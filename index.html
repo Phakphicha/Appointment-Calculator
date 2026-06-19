@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบคำนวณวันนัดและจำนวนยา (Medical Appointment & Medication Calculator)</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        pagebg: '#163333',
+                        panelbg: '#102727',
+                        cardouter: '#2b7a6b',
+                        cardinner: '#fdf8ee',
+                        textdark: '#1a3b3b',
+                        inputbg: '#f3f1eb',
+                        resultbg: '#b1f465'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .form-input, .form-select {
+            background-color: #f3f1eb;
+            border: none;
+            color: #1a3b3b;
+            font-weight: 500;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #2b7a6b;
+        }
+        ::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+        /* Scrollbar for navigator */
+        .nav-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .nav-scroll::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .nav-scroll::-webkit-scrollbar-thumb {
+            background: #2b7a6b;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-pagebg text-textdark font-sans min-h-screen selection:bg-resultbg selection:text-textdark relative">
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header Banner -->
+        <div class="bg-panelbg rounded-3xl mx-auto max-w-4xl py-6 px-8 flex items-center justify-center gap-6 mb-8 shadow-lg">
+            <div class="bg-cardouter text-white w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+                <i class="ph-fill ph-calendar-blank text-4xl"></i>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold text-white tracking-wide">ระบบคำนวณวันนัดและจำนวนยา</h1>
+        </div>
+
+        <!-- Navigator -->
+        <nav class="bg-panelbg/50 backdrop-blur-md rounded-2xl py-3 px-4 mb-8 shadow-lg max-w-7xl mx-auto overflow-x-auto nav-scroll whitespace-nowrap flex justify-center gap-3 sticky top-4 z-50 border border-white/10">
+            <a href="#section-date-diff" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-calendar-blank"></i> ระยะห่างวัน
+            </a>
+            <a href="#section-medication" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-pill"></i> จำนวนยา
+            </a>
+            <a href="#section-appt-days" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-calendar-plus"></i> นัดจากวัน
+            </a>
+            <a href="#section-appt-weeks" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-calendar-star"></i> นัดจากสัปดาห์
+            </a>
+            <a href="#section-age" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-user"></i> อายุคนไข้
+            </a>
+            <a href="#section-year" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-arrows-left-right"></i> แปลง พ.ศ./ค.ศ.
+            </a>
+            <a href="#section-vaccine" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-syringe"></i> วัคซีน
+            </a>
+        </nav>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+
+            <!-- 1. Date Difference Calculator -->
+            <section id="section-date-diff" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-blank text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัด<br>จากระยะห่างของวัน</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันที่ต้องการ (พ.ศ.)</label>
+                            <!-- Calendar icon shortcut that syncs -->
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="diffDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="diffDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center">
+                            <select id="diffMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="diffYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center">
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm relative group">
+                        <p class="text-sm font-bold text-textdark mb-1">ระยะห่างจากวันนี้</p>
+                        <p id="dateDiffResult" class="text-3xl font-bold text-textdark">- วัน</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Medication Calculator -->
+            <section id="section-medication" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-pill text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณจำนวนยา</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="medDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวัน</label>
+                        <div class="relative">
+                            <input type="number" id="medDays" min="1" placeholder="เช่น 30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="medDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                        <select id="medDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center text-sm md:text-base">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="0.25">1/4 เม็ด</option>
+                            <option value="0.5">1/2 เม็ด</option>
+                            <option value="1">1 เม็ด</option>
+                            <option value="1.5">1.5 เม็ด</option>
+                            <option value="2">2 เม็ด</option>
+                            <option value="2.5">2.5 เม็ด</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="medDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p class="text-sm font-bold text-textdark mb-1">จำนวนยาที่ต้องจ่าย</p>
+                        <p id="medResult" class="text-3xl font-bold text-textdark">- เม็ด</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Next Appt by Days -->
+            <section id="section-appt-days" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-plus text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัด<br>จากจำนวนวัน</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="apptDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวัน</label>
+                        <div class="relative">
+                            <input type="number" id="apptDays" min="1" placeholder="เช่น 30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                        <p class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
+                        <p id="apptDaysResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
+                        
+                        <!-- Clickable calendar to preview date -->
+                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
+                            <input type="date" id="apptDaysResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Next Appt by Weeks -->
+            <section id="section-appt-weeks" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-star text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัด<br>จากจำนวนสัปดาห์</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="apptWeeks" class="block text-sm font-bold text-textdark mb-2">จำนวนสัปดาห์</label>
+                        <div class="relative">
+                            <input type="number" id="apptWeeks" min="1" placeholder="เช่น 4" class="form-input w-full rounded-xl px-4 py-3 pr-16 text-center">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">สัปดาห์</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                        <p class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
+                        <p id="apptWeeksResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
+                        
+                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
+                            <input type="date" id="apptWeeksResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Age Calculator -->
+            <section id="section-age" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-user text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณอายุคนไข้</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label class="block text-sm font-bold text-textdark mb-2">วัน/เดือน/ปีเกิด (พ.ศ.)</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="ageDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center">
+                            <select id="ageMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="ageYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center">
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p class="text-sm font-bold text-textdark mb-1">อายุ</p>
+                        <p id="ageResult" class="text-2xl font-bold text-textdark">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Year Converter -->
+            <section id="section-year" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-arrows-left-right text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">แปลงปี พ.ศ. / ค.ศ.</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="yearBE" class="block text-sm font-bold text-textdark mb-2 text-center">ปี พ.ศ.</label>
+                        <input type="number" id="yearBE" placeholder="เช่น 2567" class="form-input w-full rounded-xl px-4 py-3 text-center font-bold text-xl">
+                    </div>
+                    <div class="flex justify-center text-cardouter py-1">
+                        <i class="ph-bold ph-arrows-down-up text-2xl"></i>
+                    </div>
+                    <div>
+                        <label for="yearCE" class="block text-sm font-bold text-textdark mb-2 text-center">ปี ค.ศ.</label>
+                        <input type="number" id="yearCE" placeholder="เช่น 2024" class="form-input w-full rounded-xl px-4 py-3 text-center font-bold text-xl">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Vaccine Appointment Calculator -->
+            <section id="section-vaccine" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg lg:col-span-3 scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 max-w-lg mx-auto w-full">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-syringe text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัดฉีดวัคซีนผู้ใหญ่</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 grid grid-cols-1 md:grid-cols-2 gap-6 shadow-sm">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="vaccineType" class="block text-sm font-bold text-textdark mb-2">ชนิดวัคซีน</label>
+                            <select id="vaccineType" class="form-select w-full rounded-xl px-4 py-3">
+                                <option value="">-- เลือกวัคซีน --</option>
+                                <option value="HBV">ไวรัสตับอักเสบบี (HBV)</option>
+                                <option value="HPV">เอชพีวี (HPV)</option>
+                                <option value="HAV">ไวรัสตับอักเสบเอ (HAV)</option>
+                                <option value="VZV">อีสุกอีใส (VZV)</option>
+                                <option value="RZV">งูสวัด (RZV)</option>
+                                <option value="MMR">หัด คางทูม หัดเยอรมัน (MMR)</option>
+                                <option value="DENGUE">ไข้เลือดออก (Dengue)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="vaccineDose" class="block text-sm font-bold text-textdark mb-2">เข็มที่ฉีดไปล่าสุด</label>
+                            <select id="vaccineDose" class="form-select w-full rounded-xl px-4 py-3 disabled:opacity-50">
+                                <option value="">-- เลือกเข็ม --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-sm font-bold text-textdark">วันที่ฉีดเข็มล่าสุด (พ.ศ.)</label>
+                                <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                    <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                    <input type="date" id="vaccineDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="number" id="vaccineDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center">
+                                <select id="vaccineMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm">
+                                    <option value="">เดือน</option>
+                                    <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                    <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                    <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                    <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                                </select>
+                                <input type="number" id="vaccineYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center flex flex-col justify-center h-full shadow-sm relative overflow-hidden group">
+                        <p class="text-sm font-bold text-textdark mb-2">วันนัดฉีดเข็มถัดไป (พ.ศ.)</p>
+                        <div id="vaccineResult" class="text-xl md:text-2xl font-bold text-textdark mb-2 space-y-1">-</div>
+                        <p id="vaccineNote" class="text-sm text-textdark font-medium mt-2 hidden"></p>
+                        
+                        <div class="absolute bottom-4 right-4 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-10 h-10 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-xl absolute pointer-events-none"></i>
+                            <input type="date" id="vaccineResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference and Notes -->
+                <div class="bg-cardinner rounded-[1.5rem] p-5 mt-6 shadow-sm text-sm text-textdark">
+                    <ul class="space-y-3 font-medium">
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-500 text-lg leading-none mt-0.5">&bull;</span>
+                            <span>การรับวัคซีนเลยกำหนดนัด สามารถให้วัคซีนต่อได้เลย โดยไม่ต้องเริ่มต้นนับใหม่</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-500 text-lg leading-none mt-0.5">&bull;</span>
+                            <span>การรับวัคซีนเร็วกว่ากำหนดนัด ในกรณีของวัคซีนชนิดเชื้อตาย พิจารณาให้ก่อนนัดได้ไม่เกิน 4 วัน สำหรับวัคซีนชนิดเชื้อมีชีวิตอ่อนฤทธิ์ ไม่แนะนำให้รับวัคซีนเร็วกว่ากำหนดนัด</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 pt-4 border-t border-gray-300/50 text-xs opacity-80">
+                        <strong>Reference:</strong> คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ สมาคมโรคติดเชื้อแห่งประเทศไทย พ.ศ. 2568
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
+        <p>Medical Appointment & Medication Calculator &copy; <span id="currentYearBE"></span></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
