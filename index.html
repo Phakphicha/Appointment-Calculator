@@ -29,7 +29,7 @@
                         cardinner: '#fdf8ee',
                         textdark: '#1a3b3b',
                         inputbg: '#f3f1eb',
-                        resultbg: '#b1f465'
+                        resultbg: '#cbff9c'
                     }
                 }
             }
@@ -101,6 +101,9 @@
             </a>
             <a href="#section-vaccine" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
                 <i class="ph-bold ph-syringe"></i> วัคซีน
+            </a>
+            <a href="#section-appt-table" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
+                <i class="ph-bold ph-table"></i> ตารางนัดหมายและยา
             </a>
         </nav>
 
@@ -316,6 +319,7 @@
                                 <option value="RZV">งูสวัด (RZV)</option>
                                 <option value="MMR">หัด คางทูม หัดเยอรมัน (MMR)</option>
                                 <option value="DENGUE">ไข้เลือดออก (Dengue)</option>
+                                <option value="RABIES">โรคพิษสุนัขบ้า (Rabies)</option>
                             </select>
                         </div>
                         <div>
@@ -326,7 +330,7 @@
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-2">
-                                <label class="block text-sm font-bold text-textdark">วันที่ฉีดเข็มล่าสุด (พ.ศ.)</label>
+                                <label id="vaccineDateLabel" class="block text-sm font-bold text-textdark">วันที่เริ่มฉีด (Day 0) / ฉีดเข็มล่าสุด (พ.ศ.)</label>
                                 <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
                                     <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
                                     <input type="date" id="vaccineDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
@@ -376,6 +380,93 @@
             </section>
 
         </div>
+
+        <!-- 8. Appointment & Medication Table -->
+        <section id="section-appt-table" class="bg-cardouter p-4 rounded-[2rem] flex flex-col shadow-lg mt-6 scroll-mt-24">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 max-w-lg mx-auto w-full">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-table text-xl"></i>
+                </div>
+                <h2 class="text-textdark font-bold text-lg leading-tight text-center">ตารางคำนวณวันนัดหมายและจำนวนยา</h2>
+            </div>
+            
+            <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-sm">
+                <!-- Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date - พ.ศ.)</label>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="tblBaseDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="tblBaseMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="tblBaseYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="tblDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                        <select id="tblDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="0.25">1/4 เม็ด</option>
+                            <option value="0.5">1/2 เม็ด</option>
+                            <option value="1" selected>1 เม็ด</option>
+                            <option value="1.5">1.5 เม็ด</option>
+                            <option value="2">2 เม็ด</option>
+                            <option value="2.5">2.5 เม็ด</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="tblDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                    </div>
+                </div>
+
+                <!-- Generated Table -->
+                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="text-xs text-white uppercase bg-panelbg">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-center rounded-tl-xl">ระยะเวลา<br>(สัปดาห์ / วัน)</th>
+                                <th scope="col" class="px-6 py-3 text-center">วันที่นัดหมาย<br>(วัน/เดือน/ปี พ.ศ.)</th>
+                                <th scope="col" class="px-6 py-3 text-center rounded-tr-xl">จำนวนยาที่ต้องจ่าย<br>(เม็ด)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBody" class="text-textdark">
+                            <!-- JS generates 24 rows here -->
+                            <tr>
+                                <td colspan="3" class="px-6 py-4 text-center text-gray-500">กรุณาเลือกวันที่และขนาดยาเพื่อคำนวณตาราง</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Custom Day Calculator under table -->
+                <div class="mt-6 pt-6 border-t border-gray-300">
+                    <h3 class="text-textdark font-bold mb-4">คำนวณเฉพาะจำนวนวันที่ต้องการ (Custom Days)</h3>
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <div class="relative w-full md:w-1/3">
+                            <input type="number" id="tblCustomDays" min="1" placeholder="ระบุจำนวนวัน..." class="form-input w-full rounded-xl px-4 py-3 pr-12">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
+                        </div>
+                        <div class="w-full md:w-2/3 bg-resultbg rounded-xl p-4 flex flex-col sm:flex-row justify-around items-center text-center shadow-sm gap-2">
+                            <div>
+                                <p class="text-xs font-bold text-textdark">ตรงกับวันที่</p>
+                                <p id="tblCustomDateResult" class="font-bold text-textdark text-lg">-</p>
+                            </div>
+                            <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
+                            <div>
+                                <p class="text-xs font-bold text-textdark">จำนวนยา</p>
+                                <p id="tblCustomPillResult" class="font-bold text-textdark text-lg">- เม็ด</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
     <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
