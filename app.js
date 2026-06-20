@@ -62,6 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${dayName}ที่ ${shortDate}`;
     }
 
+    // Render vaccine dose in 2-line mobile-friendly layout
+    function renderVaccineDose(label, dateStr) {
+        return `<div class="flex flex-col mb-3 w-full border-b border-[#24917d]/20 pb-2 last:border-0 last:pb-0 last:mb-0">
+            <div class="text-left text-sm md:text-base font-medium text-textdark">- ${label} :</div>
+            <div class="text-center mt-1 text-base md:text-lg font-bold text-textdark">${dateStr}</div>
+        </div>`;
+    }
+
     // Get today's date at midnight for accurate day difference calculations
     function getToday() {
         const today = new Date();
@@ -376,89 +384,90 @@ document.addEventListener('DOMContentLoaded', () => {
                         const dose3 = new Date(vDate); dose3.setDate(dose3.getDate() + 7);
                         const dose4 = new Date(vDate); dose4.setDate(dose4.getDate() + 14);
                         const dose5 = new Date(vDate); dose5.setDate(dose5.getDate() + 28);
-                        resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark">
-                            <li>เข็ม 1 (Day 0): ${formatThaiDateShortWithDay(vDate)}</li>
-                            <li>เข็ม 2 (Day 3): ${formatThaiDateShortWithDay(dose2)}</li>
-                            <li>เข็ม 3 (Day 7): ${formatThaiDateShortWithDay(dose3)}</li>
-                            <li>เข็ม 4 (Day 14): ${formatThaiDateShortWithDay(dose4)}</li>
-                            <li>เข็ม 5 (Day 28): ${formatThaiDateShortWithDay(dose5)}</li>
-                        </ul>`;
+                        resultHTML = renderVaccineDose('เข็ม 1 (Day 0)', formatThaiDateShortWithDay(vDate)) +
+                                     renderVaccineDose('เข็ม 2 (Day 3)', formatThaiDateShortWithDay(dose2)) +
+                                     renderVaccineDose('เข็ม 3 (Day 7)', formatThaiDateShortWithDay(dose3)) +
+                                     renderVaccineDose('เข็ม 4 (Day 14)', formatThaiDateShortWithDay(dose4)) +
+                                     renderVaccineDose('เข็ม 5 (Day 28)', formatThaiDateShortWithDay(dose5));
                         pickerDate = dose2;
                         vaccineNote.textContent = '(ฉีดแบบ IM 5 เข็ม)';
                     } else if (dose === '1') {
                         const dose2 = new Date(vDate); dose2.setDate(dose2.getDate() + 3);
-                        resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark">
-                            <li>เข็ม 1 (Day 0): ${formatThaiDateShortWithDay(vDate)}</li>
-                            <li>เข็ม 2 (Day 3): ${formatThaiDateShortWithDay(dose2)}</li>
-                        </ul>`;
+                        resultHTML = renderVaccineDose('เข็ม 1 (Day 0)', formatThaiDateShortWithDay(vDate)) +
+                                     renderVaccineDose('เข็ม 2 (Day 3)', formatThaiDateShortWithDay(dose2));
                         pickerDate = dose2;
                         vaccineNote.textContent = '(กระตุ้น 2 เข็ม)';
                     }
                     break;
                 case 'HBV':
                     if (dose === '1') {
-                        const dose2 = new Date(vDate);
-                        dose2.setMonth(dose2.getMonth() + 1); // 1 month after dose 1
-                        const dose3 = new Date(vDate);
-                        dose3.setMonth(dose3.getMonth() + 6); // 6 months after dose 1
-                        resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark"><li>เข็ม 2: ${formatThaiDateShortWithDay(dose2)}</li><li>เข็ม 3: ${formatThaiDateShortWithDay(dose3)}</li></ul>`;
+                        const dose2 = new Date(vDate); dose2.setMonth(dose2.getMonth() + 1);
+                        const dose3 = new Date(vDate); dose3.setMonth(dose3.getMonth() + 6);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(dose2)) +
+                                     renderVaccineDose('เข็ม 3', formatThaiDateShortWithDay(dose3));
                         pickerDate = dose2;
                         vaccineNote.textContent = '(เข็ม 2 ห่างจากเข็ม 1 = 1 เดือน, เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
                     } else if (dose === '2') {
                         nextAppt.setMonth(nextAppt.getMonth() + 5); 
+                        resultHTML = renderVaccineDose('เข็ม 3', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = '(เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
                     }
                     break;
                 case 'HPV':
                     if (dose === '1') {
-                        const dose2 = new Date(vDate);
-                        dose2.setMonth(dose2.getMonth() + 2); // 2 months after dose 1
-                        const dose3 = new Date(vDate);
-                        dose3.setMonth(dose3.getMonth() + 6); // 6 months after dose 1
-                        resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark"><li>เข็ม 2: ${formatThaiDateShortWithDay(dose2)}</li><li>เข็ม 3: ${formatThaiDateShortWithDay(dose3)}</li></ul>`;
+                        const dose2 = new Date(vDate); dose2.setMonth(dose2.getMonth() + 2);
+                        const dose3 = new Date(vDate); dose3.setMonth(dose3.getMonth() + 6);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(dose2)) +
+                                     renderVaccineDose('เข็ม 3', formatThaiDateShortWithDay(dose3));
                         pickerDate = dose2;
                         vaccineNote.textContent = '(เข็ม 2 ห่างจากเข็ม 1 = 2 เดือน, เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
                     } else if (dose === '2') {
                         nextAppt.setMonth(nextAppt.getMonth() + 4);
+                        resultHTML = renderVaccineDose('เข็ม 3', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = '(เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
                     }
                     break;
                 case 'HAV':
                     if (dose === '1') {
-                        nextAppt.setMonth(nextAppt.getMonth() + 6); // 6 months after dose 1
+                        nextAppt.setMonth(nextAppt.getMonth() + 6);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = 'เข็ม 2 ห่างจากเข็ม 1 = 6 เดือน';
                     }
                     break;
                 case 'VZV':
                     if (dose === '1') {
-                        nextAppt.setDate(nextAppt.getDate() + 28); // 4 weeks
+                        nextAppt.setDate(nextAppt.getDate() + 28);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = 'เข็ม 2 ห่างจากเข็ม 1 = 4 สัปดาห์ (หรือ 1 เดือน)';
                     }
                     break;
                 case 'MMR':
                     if (dose === '1') {
-                        nextAppt.setDate(nextAppt.getDate() + 28); // 4 weeks
+                        nextAppt.setDate(nextAppt.getDate() + 28);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = 'เข็ม 2 ห่างจากเข็ม 1 = 4 สัปดาห์';
                     }
                     break;
                 case 'RZV':
                     if (dose === '1') {
-                        nextAppt.setMonth(nextAppt.getMonth() + 2); // 2 months after dose 1
+                        nextAppt.setMonth(nextAppt.getMonth() + 2);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = 'เข็ม 2 ห่างจากเข็ม 1 = 2 เดือน';
                     }
                     break;
                 case 'DENGUE':
                     if (dose === '1') {
-                        nextAppt.setMonth(nextAppt.getMonth() + 3); // 3 months after dose 1
+                        nextAppt.setMonth(nextAppt.getMonth() + 3);
+                        resultHTML = renderVaccineDose('เข็ม 2', formatThaiDateShortWithDay(nextAppt));
                         vaccineNote.textContent = 'เข็ม 2 ห่างจากเข็ม 1 = 3 เดือน';
                     }
                     break;
             }
             
             if (resultHTML) {
-                vaccineResult.innerHTML = resultHTML;
+                vaccineResult.innerHTML = `<div class="w-full">${resultHTML}</div>`;
             } else {
-                vaccineResult.textContent = formatThaiDateShortWithDay(nextAppt);
+                vaccineResult.innerHTML = renderVaccineDose('เข็มถัดไป', formatThaiDateShortWithDay(nextAppt));
             }
             
             vaccineResultPicker.value = toISODate(pickerDate);
