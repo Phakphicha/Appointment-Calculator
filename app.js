@@ -44,6 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(date);
     }
 
+    // Format Date to short Thai Buddhist Era string (e.g. 15 มี.ค. 69)
+    function formatThaiDateShort(date) {
+        if (!date || isNaN(date)) return '-';
+        return new Intl.DateTimeFormat('th-TH', { 
+            day: 'numeric', 
+            month: 'short', 
+            year: '2-digit' 
+        }).format(date);
+    }
+
     // Get today's date at midnight for accurate day difference calculations
     function getToday() {
         const today = new Date();
@@ -515,9 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 html += `
                     <tr class="border-b border-gray-200 hover:bg-resultbg/50 transition ${bgClass}">
-                        <td class="px-6 py-3 text-center font-medium">${week} สัปดาห์<br><span class="text-xs text-gray-500">(${days} วัน)</span></td>
-                        <td class="px-6 py-3 text-center">${formatThaiDate(targetDate)}</td>
-                        <td class="px-6 py-3 text-center font-bold text-cardouter text-lg">${pills}</td>
+                        <td class="px-1 md:px-6 py-2 md:py-3 text-center font-medium">${week} สัปดาห์<br><span class="text-[10px] md:text-xs text-gray-500">(${days} วัน)</span></td>
+                        <td class="px-1 md:px-6 py-2 md:py-3 text-center whitespace-nowrap">${formatThaiDateShort(targetDate)}</td>
+                        <td class="px-1 md:px-6 py-2 md:py-3 text-center font-bold text-cardouter text-base md:text-lg">${pills}</td>
                     </tr>
                 `;
             }
@@ -535,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 targetDate.setDate(targetDate.getDate() + days);
                 const pills = Math.ceil(dose * days);
 
-                tblCustomDateResult.textContent = formatThaiDate(targetDate);
+                tblCustomDateResult.textContent = formatThaiDateShort(targetDate);
                 tblCustomPillResult.textContent = `${pills} เม็ด`;
             } else {
                 tblCustomDateResult.textContent = '-';
