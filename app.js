@@ -377,16 +377,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         const dose4 = new Date(vDate); dose4.setDate(dose4.getDate() + 14);
                         const dose5 = new Date(vDate); dose5.setDate(dose5.getDate() + 28);
                         resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark">
-                            <li>เข็ม 2 (+3 วัน): ${formatThaiDateShortWithDay(dose2)}</li>
-                            <li>เข็ม 3 (+7 วัน): ${formatThaiDateShortWithDay(dose3)}</li>
-                            <li>เข็ม 4 (+14 วัน): ${formatThaiDateShortWithDay(dose4)}</li>
-                            <li>เข็ม 5 (+28 วัน): ${formatThaiDateShortWithDay(dose5)}</li>
+                            <li>เข็ม 1 (Day 0): ${formatThaiDateShortWithDay(vDate)}</li>
+                            <li>เข็ม 2 (Day 3): ${formatThaiDateShortWithDay(dose2)}</li>
+                            <li>เข็ม 3 (Day 7): ${formatThaiDateShortWithDay(dose3)}</li>
+                            <li>เข็ม 4 (Day 14): ${formatThaiDateShortWithDay(dose4)}</li>
+                            <li>เข็ม 5 (Day 28): ${formatThaiDateShortWithDay(dose5)}</li>
                         </ul>`;
                         pickerDate = dose2;
                         vaccineNote.textContent = '(ฉีดแบบ IM 5 เข็ม)';
                     } else if (dose === '1') {
                         const dose2 = new Date(vDate); dose2.setDate(dose2.getDate() + 3);
-                        resultHTML = `<div class="text-xl md:text-2xl font-bold text-textdark">เข็ม 2 (+3 วัน): ${formatThaiDateShortWithDay(dose2)}</div>`;
+                        resultHTML = `<ul class="list-disc list-inside text-left inline-block text-base md:text-lg font-bold text-textdark">
+                            <li>เข็ม 1 (Day 0): ${formatThaiDateShortWithDay(vDate)}</li>
+                            <li>เข็ม 2 (Day 3): ${formatThaiDateShortWithDay(dose2)}</li>
+                        </ul>`;
                         pickerDate = dose2;
                         vaccineNote.textContent = '(กระตุ้น 2 เข็ม)';
                     }
