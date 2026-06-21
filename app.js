@@ -637,8 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (manualModal && !manualModal.classList.contains('hidden')) {
                 closeManual();
             }
-            if (typeof closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
-                closeCoffee();
+            if (typeof window.closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
+                window.closeCoffee();
             }
         }
     });
@@ -708,6 +708,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Close mobile menu when clicking action buttons
+    const mobileMenuActions = document.querySelectorAll('.mobile-menu-actions button');
+    if (mobileMenuActions.length > 0) {
+        mobileMenuActions.forEach(btn => {
+            btn.addEventListener('click', closeMobileMenu);
+        });
+    }
+
     // click on backdrop closes menu
     menuBackdrop.addEventListener('click', closeMobileMenu);
 
@@ -742,11 +750,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnOpenCoffees.length > 0) {
         btnOpenCoffees.forEach(btn => btn.addEventListener('click', openCoffee));
     }
-    if (btnCloseCoffeeTop) btnCloseCoffeeTop.addEventListener('click', closeCoffee);
+    if (btnCloseCoffeeTop) btnCloseCoffeeTop.addEventListener('click', window.closeCoffee);
 
     if (coffeeModal) {
         coffeeModal.addEventListener('click', (e) => {
-            if (e.target === coffeeModal) closeCoffee();
+            if (e.target === coffeeModal) window.closeCoffee();
         });
     }
 
