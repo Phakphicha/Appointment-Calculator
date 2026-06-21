@@ -749,5 +749,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === coffeeModal) closeCoffee();
         });
     }
+// 1. ดึงข้อมูลปุ่มลิงก์ทั้งหมดในเมนู
+const menuLinks = document.querySelectorAll('.mobile-offcanvas a');
+const mobileMenu = document.querySelector('.mobile-offcanvas');
+const menuBackdrop = document.querySelector('.menu-backdrop');
+
+// 2. สั่งให้ทุกครั้งที่มีการคลิกลิงก์ ให้ทำงานต่อไปนี้
+menuLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        // เอาคลาส .open ออกจากเมนู (เพื่อให้เมนูเลื่อนเก็บ)
+        mobileMenu.classList.remove('open');
+        
+        // เอาคลาส .visible ออกจากฉากหลัง (เพื่อให้ฉากหลังหายไป)
+        menuBackdrop.classList.remove('visible');
+        
+        // (ถ้าคุณมีการล็อคหน้าจอไม่ให้เลื่อนตอนเปิดเมนู ให้ใส่โค้ดนี้เพื่อปลดล็อคด้วย)
+        document.body.style.overflow = ''; 
+    });
 
 });
