@@ -85,3 +85,54 @@ input[type=number] {
   }
 }
 
+/* Hamburger tab styling */
+.mobile-hamburger-tab {
+  width: 3.5rem;
+  background-color: #0f5a48; /* dark green */
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 0.25rem;
+}
+.mobile-hamburger-tab .hamburger i {
+  color: #f5e6d3; /* beige/cream */
+}
+
+/* Off-canvas mobile menu */
+.mobile-offcanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 78vw;
+  max-width: 360px;
+  transform: translateX(-110%);
+  transition: transform 260ms ease-in-out;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+}
+.mobile-offcanvas.open {
+  transform: translateX(0);
+}
+
+/* Ensure the menu links area scrolls if content is long */
+.mobile-offcanvas .mobile-menu-links {
+  padding-right: 0.25rem;
+  overflow-y: auto;
+}
+
+/* Slight overlay when menu open (applies to body via class) */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  pointer-events: none;
+}
+.menu-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+

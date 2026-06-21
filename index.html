@@ -157,23 +157,19 @@
                     </div>
                 </div>
 
-                <nav class="mobile-secondary-bar mt-3 rounded-xl p-2 flex items-center justify-start">
-                    <button id="btnHamburger" class="hamburger p-2 focus:outline-none">
-                        <i class="ph-bold ph-list text-2xl text-[#f5e6d3]" id="hamburgerIcon"></i>
-                    </button>
-                </nav>
+                <!-- removed secondary bar; hamburger tab placed below header -->
             </header>
 
+            <!-- Hamburger tab that extends from the left edge below the header -->
+            <div class="mobile-hamburger-tab mt-2">
+                <button id="btnHamburger" class="hamburger p-3 focus:outline-none">
+                    <i class="ph-bold ph-list text-2xl text-[#f5e6d3]" id="hamburgerIcon"></i>
+                </button>
+            </div>
+
             <!-- Mobile Dropdown Menu -->
-            <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-0 right-0 max-h-[75vh] overflow-y-auto">
-                <div class="mobile-menu-actions flex flex-col gap-2 mb-2">
-                    <button class="btnOpenManual inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-question-circle text-lg"></i> คู่มือการใช้งาน
-                    </button>
-                    <button class="btnOpenCoffee inline-flex items-center gap-2 bg-[#ffc395] text-[#24917d] px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-coffee text-lg"></i> สนับสนุนค่ากาแฟ
-                    </button>
-                </div>
+            <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md p-4 shadow-xl border border-white/10 flex flex-col gap-2 mt-2 mobile-offcanvas">
+                <div class="mobile-menu-links flex flex-col gap-2 overflow-y-auto">
                 <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
                     <i class="ph-bold ph-calendar-blank text-lg"></i> ระยะห่างวัน
                 </a>
@@ -198,6 +194,16 @@
                 <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
                     <i class="ph-bold ph-table text-lg"></i> ตารางนัดหมายและยา
                 </a>
+                </div>
+
+                <div class="mobile-menu-actions flex flex-col gap-2 mt-auto">
+                    <button class="btnOpenManual inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-question-circle text-lg"></i> คู่มือการใช้งาน
+                    </button>
+                    <button class="btnOpenCoffee inline-flex items-center gap-2 bg-[#ffc395] text-[#24917d] px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-coffee text-lg"></i> สนับสนุนค่ากาแฟ
+                    </button>
+                </div>
             </div>
         </div>
 

@@ -650,12 +650,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenu = document.getElementById('mobileMenu');
     const hamburgerIcon = document.getElementById('hamburgerIcon');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    // create backdrop for off-canvas menu
+    let menuBackdrop = document.getElementById('mobileMenuBackdrop');
+    if (!menuBackdrop) {
+        menuBackdrop = document.createElement('div');
+        menuBackdrop.id = 'mobileMenuBackdrop';
+        menuBackdrop.className = 'menu-backdrop';
+        document.body.appendChild(menuBackdrop);
+    }
 
     function toggleMobileMenu() {
         if (!mobileMenu || !hamburgerIcon) return;
-        const isHidden = mobileMenu.classList.contains('hidden');
-        if (isHidden) {
+        const isOpen = mobileMenu.classList.contains('open');
+        if (!isOpen) {
+            // show then animate in
             mobileMenu.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                mobileMenu.classList.add('open');
+                menuBackdrop.classList.add('visible');
+            });
             hamburgerIcon.classList.remove('ph-list');
             hamburgerIcon.classList.add('ph-x');
         } else {
@@ -665,9 +678,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeMobileMenu() {
         if (!mobileMenu || !hamburgerIcon) return;
-        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('open');
+        menuBackdrop.classList.remove('visible');
         hamburgerIcon.classList.remove('ph-x');
         hamburgerIcon.classList.add('ph-list');
+        // after transition, hide to remove from accessibility/flow
+        const onEnd = function() {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.removeEventListener('transitionend', onEnd);
+        };
+        mobileMenu.addEventListener('transitionend', onEnd);
     }
 
     if (btnHamburger) {
@@ -683,8 +703,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // click on backdrop closes menu
+    menuBackdrop.addEventListener('click', closeMobileMenu);
+
     document.addEventListener('click', (e) => {
-        if (mobileMenu && !mobileMenu.classList.contains('hidden') && e.target !== btnHamburger && !btnHamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        if (mobileMenu && mobileMenu.classList.contains('open') && e.target !== btnHamburger && !btnHamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
             closeMobileMenu();
         }
     });
