@@ -692,14 +692,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', (e) => {
                 const targetId = link.getAttribute('href');
                 if (targetId && targetId.startsWith('#')) {
+                    // close menu then navigate via hash to ensure click works under overlay
                     e.preventDefault();
                     closeMobileMenu();
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        setTimeout(() => {
-                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 150);
-                    }
+                    setTimeout(() => {
+                        // Use location.hash to navigate and allow browser default behavior
+                        window.location.hash = targetId;
+                    }, 220);
                 } else {
                     closeMobileMenu();
                 }
