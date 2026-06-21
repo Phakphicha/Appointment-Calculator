@@ -71,16 +71,35 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Header Banner -->
-        <div class="bg-panelbg rounded-3xl mx-auto max-w-4xl py-4 px-3 md:py-6 md:px-8 flex items-center justify-center gap-3 md:gap-6 mb-6 md:mb-8 shadow-lg min-w-0">
-            <div class="bg-[#24917d] text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
-                <i class="ph-fill ph-calendar-blank text-2xl md:text-4xl"></i>
+        <!-- Desktop Header Area (Hidden on Mobile) -->
+        <header class="hidden lg:block relative w-full mb-8">
+            <!-- Floating Buttons (Desktop) -->
+            <div class="absolute top-2 right-2 xl:right-0 flex items-center gap-3 z-[60]">
+                <!-- Coffee Button -->
+                <button class="btnOpenCoffee w-12 h-12 flex items-center justify-center bg-[#ffc395] hover:bg-[#e0ab82] text-[#24917d] rounded-full transition shadow-lg group relative border border-white/20">
+                    <i class="ph-bold ph-coffee text-2xl"></i>
+                    <!-- Tooltip -->
+                    <span class="absolute top-full mt-3 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">สนับสนุนค่ากาแฟ</span>
+                </button>
+                <!-- Help Button -->
+                <button class="btnOpenManual w-12 h-12 flex items-center justify-center bg-[#24917d] hover:bg-[#1f7a69] text-white rounded-full transition shadow-lg group relative border border-white/20">
+                    <i class="ph-bold ph-question text-2xl"></i>
+                    <!-- Tooltip -->
+                    <span class="absolute top-full mt-3 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">คู่มือการใช้งาน</span>
+                </button>
             </div>
-            <h1 class="text-lg sm:text-xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight truncate leading-tight flex-shrink min-w-0">ระบบคำนวณวันนัดและจำนวนยา</h1>
-        </div>
 
-        <!-- Navigator -->
-        <nav class="bg-panelbg/50 backdrop-blur-md rounded-2xl py-3 px-4 mb-8 shadow-lg max-w-7xl mx-auto overflow-x-auto nav-scroll whitespace-nowrap flex justify-start md:justify-center gap-3 sticky top-4 z-50 border border-white/10">
+            <!-- Desktop Header Banner (Centered) -->
+            <div class="bg-panelbg rounded-3xl mx-auto max-w-4xl py-6 px-8 flex items-center justify-center gap-6 shadow-lg min-w-0">
+                <div class="bg-[#24917d] text-white w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <i class="ph-fill ph-calendar-blank text-4xl"></i>
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-bold text-white tracking-tight truncate leading-tight flex-shrink min-w-0">ระบบคำนวณวันนัดและจำนวนยา</h1>
+            </div>
+        </header>
+
+        <!-- Desktop Navigator (Hidden on Mobile) -->
+        <nav class="hidden lg:flex bg-panelbg/50 backdrop-blur-md rounded-2xl py-3 px-4 mb-8 shadow-lg max-w-7xl mx-auto overflow-x-auto nav-scroll whitespace-nowrap justify-center gap-3 sticky top-4 z-50 border border-white/10">
             <a href="#section-date-diff" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
                 <i class="ph-bold ph-calendar-blank"></i> ระยะห่างวัน
             </a>
@@ -106,6 +125,66 @@
                 <i class="ph-bold ph-table"></i> ตารางนัดหมายและยา
             </a>
         </nav>
+
+        <!-- Mobile Unified Navbar & Hamburger (Hidden on Desktop) -->
+        <div class="lg:hidden sticky top-4 z-50 max-w-7xl mx-auto mb-6">
+            <nav class="bg-panelbg/95 backdrop-blur-md rounded-2xl py-3 px-4 shadow-lg flex items-center justify-between border border-white/10 relative">
+                <!-- Left: Logo + Site Name -->
+                <div class="flex items-center gap-3 min-w-0 shrink-0">
+                    <div class="bg-[#24917d] text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+                        <i class="ph-fill ph-calendar-blank text-xl"></i>
+                    </div>
+                    <h1 class="text-base sm:text-lg font-bold text-white tracking-tight truncate leading-tight">ระบบคำนวณวันนัดและจำนวนยา</h1>
+                </div>
+
+                <!-- Right: Icons + Hamburger Button -->
+                <div class="flex items-center gap-2 ml-auto shrink-0">
+                    <!-- Coffee Button -->
+                    <button class="btnOpenCoffee w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-[#ffc395] rounded-full transition group relative">
+                        <i class="ph-bold ph-coffee text-xl"></i>
+                        <!-- Tooltip -->
+                        <span class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[60] shadow-lg">สนับสนุนค่ากาแฟ</span>
+                    </button>
+                    <!-- Help Button -->
+                    <button class="btnOpenManual w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition group relative">
+                        <i class="ph-bold ph-question text-xl"></i>
+                        <!-- Tooltip -->
+                        <span class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[60] shadow-lg">คู่มือการใช้งาน</span>
+                    </button>
+                    <button id="btnHamburger" class="text-white hover:text-gray-200 transition p-2 focus:outline-none">
+                        <i class="ph-bold ph-list text-3xl" id="hamburgerIcon"></i>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-0 right-0 max-h-[75vh] overflow-y-auto">
+                <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-calendar-blank text-lg"></i> ระยะห่างวัน
+                </a>
+                <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-pill text-lg"></i> จำนวนยา
+                </a>
+                <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-calendar-plus text-lg"></i> นัดจากวัน
+                </a>
+                <a href="#section-appt-weeks" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-calendar-star text-lg"></i> นัดจากสัปดาห์
+                </a>
+                <a href="#section-age" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-user text-lg"></i> อายุคนไข้
+                </a>
+                <a href="#section-year" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-arrows-left-right text-lg"></i> แปลง พ.ศ./ค.ศ.
+                </a>
+                <a href="#section-vaccine" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-syringe text-lg"></i> วัคซีน
+                </a>
+                <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                    <i class="ph-bold ph-table text-lg"></i> ตารางนัดหมายและยา
+                </a>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
 
@@ -471,8 +550,126 @@
 
     <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
         <p>Medical Appointment & Medication Calculator &copy; <span id="currentYearBE"></span></p>
+        <div class="flex items-center justify-center gap-2 mt-2">
+            <button class="btnOpenManual inline-flex items-center gap-1 bg-[#163333] text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-[#24917d] transition">
+                <i class="ph-fill ph-question text-sm"></i> คู่มือการใช้งาน
+            </button>
+            <button class="btnOpenCoffee inline-flex items-center gap-1 bg-[#ffc395] text-[#24917d] px-3 py-1 rounded-full text-xs font-bold hover:bg-[#e0ab82] transition">
+                <i class="ph-fill ph-coffee text-sm"></i> สนับสนุนค่ากาแฟ
+            </button>
+        </div>
     </footer>
 
+    <!-- Coffee Donation Modal -->
+    <div id="coffeeModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 hidden backdrop-blur-sm p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col relative transform transition-all overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-[#ffc395]">
+                <h2 class="text-xl font-bold text-[#163333] flex items-center gap-2"><i class="ph-fill ph-coffee text-2xl text-[#24917d]"></i> สนับสนุนค่ากาแฟ</h2>
+                <button id="btnCloseCoffeeTop" class="text-[#163333] hover:text-gray-700 transition">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto flex flex-col items-center flex-grow">
+                <h3 class="font-bold text-[#24917d] text-lg text-center mb-4">สนับสนุนค่ากาแฟเพื่อเป็นกำลังใจ ☕</h3>
+                
+                <div class="bg-gray-50 p-3 rounded-2xl shadow-inner mb-6 border border-gray-100">
+                    <img src="https://lh3.googleusercontent.com/d/1OT2fAKWcfKiypu3W4-FAyEvqs_hf9J-x" alt="QR Code PromptPay" class="w-56 h-auto object-contain rounded-xl shadow-md mx-auto mix-blend-multiply">
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full mb-6">
+                    <div class="bg-red-50/70 text-red-800 border border-red-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">☕</span> Nescafe</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-red-700">: 19 .-</div>
+                    </div>
+                    <div class="bg-green-50/70 text-green-800 border border-green-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">🦜</span> Amazon</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-green-700">: 59 .-</div>
+                    </div>
+                    <div class="bg-emerald-50/70 text-emerald-800 border border-emerald-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">⭐</span> Starbucks</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-emerald-700">: 99 .-</div>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-500 text-center bg-gray-50 py-2 px-4 rounded-lg w-full">
+                    สแกนผ่านแอปพลิเคชันธนาคารได้ทุกธนาคาร<br>ขอบคุณสำหรับทุกการสนับสนุนค่ะ 🙏
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Manual Modal -->
+    <div id="manualModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 hidden backdrop-blur-sm p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col relative transform transition-all overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-[#24917d]">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="ph-fill ph-book-open-text text-2xl"></i> คู่มือการใช้งานระบบ</h2>
+                <button id="btnCloseManualTop" class="text-white hover:text-gray-200 transition">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto text-gray-800 space-y-5 flex-grow">
+                <ul class="space-y-4">
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">1</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:</span> 
+                            เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง
+                        </div>
+                    </li>
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">2</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณระยะห่างของวัน:</span> 
+                            เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน
+                        </div>
+                    </li>
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">3</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:</span> 
+                            กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที
+                        </div>
+                    </li>
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">4</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณอายุคนไข้:</span> 
+                            กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)
+                        </div>
+                    </li>
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">5</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:</span> 
+                            กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ
+                        </div>
+                    </li>
+                    <li class="flex gap-3">
+                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">6</div>
+                        <div>
+                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:</span> 
+                            เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-5 border-t border-gray-200 bg-gray-50 flex justify-end">
+                <button id="btnCloseManualBottom" class="bg-[#24917d] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-opacity-90 transition shadow-sm">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="app.js?v=1.1"></script>
 </body>
 </html>

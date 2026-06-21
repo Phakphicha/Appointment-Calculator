@@ -598,4 +598,128 @@ document.addEventListener('DOMContentLoaded', () => {
         generateTable();
     }
 
+    // -------------------------------------------------------------
+    // 9. User Manual Modal
+    // -------------------------------------------------------------
+    const manualModal = document.getElementById('manualModal');
+    const btnOpenManuals = document.querySelectorAll('.btnOpenManual');
+    const btnCloseManualTop = document.getElementById('btnCloseManualTop');
+    const btnCloseManualBottom = document.getElementById('btnCloseManualBottom');
+
+    function openManual() {
+        if (manualModal) {
+            manualModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // prevent background scroll
+        }
+    }
+
+    function closeManual() {
+        if (manualModal) {
+            manualModal.classList.add('hidden');
+            document.body.style.overflow = ''; // restore scroll
+        }
+    }
+
+    if (btnOpenManuals.length > 0) {
+        btnOpenManuals.forEach(btn => btn.addEventListener('click', openManual));
+    }
+    if (btnCloseManualTop) btnCloseManualTop.addEventListener('click', closeManual);
+    if (btnCloseManualBottom) btnCloseManualBottom.addEventListener('click', closeManual);
+
+    if (manualModal) {
+        manualModal.addEventListener('click', (e) => {
+            if (e.target === manualModal) closeManual();
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (manualModal && !manualModal.classList.contains('hidden')) {
+                closeManual();
+            }
+            if (typeof closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
+                closeCoffee();
+            }
+        }
+    });
+
+    // -------------------------------------------------------------
+    // 10. Hamburger Mobile Menu
+    // -------------------------------------------------------------
+    const btnHamburger = document.getElementById('btnHamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const hamburgerIcon = document.getElementById('hamburgerIcon');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    function toggleMobileMenu() {
+        if (!mobileMenu || !hamburgerIcon) return;
+        const isHidden = mobileMenu.classList.contains('hidden');
+        if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            hamburgerIcon.classList.remove('ph-list');
+            hamburgerIcon.classList.add('ph-x');
+        } else {
+            closeMobileMenu();
+        }
+    }
+
+    function closeMobileMenu() {
+        if (!mobileMenu || !hamburgerIcon) return;
+        mobileMenu.classList.add('hidden');
+        hamburgerIcon.classList.remove('ph-x');
+        hamburgerIcon.classList.add('ph-list');
+    }
+
+    if (btnHamburger) {
+        btnHamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+    }
+
+    if (mobileNavLinks.length > 0) {
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (mobileMenu && !mobileMenu.classList.contains('hidden') && e.target !== btnHamburger && !btnHamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // -------------------------------------------------------------
+    // 11. Coffee Modal
+    // -------------------------------------------------------------
+    const coffeeModal = document.getElementById('coffeeModal');
+    const btnOpenCoffees = document.querySelectorAll('.btnOpenCoffee');
+    const btnCloseCoffeeTop = document.getElementById('btnCloseCoffeeTop');
+
+    function openCoffee() {
+        if (coffeeModal) {
+            coffeeModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // prevent background scroll
+        }
+    }
+
+    // Exposed to the global scope for the escape key listener above
+    window.closeCoffee = function() {
+        if (coffeeModal) {
+            coffeeModal.classList.add('hidden');
+            document.body.style.overflow = ''; // restore scroll
+        }
+    }
+
+    if (btnOpenCoffees.length > 0) {
+        btnOpenCoffees.forEach(btn => btn.addEventListener('click', openCoffee));
+    }
+    if (btnCloseCoffeeTop) btnCloseCoffeeTop.addEventListener('click', closeCoffee);
+
+    if (coffeeModal) {
+        coffeeModal.addEventListener('click', (e) => {
+            if (e.target === coffeeModal) closeCoffee();
+        });
+    }
+
 });
