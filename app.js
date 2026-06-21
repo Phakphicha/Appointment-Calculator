@@ -691,14 +691,16 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 const targetId = link.getAttribute('href');
+                console.log('mobile-nav click:', targetId);
                 if (targetId && targetId.startsWith('#')) {
                     // close menu then navigate via hash to ensure click works under overlay
                     e.preventDefault();
                     closeMobileMenu();
                     setTimeout(() => {
+                        console.log('navigating to', targetId);
                         // Use location.hash to navigate and allow browser default behavior
                         window.location.hash = targetId;
-                    }, 220);
+                    }, 300);
                 } else {
                     closeMobileMenu();
                 }
