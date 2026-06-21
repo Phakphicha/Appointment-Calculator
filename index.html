@@ -143,8 +143,8 @@
 
         <!-- Mobile Unified Navbar & Hamburger (Hidden on Desktop) -->
         <div class="lg:hidden sticky top-4 z-50 max-w-7xl mx-auto mb-6">
-            <nav class="bg-panelbg/95 backdrop-blur-md rounded-2xl py-3 px-4 shadow-lg flex items-center justify-between border border-white/10 relative">
-                <!-- Left: Logo + Site Name -->
+            <nav class="bg-panelbg/95 backdrop-blur-md rounded-2xl py-3 px-4 shadow-lg border border-white/10 relative">
+                <!-- Top: Logo + Site Name -->
                 <div class="flex items-center gap-3 min-w-0 shrink-0">
                     <div class="bg-[#24917d] text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
                         <i class="ph-fill ph-calendar-blank text-xl"></i>
@@ -152,22 +152,19 @@
                     <h1 class="text-base sm:text-lg font-bold text-white tracking-tight truncate leading-tight">ระบบคำนวณวันนัดและจำนวนยา</h1>
                 </div>
 
-                <!-- Right: Icons + Hamburger Button -->
-                <div class="flex items-center gap-2 ml-auto shrink-0">
-                    <!-- Coffee Button -->
-                    <button class="btnOpenCoffee w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-[#ffc395] rounded-full transition group relative">
+                <!-- Stacked Mobile Actions -->
+                <div class="mt-3 flex flex-col items-stretch gap-2">
+                    <button class="btnOpenCoffee w-full h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-[#ffc395] rounded-2xl transition group relative">
                         <i class="ph-bold ph-coffee text-xl"></i>
-                        <!-- Tooltip -->
-                        <span class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[60] shadow-lg">สนับสนุนค่ากาแฟ</span>
+                        <span class="sr-only">สนับสนุนค่ากาแฟ</span>
                     </button>
-                    <!-- Help Button -->
-                    <button class="btnOpenManual w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition group relative">
+                    <button class="btnOpenManual w-full h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-2xl transition group relative">
                         <i class="ph-bold ph-question text-xl"></i>
-                        <!-- Tooltip -->
-                        <span class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[60] shadow-lg">คู่มือการใช้งาน</span>
+                        <span class="sr-only">คู่มือการใช้งาน</span>
                     </button>
-                    <button id="btnHamburger" class="text-white hover:text-gray-200 transition p-2 focus:outline-none">
+                    <button id="btnHamburger" class="w-full h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-2xl transition p-0 focus:outline-none">
                         <i class="ph-bold ph-list text-3xl" id="hamburgerIcon"></i>
+                        <span class="sr-only">เมนู</span>
                     </button>
                 </div>
             </nav>
