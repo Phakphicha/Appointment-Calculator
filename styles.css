@@ -44,3 +44,44 @@ input[type=number] {
     @apply border-gray-300 focus:border-primary-500 focus:ring-primary-500 rounded-md shadow-sm;
 }
 
+/* Mobile specific header styles for new UI reference */
+@media (max-width: 768px) {
+  .mobile-main-header {
+    background-color: #0f5a48; /* dark green */
+    padding: 1rem;
+  }
+
+  .mobile-main-header .mobile-title {
+    font-family: 'Prompt', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+  }
+
+  .mobile-secondary-bar {
+    background-color: #0b4439; /* slightly darker bar */
+  }
+
+  .mobile-secondary-bar .hamburger,
+  .mobile-secondary-bar .btnOpenManual,
+  .mobile-secondary-bar .btnOpenCoffee {
+    background: transparent;
+    border-radius: 0.5rem;
+    color: #f5e6d3; /* beige/off-white */
+  }
+
+  .mobile-secondary-bar .hamburger i,
+  .mobile-secondary-bar .btnOpenManual i,
+  .mobile-secondary-bar .btnOpenCoffee i {
+    color: #f5e6d3;
+  }
+
+  .mobile-main-header, .mobile-secondary-bar {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+
+  .mobile-main-header .mobile-app-icon {
+    margin-right: 0.5rem;
+  }
+}
+
