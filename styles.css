@@ -105,9 +105,9 @@ input[type=number] {
   height: 100vh;
   width: 78vw;
   max-width: 360px;
-  transform: translateX(-110%);
+  transform: translateX(-100%);
   transition: transform 260ms ease-in-out;
-  z-index: 60;
+  z-index: 70;
   display: flex;
   flex-direction: column;
 }
@@ -119,6 +119,11 @@ input[type=number] {
 .mobile-offcanvas .mobile-menu-links {
   padding-right: 0.25rem;
   overflow-y: auto;
+  flex: 1;
+}
+
+.mobile-menu-actions {
+  margin-top: auto;
 }
 
 /* Slight overlay when menu open (applies to body via class) */
@@ -126,7 +131,7 @@ input[type=number] {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
-  z-index: 50;
+  z-index: 65;
   opacity: 0;
   transition: opacity 200ms ease-in-out;
   pointer-events: none;
