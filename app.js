@@ -109,30 +109,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const diffDayInput = document.getElementById('diffDay');
     const diffMonthInput = document.getElementById('diffMonth');
     const diffYearInput = document.getElementById('diffYear');
+    const diffStartDatePicker = document.getElementById('diffStartDatePicker');
+    const diffStartDayInput = document.getElementById('diffStartDay');
+    const diffStartMonthInput = document.getElementById('diffStartMonth');
+    const diffStartYearInput = document.getElementById('diffStartYear');
+    
     const diffDatePicker = document.getElementById('diffDatePicker');
     const dateDiffResult = document.getElementById('dateDiffResult');
     const medDaysInput = document.getElementById('medDays');
+    
+    // Initialize with today's date
+    const todayDiff = getToday();
+    if (diffStartDayInput) {
+        syncDateToFields(todayDiff, diffStartDayInput, diffStartMonthInput, diffStartYearInput);
+        if (diffStartDatePicker) diffStartDatePicker.value = toISODate(todayDiff);
+    }
 
     function calculateDateDiff() {
+        const sd = diffStartDayInput ? parseInt(diffStartDayInput.value) : NaN;
+        const sm = diffStartMonthInput ? parseInt(diffStartMonthInput.value) : NaN;
+        const syBE = diffStartYearInput ? parseInt(diffStartYearInput.value) : NaN;
+        
         const d = parseInt(diffDayInput.value);
         const m = parseInt(diffMonthInput.value);
         const yBE = parseInt(diffYearInput.value);
 
         if (!isNaN(d) && !isNaN(m) && !isNaN(yBE)) {
-            const yCE = yBE - 543;
-            const targetDate = new Date(yCE, m - 1, d);
-            const today = getToday();
+            const startDate = (!isNaN(sd) && !isNaN(sm) && !isNaN(syBE)) ? new Date(syBE - 543, sm - 1, sd) : getToday();
+            const targetDate = new Date(yBE - 543, m - 1, d);
             
             // Sync to the hidden date picker
+            if (diffStartDatePicker) diffStartDatePicker.value = toISODate(startDate);
             diffDatePicker.value = toISODate(targetDate);
             
-            const diffTime = Math.abs(targetDate - today);
+            const diffTime = Math.abs(targetDate - startDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             dateDiffResult.textContent = `${diffDays} วัน`;
             
             // Auto-fill Med Days
             medDaysInput.value = diffDays;
             medDaysInput.dispatchEvent(new Event('input'));
+            
+            // Auto-fill Weekly Medication End Date & Start Date
+            const wPicker = document.getElementById('medWeeklyEndPicker');
+            const wsPicker = document.getElementById('medWeeklyStartPicker');
+            if (wPicker) {
+                wPicker.value = toISODate(targetDate);
+                wPicker.dispatchEvent(new Event('change'));
+            }
+            if (wsPicker) {
+                wsPicker.value = toISODate(startDate);
+                wsPicker.dispatchEvent(new Event('change'));
+            }
+            
+            // Auto-fill Daily Medication End Date & Start Date
+            const dPicker = document.getElementById('medDailyEndPicker');
+            const dsPicker = document.getElementById('medDailyStartPicker');
+            if (dPicker) {
+                dPicker.value = toISODate(targetDate);
+                dPicker.dispatchEvent(new Event('change'));
+            }
+            if (dsPicker) {
+                dsPicker.value = toISODate(startDate);
+                dsPicker.dispatchEvent(new Event('change'));
+            }
         } else {
             dateDiffResult.textContent = '- วัน';
             diffDatePicker.value = '';
@@ -142,6 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
     diffDayInput.addEventListener('input', calculateDateDiff);
     diffMonthInput.addEventListener('change', calculateDateDiff);
     diffYearInput.addEventListener('input', calculateDateDiff);
+    
+    if (diffStartDayInput) {
+        [diffStartDayInput, diffStartMonthInput, diffStartYearInput].forEach(el => el.addEventListener('input', calculateDateDiff));
+        if (diffStartDatePicker) {
+            diffStartDatePicker.addEventListener('change', (e) => {
+                const d = parseDateStr(e.target.value);
+                syncDateToFields(d, diffStartDayInput, diffStartMonthInput, diffStartYearInput);
+                calculateDateDiff();
+            });
+        }
+    }
     
     // Reverse sync: Date Picker -> Fields
     diffDatePicker.addEventListener('change', (e) => {
@@ -153,6 +204,69 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
     // 2. Medication Calculator
     // -------------------------------------------------------------
+    const medDailyStartDay = document.getElementById('medDailyStartDay');
+    const medDailyStartMonth = document.getElementById('medDailyStartMonth');
+    const medDailyStartYear = document.getElementById('medDailyStartYear');
+    const medDailyStartPicker = document.getElementById('medDailyStartPicker');
+    
+    const medDailyEndDay = document.getElementById('medDailyEndDay');
+    const medDailyEndMonth = document.getElementById('medDailyEndMonth');
+    const medDailyEndYear = document.getElementById('medDailyEndYear');
+    const medDailyEndPicker = document.getElementById('medDailyEndPicker');
+
+    // Initialize daily start with today's date
+    const todayDaily = getToday();
+    if (medDailyStartDay) {
+        syncDateToFields(todayDaily, medDailyStartDay, medDailyStartMonth, medDailyStartYear);
+        if (medDailyStartPicker) medDailyStartPicker.value = toISODate(todayDaily);
+    }
+
+    function calculateMedDaysFromDates() {
+        const sd = parseInt(medDailyStartDay.value);
+        const sm = parseInt(medDailyStartMonth.value);
+        const syBE = parseInt(medDailyStartYear.value);
+        
+        const ed = parseInt(medDailyEndDay.value);
+        const em = parseInt(medDailyEndMonth.value);
+        const eyBE = parseInt(medDailyEndYear.value);
+        
+        if (!isNaN(sd) && !isNaN(sm) && !isNaN(syBE) && !isNaN(ed) && !isNaN(em) && !isNaN(eyBE)) {
+            const startDate = new Date(syBE - 543, sm - 1, sd);
+            const endDate = new Date(eyBE - 543, em - 1, ed);
+            
+            if (medDailyStartPicker) medDailyStartPicker.value = toISODate(startDate);
+            if (medDailyEndPicker) medDailyEndPicker.value = toISODate(endDate);
+            
+            const diffTime = endDate - startDate;
+            if (diffTime >= 0) {
+                const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                medDaysInput.value = totalDays;
+                medDaysInput.dispatchEvent(new Event('input'));
+            }
+        }
+    }
+
+    if (medDailyStartDay) {
+        [medDailyStartDay, medDailyStartMonth, medDailyStartYear].forEach(el => el.addEventListener('input', calculateMedDaysFromDates));
+        [medDailyEndDay, medDailyEndMonth, medDailyEndYear].forEach(el => el.addEventListener('input', calculateMedDaysFromDates));
+
+        if (medDailyStartPicker) {
+            medDailyStartPicker.addEventListener('change', (e) => {
+                const d = parseDateStr(e.target.value);
+                syncDateToFields(d, medDailyStartDay, medDailyStartMonth, medDailyStartYear);
+                calculateMedDaysFromDates();
+            });
+        }
+
+        if (medDailyEndPicker) {
+            medDailyEndPicker.addEventListener('change', (e) => {
+                const d = parseDateStr(e.target.value);
+                syncDateToFields(d, medDailyEndDay, medDailyEndMonth, medDailyEndYear);
+                calculateMedDaysFromDates();
+            });
+        }
+    }
+
     const medDoseDropdown = document.getElementById('medDoseDropdown');
     const medDoseCustom = document.getElementById('medDoseCustom');
     const medResult = document.getElementById('medResult');
@@ -224,6 +338,119 @@ document.addEventListener('DOMContentLoaded', () => {
             apptWeeksResult.textContent = '-';
             apptWeeksResultPicker.value = '';
         }
+    });
+
+    // -------------------------------------------------------------
+    // 7. Weekly Medication Calculator
+    // -------------------------------------------------------------
+    const medWeeklyStartPicker = document.getElementById('medWeeklyStartPicker');
+    const medWeeklyStartDay = document.getElementById('medWeeklyStartDay');
+    const medWeeklyStartMonth = document.getElementById('medWeeklyStartMonth');
+    const medWeeklyStartYear = document.getElementById('medWeeklyStartYear');
+    
+    const medWeeklyEndPicker = document.getElementById('medWeeklyEndPicker');
+    const medWeeklyEndDay = document.getElementById('medWeeklyEndDay');
+    const medWeeklyEndMonth = document.getElementById('medWeeklyEndMonth');
+    const medWeeklyEndYear = document.getElementById('medWeeklyEndYear');
+    
+    const medWeeklyDose = document.getElementById('medWeeklyDose');
+    const medWeeklyDoseCustom = document.getElementById('medWeeklyDoseCustom');
+    const medWeeklyDuration = document.getElementById('medWeeklyDuration');
+    const medWeeklyResult = document.getElementById('medWeeklyResult');
+
+    // Initialize with today's date
+    const todayForWeekly = getToday();
+    syncDateToFields(todayForWeekly, medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear);
+    medWeeklyStartPicker.value = toISODate(todayForWeekly);
+
+    function calculateWeeklyMedication() {
+        const sd = parseInt(medWeeklyStartDay.value);
+        const sm = parseInt(medWeeklyStartMonth.value);
+        const syBE = parseInt(medWeeklyStartYear.value);
+        
+        const ed = parseInt(medWeeklyEndDay.value);
+        const em = parseInt(medWeeklyEndMonth.value);
+        const eyBE = parseInt(medWeeklyEndYear.value);
+
+        const doseSelection = medWeeklyDose.value;
+        let dosage = 0;
+        
+        if (doseSelection === 'custom') {
+            medWeeklyDoseCustom.classList.remove('hidden');
+            dosage = parseFloat(medWeeklyDoseCustom.value);
+        } else {
+            medWeeklyDoseCustom.classList.add('hidden');
+            dosage = parseFloat(doseSelection);
+        }
+
+        if (!isNaN(sd) && !isNaN(sm) && !isNaN(syBE) && !isNaN(ed) && !isNaN(em) && !isNaN(eyBE) && !isNaN(dosage) && dosage > 0) {
+            const startDate = new Date(syBE - 543, sm - 1, sd);
+            const endDate = new Date(eyBE - 543, em - 1, ed);
+            
+            medWeeklyStartPicker.value = toISODate(startDate);
+            medWeeklyEndPicker.value = toISODate(endDate);
+
+            const diffTime = endDate - startDate;
+            if (diffTime >= 0) {
+                const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const totalWeeks = Math.ceil(totalDays / 7);
+                
+                const checkedDays = Array.from(document.querySelectorAll('.med-weekly-day:checked')).map(cb => parseInt(cb.value));
+                let totalPills = 0;
+
+                if (checkedDays.length > 0) {
+                    let pillsPerDose = dosage / checkedDays.length;
+                    let occurrences = 0;
+                    
+                    for (let i = 0; i <= totalDays; i++) {
+                        let current = new Date(startDate);
+                        current.setDate(startDate.getDate() + i);
+                        if (checkedDays.includes(current.getDay())) {
+                            occurrences++;
+                        }
+                    }
+                    totalPills = occurrences * pillsPerDose;
+                    medWeeklyDuration.innerHTML = `${totalDays} วัน <br><span class="text-sm font-normal text-textdark/70">(ทานยาทั้งหมด ${occurrences} วัน)</span>`;
+                    
+                    const exactPills = Number.isInteger(totalPills) ? totalPills : parseFloat(totalPills.toFixed(2));
+                    const roundedPills = Math.ceil(totalPills);
+                    
+                    if (roundedPills !== exactPills) {
+                        medWeeklyResult.innerHTML = `${roundedPills} เม็ด <br><span class="text-base font-normal text-textdark/70">(จำนวนจริง: ${exactPills} เม็ด)</span>`;
+                    } else {
+                        medWeeklyResult.textContent = `${exactPills} เม็ด`;
+                    }
+                } else {
+                    totalPills = totalWeeks * dosage;
+                    medWeeklyDuration.innerHTML = `${totalDays} วัน <br><span class="text-sm font-normal text-textdark/70">(ประมาณ ${totalWeeks} สัปดาห์)</span>`;
+                    medWeeklyResult.textContent = `${totalPills} เม็ด`;
+                }
+            } else {
+                medWeeklyDuration.textContent = '-';
+                medWeeklyResult.textContent = '- เม็ด';
+            }
+        } else {
+            medWeeklyDuration.textContent = '-';
+            medWeeklyResult.textContent = '- เม็ด';
+        }
+    }
+
+    [medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear].forEach(el => el.addEventListener('input', calculateWeeklyMedication));
+    [medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear].forEach(el => el.addEventListener('input', calculateWeeklyMedication));
+    medWeeklyDose.addEventListener('change', calculateWeeklyMedication);
+    medWeeklyDoseCustom.addEventListener('input', calculateWeeklyMedication);
+    document.querySelectorAll('.med-weekly-day').forEach(cb => cb.addEventListener('change', calculateWeeklyMedication));
+
+    medWeeklyStartPicker.addEventListener('change', (e) => {
+        const d = parseDateStr(e.target.value);
+        syncDateToFields(d, medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear);
+        calculateWeeklyMedication();
+    });
+
+    medWeeklyEndPicker.addEventListener('change', (e) => {
+        const d = parseDateStr(e.target.value);
+        syncDateToFields(d, medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear);
+        calculateWeeklyMedication();
     });
 
     // -------------------------------------------------------------
@@ -502,9 +729,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const tblDoseCustom = document.getElementById('tblDoseCustom');
     const tblBody = document.getElementById('tblBody');
     
+    const tblWeeklyDoseCustom = document.getElementById('tblWeeklyDoseCustom');
+
     const tblCustomDays = document.getElementById('tblCustomDays');
     const tblCustomDateResult = document.getElementById('tblCustomDateResult');
+    const tblCustomDaysDoseDropdown = document.getElementById('tblCustomDaysDoseDropdown');
+    const tblCustomDaysDoseCustom = document.getElementById('tblCustomDaysDoseCustom');
+    const tblCustomDaysWeeklyDoseDropdown = document.getElementById('tblCustomDaysWeeklyDoseDropdown');
+    const tblCustomDaysWeeklyDoseCustom = document.getElementById('tblCustomDaysWeeklyDoseCustom');
     const tblCustomPillResult = document.getElementById('tblCustomPillResult');
+    const tblCustomWeeklyPillResult = document.getElementById('tblCustomWeeklyPillResult');
 
     // Initialize with today's date
     if (tblBaseDay) {
@@ -529,12 +763,42 @@ document.addEventListener('DOMContentLoaded', () => {
             return parseFloat(dose);
         }
 
+        const tblWeeklyDoseDropdown = document.getElementById('tblWeeklyDoseDropdown');
+
+        function getTblWeeklyDose() {
+            if (!tblWeeklyDoseDropdown) return NaN;
+            let dose = tblWeeklyDoseDropdown.value;
+            if (dose === 'custom') {
+                dose = tblWeeklyDoseCustom ? tblWeeklyDoseCustom.value : '';
+            }
+            return parseFloat(dose);
+        }
+
+        function getTblCustomDaysDose() {
+            if (!tblCustomDaysDoseDropdown) return NaN;
+            let dose = tblCustomDaysDoseDropdown.value;
+            if (dose === 'custom') {
+                dose = tblCustomDaysDoseCustom ? tblCustomDaysDoseCustom.value : '';
+            }
+            return parseFloat(dose);
+        }
+
+        function getTblCustomDaysWeeklyDose() {
+            if (!tblCustomDaysWeeklyDoseDropdown) return NaN;
+            let dose = tblCustomDaysWeeklyDoseDropdown.value;
+            if (dose === 'custom') {
+                dose = tblCustomDaysWeeklyDoseCustom ? tblCustomDaysWeeklyDoseCustom.value : '';
+            }
+            return parseFloat(dose);
+        }
+
         function generateTable() {
             const baseDate = getTblBaseDate();
             const dose = getTblDose();
+            const weeklyDose = getTblWeeklyDose();
 
-            if (!baseDate || isNaN(dose) || dose <= 0) {
-                tblBody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">กรุณากรอกวันที่และขนาดยาให้ครบถ้วน</td></tr>`;
+            if (!baseDate || ((isNaN(dose) || dose <= 0) && (isNaN(weeklyDose) || weeklyDose <= 0))) {
+                tblBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">กรุณากรอกวันที่และขนาดยาให้ครบถ้วน</td></tr>`;
                 return;
             }
 
@@ -544,7 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetDate = new Date(baseDate);
                 targetDate.setDate(targetDate.getDate() + days);
                 
-                const pills = Math.ceil(dose * days);
+                const pills = (!isNaN(dose) && dose > 0) ? Math.ceil(dose * days) : '-';
+                const weeklyPills = (!isNaN(weeklyDose) && weeklyDose > 0) ? Math.ceil(weeklyDose * week) : '-';
                 
                 // Zebra striping classes
                 const bgClass = week % 2 === 0 ? 'bg-panelbg/5' : 'bg-white';
@@ -554,6 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center font-medium"><div class="flex flex-col items-center whitespace-nowrap"><span>${week} สัปดาห์</span><span class="text-[10px] md:text-xs text-gray-500">(${days} วัน)</span></div></td>
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center whitespace-nowrap">${formatThaiDateShort(targetDate)}</td>
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center font-bold text-cardouter text-base md:text-lg">${pills}</td>
+                        <td class="px-1 md:px-6 py-2 md:py-3 text-center font-bold text-blue-700 text-base md:text-lg">${weeklyPills}</td>
                     </tr>
                 `;
             }
@@ -563,19 +829,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function calculateTblCustom() {
             const baseDate = getTblBaseDate();
-            const dose = getTblDose();
+            const dose = getTblCustomDaysDose();
+            const weeklyDose = getTblCustomDaysWeeklyDose();
             const days = parseInt(tblCustomDays.value);
 
-            if (baseDate && !isNaN(dose) && dose > 0 && !isNaN(days) && days > 0) {
+            if (baseDate && !isNaN(days) && days > 0) {
                 const targetDate = new Date(baseDate);
                 targetDate.setDate(targetDate.getDate() + days);
-                const pills = Math.ceil(dose * days);
-
                 tblCustomDateResult.textContent = formatThaiDateShort(targetDate);
-                tblCustomPillResult.textContent = `${pills} เม็ด`;
+                
+                if (!isNaN(dose) && dose > 0) {
+                    const pills = Math.ceil(dose * days);
+                    tblCustomPillResult.textContent = `${pills} เม็ด`;
+                } else {
+                    tblCustomPillResult.textContent = '- เม็ด';
+                }
+
+                if (tblCustomWeeklyPillResult) {
+                    if (!isNaN(weeklyDose) && weeklyDose > 0) {
+                        const weeklyPills = Math.ceil(weeklyDose * (days / 7));
+                        tblCustomWeeklyPillResult.textContent = `${weeklyPills} เม็ด`;
+                    } else {
+                        tblCustomWeeklyPillResult.textContent = '- เม็ด';
+                    }
+                }
             } else {
                 tblCustomDateResult.textContent = '-';
                 tblCustomPillResult.textContent = '- เม็ด';
+                if (tblCustomWeeklyPillResult) tblCustomWeeklyPillResult.textContent = '- เม็ด';
             }
         }
 
@@ -584,14 +865,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 tblDoseCustom.classList.remove('hidden');
             } else {
                 tblDoseCustom.classList.add('hidden');
+                tblDoseCustom.value = '';
             }
             generateTable();
         });
+        tblDoseCustom.addEventListener('input', generateTable);
+
+        if (tblWeeklyDoseDropdown) {
+            tblWeeklyDoseDropdown.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    if (tblWeeklyDoseCustom) tblWeeklyDoseCustom.classList.remove('hidden');
+                } else {
+                    if (tblWeeklyDoseCustom) {
+                        tblWeeklyDoseCustom.classList.add('hidden');
+                        tblWeeklyDoseCustom.value = '';
+                    }
+                }
+                generateTable();
+            });
+        }
+        if (tblWeeklyDoseCustom) tblWeeklyDoseCustom.addEventListener('input', generateTable);
+
+        if (tblCustomDaysDoseDropdown) {
+            tblCustomDaysDoseDropdown.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    if (tblCustomDaysDoseCustom) tblCustomDaysDoseCustom.classList.remove('hidden');
+                } else {
+                    if (tblCustomDaysDoseCustom) {
+                        tblCustomDaysDoseCustom.classList.add('hidden');
+                        tblCustomDaysDoseCustom.value = '';
+                    }
+                }
+                calculateTblCustom();
+            });
+        }
+        if (tblCustomDaysDoseCustom) tblCustomDaysDoseCustom.addEventListener('input', calculateTblCustom);
+
+        if (tblCustomDaysWeeklyDoseDropdown) {
+            tblCustomDaysWeeklyDoseDropdown.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    if (tblCustomDaysWeeklyDoseCustom) tblCustomDaysWeeklyDoseCustom.classList.remove('hidden');
+                } else {
+                    if (tblCustomDaysWeeklyDoseCustom) {
+                        tblCustomDaysWeeklyDoseCustom.classList.add('hidden');
+                        tblCustomDaysWeeklyDoseCustom.value = '';
+                    }
+                }
+                calculateTblCustom();
+            });
+        }
+        if (tblCustomDaysWeeklyDoseCustom) tblCustomDaysWeeklyDoseCustom.addEventListener('input', calculateTblCustom);
 
         tblBaseDay.addEventListener('input', generateTable);
         tblBaseMonth.addEventListener('change', generateTable);
         tblBaseYear.addEventListener('input', generateTable);
-        tblDoseCustom.addEventListener('input', generateTable);
         tblCustomDays.addEventListener('input', calculateTblCustom);
 
         // Initial generate

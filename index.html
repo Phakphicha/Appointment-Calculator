@@ -114,38 +114,10 @@
             </div>
         </header>
 
-        <!-- Desktop Navigator (Hidden on Mobile) -->
-        <nav class="hidden lg:flex bg-panelbg/50 backdrop-blur-md rounded-2xl py-3 px-4 mb-8 shadow-lg max-w-7xl mx-auto overflow-x-auto nav-scroll whitespace-nowrap justify-center gap-3 sticky top-4 z-50 border border-white/10">
-            <a href="#section-date-diff" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-calendar-blank"></i> ระยะห่างวัน
-            </a>
-            <a href="#section-medication" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-pill"></i> จำนวนยา
-            </a>
-            <a href="#section-appt-days" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-calendar-plus"></i> นัดจากวัน
-            </a>
-            <a href="#section-appt-weeks" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-calendar-star"></i> นัดจากสัปดาห์
-            </a>
-            <a href="#section-age" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-user"></i> อายุคนไข้
-            </a>
-            <a href="#section-year" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-arrows-left-right"></i> แปลง พ.ศ./ค.ศ.
-            </a>
-            <a href="#section-vaccine" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-syringe"></i> วัคซีน
-            </a>
-            <a href="#section-appt-table" class="inline-flex items-center gap-2 bg-cardouter text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-opacity-90 transition shadow-sm">
-                <i class="ph-bold ph-table"></i> ตารางนัดหมายและยา
-            </a>
-        </nav>
-
-        <!-- Mobile Header & Hamburger (Hidden on Desktop) -->
-        <div class="lg:hidden mb-8 relative">
-            <!-- Headline Banner -->
-            <div class="bg-[#1a5b4b] rounded-[2rem] py-3 px-3 sm:py-4 sm:px-5 flex items-center justify-center gap-2 sm:gap-4 shadow-xl min-w-0 relative z-40 border border-white/10 mx-auto w-full max-w-md overflow-hidden">
+        <!-- Hamburger Menu (Visible on All Devices) -->
+        <div class="mb-8 relative">
+            <!-- Mobile Headline Banner (Hidden on Desktop) -->
+            <div class="lg:hidden bg-[#1a5b4b] rounded-[2rem] py-3 px-3 sm:py-4 sm:px-5 flex items-center justify-center gap-2 sm:gap-4 shadow-xl min-w-0 relative z-40 border border-white/10 mx-auto w-full max-w-md overflow-hidden">
                 <!-- Outer white circle, inner green circle -->
                 <div class="bg-white w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-md p-1">
                     <div class="bg-[#1a5b4b] w-full h-full rounded-full flex items-center justify-center">
@@ -155,37 +127,37 @@
                 <h1 class="text-[14px] min-[375px]:text-base sm:text-xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-sm">ระบบคำนวณวันนัดและจำนวนยา</h1>
             </div>
 
-            <!-- Hamburger Tab (Sticky on left edge) -->
-            <div class="sticky top-4 z-50 mt-4">
-                <button id="btnHamburger" class="bg-[#244c41] text-[#fff2d1] hover:bg-[#1a3830] transition pl-5 pr-6 py-3 rounded-r-full focus:outline-none shadow-lg flex items-center justify-center -ml-4 sm:-ml-6 border border-white/10 border-l-0">
+            <!-- Hamburger Tab (Fixed to viewport) -->
+            <div class="fixed top-4 left-0 z-50">
+                <button id="btnHamburger" class="bg-[#244c41] text-[#fff2d1] hover:bg-[#1a3830] transition pl-4 pr-5 py-3 rounded-r-full focus:outline-none shadow-lg flex items-center justify-center border border-white/10 border-l-0">
                     <i class="ph-bold ph-list text-3xl drop-shadow-sm" id="hamburgerIcon"></i>
                 </button>
                 
                 <!-- Mobile Dropdown Menu -->
-                <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-0 w-[calc(100vw-2rem)] max-w-sm max-h-[75vh] overflow-y-auto z-50">
+                <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-4 w-[calc(100vw-2rem)] max-w-sm max-h-[75vh] overflow-y-auto z-50">
                     <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-calendar-blank text-lg"></i> ระยะห่างวัน
+                        <i class="ph-bold ph-calendar-blank text-lg"></i> คำนวณวันนัด
                     </a>
                     <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-pill text-lg"></i> จำนวนยา
+                        <i class="ph-bold ph-pill text-lg"></i> คำนวณจำนวนยา
                     </a>
                     <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-calendar-plus text-lg"></i> นัดจากวัน
+                        <i class="ph-bold ph-calendar-plus text-lg"></i> คำนวณวันนัดจากจำนวนวัน
                     </a>
                     <a href="#section-appt-weeks" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-calendar-star text-lg"></i> นัดจากสัปดาห์
+                        <i class="ph-bold ph-calendar-star text-lg"></i> คำนวณวันนัดจากจำนวนสัปดาห์
                     </a>
                     <a href="#section-age" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-user text-lg"></i> อายุคนไข้
+                        <i class="ph-bold ph-user text-lg"></i> คำนวณอายุ
                     </a>
                     <a href="#section-year" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-arrows-left-right text-lg"></i> แปลง พ.ศ./ค.ศ.
+                        <i class="ph-bold ph-arrows-left-right text-lg"></i> แปลงปี พ.ศ./ค.ศ.
                     </a>
                     <a href="#section-vaccine" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-syringe text-lg"></i> วัคซีน
+                        <i class="ph-bold ph-syringe text-lg"></i> คำนวณวันนัดฉีดวัคซีนผู้ใหญ่
                     </a>
                     <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-table text-lg"></i> ตารางนัดหมายและยา
+                        <i class="ph-bold ph-table text-lg"></i> ตารางคำนวณวันนัดหมายและจำนวนยา
                     </a>
                     
                     <!-- Action Buttons at the Bottom -->
@@ -201,7 +173,10 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+        <div class="space-y-4 pt-2 w-full">
+
+            <!-- Row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <!-- 1. Date Difference Calculator -->
             <section id="section-date-diff" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
@@ -212,6 +187,26 @@
                     <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัด<br>จากระยะห่างของวัน</h2>
                 </div>
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันที่เริ่มต้น (ค่าเริ่มต้น: วันนี้)</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="diffStartDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="diffStartDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="diffStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="diffStartYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-sm font-bold text-textdark">วันนัดที่ต้องการ</label>
@@ -247,9 +242,47 @@
                     <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="ph-fill ph-pill text-xl"></i>
                     </div>
-                    <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณจำนวนยา</h2>
+                    <h2 class="text-textdark font-bold text-[15px] sm:text-base leading-tight text-center">คำนวณจำนวนยาตามขนาด<br>ยาที่แพทย์สั่ง <span class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">ต่อวัน</span></h2>
                 </div>
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันที่เริ่มต้น</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medDailyStartPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medDailyStartDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medDailyStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medDailyStartYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันนัดหมาย</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medDailyEndPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medDailyEndDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medDailyEndMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medDailyEndYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
                     <div>
                         <label for="medDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
                         <div class="relative">
@@ -278,6 +311,111 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Weekly Medication Calculator -->
+            <section id="section-medication-weekly" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-pill text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-[15px] sm:text-base leading-tight text-center">คำนวณจำนวนยาตามขนาด<br>ยาที่แพทย์สั่ง <span class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">ต่อสัปดาห์</span></h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันที่เริ่มต้น</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medWeeklyStartPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medWeeklyStartDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medWeeklyStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medWeeklyStartYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-bold text-textdark">วันนัดหมาย</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medWeeklyEndPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medWeeklyEndDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medWeeklyEndMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medWeeklyEndYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="medWeeklyDose" class="block text-sm font-bold text-textdark mb-2">จำนวนเม็ดยาต่อสัปดาห์</label>
+                        <select id="medWeeklyDose" class="form-select w-full rounded-xl px-4 py-3 text-center text-sm md:text-base">
+                            <option value="">--เลือกจำนวนเม็ด--</option>
+                            <option value="1">1 เม็ด / สัปดาห์</option>
+                            <option value="2">2 เม็ด / สัปดาห์</option>
+                            <option value="3">3 เม็ด / สัปดาห์</option>
+                            <option value="4">4 เม็ด / สัปดาห์</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="medWeeklyDoseCustom" min="1" placeholder="ระบุจำนวนเม็ด" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-textdark mb-2">ระบุวันที่ทานยาในสัปดาห์ (เพื่อความแม่นยำ)</label>
+                        <div class="grid grid-cols-7 gap-1 sm:gap-2">
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="1" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">จ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="2" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">อ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="3" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">พ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="4" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">พฤ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="5" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">ศ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="6" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark">ส.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="0" class="med-weekly-day hidden">
+                                <span class="text-xs sm:text-sm font-bold text-textdark text-red-600">อา.</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p class="text-sm font-bold text-textdark mb-1">ระยะเวลาทั้งหมด: <span id="medWeeklyDuration">-</span></p>
+                        <p class="text-sm font-bold text-textdark mb-3">จำนวนยาที่ต้องจ่ายรวม</p>
+                        <p id="medWeeklyResult" class="text-3xl font-bold text-textdark">- เม็ด</p>
+                    </div>
+                </div>
+            </section>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <!-- 3. Next Appt by Days -->
             <section id="section-appt-days" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
@@ -337,6 +475,10 @@
                     </div>
                 </div>
             </section>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
             <!-- 5. Age Calculator -->
             <section id="section-age" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
@@ -391,10 +533,14 @@
                     </div>
                 </div>
             </section>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="grid grid-cols-1 gap-4">
 
             <!-- 7. Vaccine Appointment Calculator -->
-            <section id="section-vaccine" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg lg:col-span-3 scroll-mt-24">
-                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 max-w-lg mx-auto w-full">
+            <section id="section-vaccine" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 w-full">
                     <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="ph-fill ph-syringe text-xl"></i>
                     </div>
@@ -472,12 +618,13 @@
                     </div>
                 </div>
             </section>
+            </div>
 
         </div>
 
         <!-- 8. Appointment & Medication Table -->
         <section id="section-appt-table" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg mt-6 scroll-mt-24">
-            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 max-w-lg mx-auto w-full">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 w-full">
                 <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
                     <i class="ph-fill ph-table text-xl"></i>
                 </div>
@@ -486,8 +633,8 @@
             
             <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-sm">
                 <!-- Inputs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="md:col-span-2">
                         <label class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date)</label>
                         <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
                             <input type="number" id="tblBaseDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
@@ -501,7 +648,7 @@
                             <input type="number" id="tblBaseYear" placeholder="พ.ศ." class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
                         </div>
                     </div>
-                    <div>
+                    <div class="md:col-span-1">
                         <label for="tblDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
                         <select id="tblDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
                             <option value="">--เลือกขนาดยา--</option>
@@ -515,6 +662,22 @@
                         </select>
                         <input type="number" id="tblDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                     </div>
+                    <div class="md:col-span-1">
+                        <label for="tblWeeklyDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
+                        <select id="tblWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="1">1 เม็ด/สัปดาห์</option>
+                            <option value="2">2 เม็ด/สัปดาห์</option>
+                            <option value="3">3 เม็ด/สัปดาห์</option>
+                            <option value="4">4 เม็ด/สัปดาห์</option>
+                            <option value="5">5 เม็ด/สัปดาห์</option>
+                            <option value="6">6 เม็ด/สัปดาห์</option>
+                            <option value="7">7 เม็ด/สัปดาห์</option>
+                            <option value="8">8 เม็ด/สัปดาห์</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="tblWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                    </div>
                 </div>
 
                 <!-- Generated Table -->
@@ -522,15 +685,16 @@
                     <table class="w-full text-xs md:text-sm text-left">
                         <thead class="text-[10px] md:text-xs text-white uppercase bg-panelbg leading-tight">
                             <tr>
-                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tl-xl w-1/3">ระยะเวลา<br><span class="hidden md:inline">(สัปดาห์ / วัน)</span><span class="md:hidden">(วีค/วัน)</span></th>
-                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center w-1/3">วันที่นัดหมาย<br><span class="hidden md:inline">(วัน/เดือน/ปี พ.ศ.)</span><span class="md:hidden">(พ.ศ.)</span></th>
-                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tr-xl w-1/3">จำนวนยา<br><span class="hidden md:inline">ที่ต้องจ่าย(เม็ด)</span><span class="md:hidden">(เม็ด)</span></th>
+                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tl-xl w-[20%]">ระยะเวลา<br><span class="hidden md:inline">(สัปดาห์ / วัน)</span><span class="md:hidden">(วีค/วัน)</span></th>
+                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center w-[30%]">วันที่นัดหมาย<br><span class="hidden md:inline">(วัน/เดือน/ปี พ.ศ.)</span><span class="md:hidden">(พ.ศ.)</span></th>
+                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center w-[25%]">จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class="text-[8px] md:text-[10px] text-gray-400 font-normal">*คำนวณจากขนาดยาที่แพทย์สั่งต่อวัน*</span></th>
+                                <th scope="col" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tr-xl w-[25%]">จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class="text-[8px] md:text-[10px] text-gray-400 font-normal">*คำนวณจากขนาดยาที่แพทย์สั่งต่อสัปดาห์*</span></th>
                             </tr>
                         </thead>
                         <tbody id="tblBody" class="text-textdark">
                             <!-- JS generates 24 rows here -->
                             <tr>
-                                <td colspan="3" class="px-2 md:px-6 py-4 text-center text-gray-500 text-xs md:text-sm">กรุณาเลือกวันที่และขนาดยาเพื่อคำนวณตาราง</td>
+                                <td colspan="4" class="px-2 md:px-6 py-4 text-center text-gray-500 text-xs md:text-sm">กรุณาเลือกวันที่และขนาดยาเพื่อคำนวณตาราง</td>
                             </tr>
                         </tbody>
                     </table>
@@ -539,21 +703,59 @@
                 <!-- Custom Day Calculator under table -->
                 <div class="mt-6 pt-6 border-t border-gray-300">
                     <h3 class="text-textdark font-bold mb-4">คำนวณเฉพาะจำนวนวันที่ต้องการ (Custom Days)</h3>
-                    <div class="flex flex-col md:flex-row gap-4 items-center">
-                        <div class="relative w-full md:w-1/3">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="relative w-full">
+                            <label class="block text-sm font-bold text-textdark mb-2">ระบุจำนวนวัน</label>
                             <input type="number" id="tblCustomDays" min="1" placeholder="ระบุจำนวนวัน..." class="form-input w-full rounded-xl px-4 py-3 pr-12">
-                            <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
+                            <span class="absolute right-4 top-[38px] font-bold text-textdark">วัน</span>
                         </div>
-                        <div class="w-full md:w-2/3 bg-resultbg rounded-xl p-4 flex flex-col sm:flex-row justify-around items-center text-center shadow-sm gap-2">
-                            <div>
-                                <p class="text-xs font-bold text-textdark">ตรงกับวันที่</p>
-                                <p id="tblCustomDateResult" class="font-bold text-textdark text-lg">-</p>
-                            </div>
-                            <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
-                            <div>
-                                <p class="text-xs font-bold text-textdark">จำนวนยา</p>
-                                <p id="tblCustomPillResult" class="font-bold text-textdark text-lg">- เม็ด</p>
-                            </div>
+                        <div>
+                            <label for="tblCustomDaysDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                            <select id="tblCustomDaysDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                                <option value="">--เลือกขนาดยา--</option>
+                                <option value="0.25">1/4 เม็ด</option>
+                                <option value="0.5">1/2 เม็ด</option>
+                                <option value="1" selected>1 เม็ด</option>
+                                <option value="1.5">1.5 เม็ด</option>
+                                <option value="2">2 เม็ด</option>
+                                <option value="2.5">2.5 เม็ด</option>
+                                <option value="custom">กำหนดเอง...</option>
+                            </select>
+                            <input type="number" id="tblCustomDaysDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        </div>
+                        <div>
+                            <label for="tblCustomDaysWeeklyDoseDropdown" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
+                            <select id="tblCustomDaysWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                                <option value="">--เลือกขนาดยา--</option>
+                                <option value="1">1 เม็ด/สัปดาห์</option>
+                                <option value="2">2 เม็ด/สัปดาห์</option>
+                                <option value="3">3 เม็ด/สัปดาห์</option>
+                                <option value="4">4 เม็ด/สัปดาห์</option>
+                                <option value="5">5 เม็ด/สัปดาห์</option>
+                                <option value="6">6 เม็ด/สัปดาห์</option>
+                                <option value="7">7 เม็ด/สัปดาห์</option>
+                                <option value="8">8 เม็ด/สัปดาห์</option>
+                                <option value="custom">กำหนดเอง...</option>
+                            </select>
+                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-resultbg rounded-xl p-4 flex flex-col sm:flex-row justify-around items-center text-center shadow-sm gap-2">
+                        <div>
+                            <p class="text-xs font-bold text-textdark">ตรงกับวันที่</p>
+                            <p id="tblCustomDateResult" class="font-bold text-textdark text-lg">-</p>
+                        </div>
+                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
+                        <div>
+                            <p class="text-xs font-bold text-textdark">จ่ายยารายวัน</p>
+                            <p id="tblCustomPillResult" class="font-bold text-textdark text-lg">- เม็ด</p>
+                        </div>
+                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
+                        <div>
+                            <p class="text-xs font-bold text-textdark">จ่ายยารายสัปดาห์</p>
+                            <p id="tblCustomWeeklyPillResult" class="font-bold text-blue-700 text-lg">- เม็ด</p>
                         </div>
                     </div>
                 </div>
