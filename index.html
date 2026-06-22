@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบคำนวณวันนัดและจำนวนยา (Medical Appointment & Medication Calculator)</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>ระบบคำนวณวันนัดและจำนวนยา | โปรแกรมคำนวณทางการแพทย์ออนไลน์</title>
+    <meta name="description" content="เครื่องมือคำนวณวันนัดหมายผู้ป่วย คำนวณจำนวนยา ระยะห่างวัน คำนวณอายุ และตารางนัดฉีดวัคซีนผู้ใหญ่ ใช้งานง่าย แม่นยำ สำหรับบุคลากรทางการแพทย์และบุคคลทั่วไป">
+    <meta name="keywords" content="คำนวณวันนัด, คำนวณจำนวนยา, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
+
+    <!-- Open Graph (Social Media) Meta Tags -->
+    <meta property="og:title" content="ระบบคำนวณวันนัดและจำนวนยาออนไลน์">
+    <meta property="og:description" content="เครื่องมือคำนวณวันนัดหมาย คำนวณยา และวัคซีน ใช้งานฟรี">
+    <meta property="og:image" content="https://easymedcal.com/ชื่อไฟล์รูปหน้าปกของคุณ.jpg">
+    <meta property="og:url" content="https://easymedcal.com/">
+    
+    <!-- Favicon and App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <!-- Google Fonts: Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,21 +82,6 @@
             border-radius: 10px;
         }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4098943133803146"
-     crossorigin="anonymous"></script>
-    <title>ระบบคำนวณวันนัดและจำนวนยา | โปรแกรมคำนวณทางการแพทย์ออนไลน์</title>
-
-<meta name="description" content="เครื่องมือคำนวณวันนัดหมายผู้ป่วย คำนวณจำนวนยา ระยะห่างวัน คำนวณอายุ และตารางนัดฉีดวัคซีนผู้ใหญ่ ใช้งานง่าย แม่นยำ สำหรับบุคลากรทางการแพทย์และบุคคลทั่วไป">
-
-<meta name="keywords" content="คำนวณวันนัด, คำนวณจำนวนยา, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
-
-<meta property="og:title" content="ระบบคำนวณวันนัดและจำนวนยาออนไลน์">
-<meta property="og:description" content="เครื่องมือคำนวณวันนัดหมาย คำนวณยา และวัคซีน ใช้งานฟรี">
-<meta property="og:url" content="https://easymedcal.com/">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
 </head>
 <body class="bg-pagebg text-textdark font-sans min-h-screen selection:bg-resultbg selection:text-textdark relative">
 
@@ -105,11 +106,11 @@
             </div>
 
             <!-- Desktop Header Banner (Centered) -->
-            <div class="bg-panelbg rounded-3xl mx-auto max-w-4xl py-6 px-8 flex items-center justify-center gap-6 shadow-lg min-w-0">
-                <div class="bg-[#24917d] text-white w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
-                    <i class="ph-fill ph-calendar-blank text-4xl"></i>
+            <div class="bg-panelbg rounded-[2rem] mx-auto max-w-4xl py-4 px-6 md:py-5 md:px-8 flex items-center justify-center gap-3 md:gap-5 shadow-lg relative z-40 border border-white/20">
+                <div class="bg-[#24917d] text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <i class="ph-fill ph-calendar-blank text-2xl md:text-4xl"></i>
                 </div>
-                <h1 class="text-3xl lg:text-4xl font-bold text-white tracking-tight truncate leading-tight flex-shrink min-w-0">ระบบคำนวณวันนัดและจำนวนยา</h1>
+                <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-sm">ระบบคำนวณวันนัดและจำนวนยา</h1>
             </div>
         </header>
 
@@ -141,68 +142,61 @@
             </a>
         </nav>
 
-        <!-- Mobile Unified Navbar & Hamburger (Hidden on Desktop) -->
-        <div class="lg:hidden sticky top-4 z-50 max-w-7xl mx-auto mb-6">
-            <header class="mobile-main-header rounded-2xl text-white p-4 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="mobile-app-icon flex-shrink-0">
-                        <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-inner">
-                            <div class="bg-[#24917d] w-10 h-10 rounded-full flex items-center justify-center text-white">
-                                <i class="ph-fill ph-calendar-blank text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h1 class="mobile-title text-white font-bold text-base leading-tight truncate">ระบบคำนวณวันนัดและจำนวนยา</h1>
+        <!-- Mobile Header & Hamburger (Hidden on Desktop) -->
+        <div class="lg:hidden mb-8 relative">
+            <!-- Headline Banner -->
+            <div class="bg-[#1a5b4b] rounded-[2rem] py-3 px-3 sm:py-4 sm:px-5 flex items-center justify-center gap-2 sm:gap-4 shadow-xl min-w-0 relative z-40 border border-white/10 mx-auto w-full max-w-md overflow-hidden">
+                <!-- Outer white circle, inner green circle -->
+                <div class="bg-white w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-md p-1">
+                    <div class="bg-[#1a5b4b] w-full h-full rounded-full flex items-center justify-center">
+                        <i class="ph-fill ph-calendar-blank text-xl sm:text-3xl text-white drop-shadow-sm"></i>
                     </div>
                 </div>
-
-                <!-- removed secondary bar; hamburger tab placed below header -->
-            </header>
-
-            <!-- Hamburger tab that extends from the left edge below the header -->
-            <div class="mobile-hamburger-tab mt-2">
-                <button id="btnHamburger" type="button" class="hamburger p-3 focus:outline-none">
-                    <i class="ph-bold ph-list text-2xl text-[#f5e6d3]" id="hamburgerIcon"></i>
-                </button>
+                <h1 class="text-[14px] min-[375px]:text-base sm:text-xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-sm">ระบบคำนวณวันนัดและจำนวนยา</h1>
             </div>
 
-            <!-- Mobile Dropdown Menu -->
-            <div id="mobileMenu" class="bg-panelbg/95 backdrop-blur-md p-4 shadow-xl border border-white/10 flex flex-col gap-2 mt-2 mobile-offcanvas">
-                <div class="mobile-menu-links flex flex-col gap-2 overflow-y-auto">
-                <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-calendar-blank text-lg"></i> ระยะห่างวัน
-                </a>
-                <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-pill text-lg"></i> จำนวนยา
-                </a>
-                <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-calendar-plus text-lg"></i> นัดจากวัน
-                </a>
-                <a href="#section-appt-weeks" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-calendar-star text-lg"></i> นัดจากสัปดาห์
-                </a>
-                <a href="#section-age" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-user text-lg"></i> อายุคนไข้
-                </a>
-                <a href="#section-year" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-arrows-left-right text-lg"></i> แปลง พ.ศ./ค.ศ.
-                </a>
-                <a href="#section-vaccine" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-syringe text-lg"></i> วัคซีน
-                </a>
-                <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                    <i class="ph-bold ph-table text-lg"></i> ตารางนัดหมายและยา
-                </a>
-                </div>
-
-                <div class="mobile-menu-actions flex flex-col gap-2 mt-auto">
-                    <button type="button" class="btnOpenManual inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-question-circle text-lg"></i> คู่มือการใช้งาน
-                    </button>
-                    <button type="button" class="btnOpenCoffee inline-flex items-center gap-2 bg-[#ffc395] text-[#24917d] px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-coffee text-lg"></i> สนับสนุนค่ากาแฟ
-                    </button>
+            <!-- Hamburger Tab (Sticky on left edge) -->
+            <div class="sticky top-4 z-50 mt-4">
+                <button id="btnHamburger" class="bg-[#244c41] text-[#fff2d1] hover:bg-[#1a3830] transition pl-5 pr-6 py-3 rounded-r-full focus:outline-none shadow-lg flex items-center justify-center -ml-4 sm:-ml-6 border border-white/10 border-l-0">
+                    <i class="ph-bold ph-list text-3xl drop-shadow-sm" id="hamburgerIcon"></i>
+                </button>
+                
+                <!-- Mobile Dropdown Menu -->
+                <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-0 w-[calc(100vw-2rem)] max-w-sm max-h-[75vh] overflow-y-auto z-50">
+                    <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-blank text-lg"></i> ระยะห่างวัน
+                    </a>
+                    <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-pill text-lg"></i> จำนวนยา
+                    </a>
+                    <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-plus text-lg"></i> นัดจากวัน
+                    </a>
+                    <a href="#section-appt-weeks" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-star text-lg"></i> นัดจากสัปดาห์
+                    </a>
+                    <a href="#section-age" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-user text-lg"></i> อายุคนไข้
+                    </a>
+                    <a href="#section-year" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-arrows-left-right text-lg"></i> แปลง พ.ศ./ค.ศ.
+                    </a>
+                    <a href="#section-vaccine" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-syringe text-lg"></i> วัคซีน
+                    </a>
+                    <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-table text-lg"></i> ตารางนัดหมายและยา
+                    </a>
+                    
+                    <!-- Action Buttons at the Bottom -->
+                    <div class="mt-4 pt-4 border-t border-white/20 flex flex-col gap-3">
+                        <button class="btnOpenCoffee mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-[#ffc395] hover:bg-[#e0ab82] text-[#1a5b4b] px-4 py-3 rounded-xl text-sm font-bold shadow-md transition">
+                            <i class="ph-bold ph-coffee text-lg"></i> สนับสนุนค่ากาแฟ
+                        </button>
+                        <button class="btnOpenManual mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-[#1a5b4b] hover:bg-[#134237] text-white px-4 py-3 rounded-xl text-sm font-bold shadow-md transition border border-white/10">
+                            <i class="ph-bold ph-question text-lg"></i> คู่มือการใช้งานระบบ
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -220,7 +214,7 @@
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                            <label class="block text-sm font-bold text-textdark">วันที่ต้องการ (พ.ศ.)</label>
+                            <label class="block text-sm font-bold text-textdark">วันนัดที่ต้องการ</label>
                             <!-- Calendar icon shortcut that syncs -->
                             <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
                                 <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
@@ -257,7 +251,7 @@
                 </div>
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
                     <div>
-                        <label for="medDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวัน</label>
+                        <label for="medDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
                         <div class="relative">
                             <input type="number" id="medDays" min="1" placeholder="เช่น 30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
                             <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
@@ -295,7 +289,7 @@
                 </div>
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
                     <div>
-                        <label for="apptDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวัน</label>
+                        <label for="apptDays" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
                         <div class="relative">
                             <input type="number" id="apptDays" min="1" placeholder="เช่น 30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
                             <span class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
@@ -430,7 +424,7 @@
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-2">
-                                <label id="vaccineDateLabel" class="block text-sm font-bold text-textdark">วันที่เริ่มฉีด (Day 0) / ฉีดเข็มล่าสุด (พ.ศ.)</label>
+                                <label id="vaccineDateLabel" class="block text-sm font-bold text-textdark">วันที่ฉีดเข็มล่าสุด</label>
                                 <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
                                     <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
                                     <input type="date" id="vaccineDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
@@ -450,7 +444,7 @@
                         </div>
                     </div>
                     <div class="bg-resultbg rounded-[1.25rem] p-6 text-center flex flex-col justify-center h-full shadow-sm relative overflow-hidden group">
-                        <p class="text-sm font-bold text-textdark mb-2">วันนัดฉีดเข็มถัดไป (พ.ศ.)</p>
+                        <p class="text-sm font-bold text-textdark mb-2">วันนัดฉีดเข็มถัดไป</p>
                         <div id="vaccineResult" class="text-xl md:text-2xl font-bold text-textdark mb-2 space-y-1">-</div>
                         <p id="vaccineNote" class="text-xs md:text-sm text-textdark/70 font-medium mt-2 hidden"></p>
                         
@@ -494,7 +488,7 @@
                 <!-- Inputs -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date - พ.ศ.)</label>
+                        <label class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date)</label>
                         <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
                             <input type="number" id="tblBaseDay" min="1" max="31" placeholder="วัน" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
                             <select id="tblBaseMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
@@ -566,15 +560,31 @@
 
             </div>
         </section>
-<section style="margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
-    <h2>ทำไมต้องใช้เครื่องมือคำนวณวันนัดผู้ป่วยของเรา?</h2>
-    <p>
-        Easymedcal คือ <strong>โปรแกรมคำนวณวันนัดผู้ป่วย</strong> และเครื่องมืออำนวยความสะดวกสำหรับบุคลากรทางการแพทย์ ที่ออกแบบมาเพื่อช่วยลดข้อผิดพลาดในการจ่ายยา เรามีระบบ <strong>วิธีคำนวณยาตามวัน</strong> ที่แม่นยำ ช่วยให้ทราบ <strong>ระยะห่างวัน คลินิก</strong> ได้อย่างรวดเร็ว 
-    </p>
-    <p>
-        นอกจากนี้ยังมี <strong>แอปคำนวณอายุคนไข้</strong> และ <strong>ตารางนัดฉีดวัคซีนผู้ใหญ่</strong> ที่อัปเดตตามมาตรฐานการแพทย์ ช่วยให้พยาบาลและเภสัชกรทำงานได้สะดวกยิ่งขึ้น โปรแกรมนี้สามารถใช้งานได้ฟรีโดยไม่ต้องติดตั้งแอปพลิเคชัน
-    </p>
-</section>
+
+        <!-- SEO Content -->
+        <div class="seo-content-box" style="background-color: #ffffff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 30px; margin-bottom: 30px; line-height: 1.6;">
+            <h2 style="color: #1a5c40; font-size: 1.1rem; margin-top: 0; margin-bottom: 12px; font-weight: bold;">
+                ทำไมต้องให้ Easymedcal เป็นผู้ช่วยคู่ใจของคุณ?
+            </h2>
+            <p style="color: #4b5563; margin-bottom: 16px;">
+                เราคือ <strong>โปรแกรมคำนวณวันนัดผู้ป่วย</strong> ที่สร้างขึ้นมาเพื่อช่วยแบ่งเบาภาระการทำงานของแพทย์ พยาบาล และเภสัชกร ให้คุณทำงานได้รวดเร็วและแม่นยำยิ่งขึ้น:
+            </p>
+            <ul style="list-style-type: none; padding-left: 0; margin: 0; color: #4b5563;">
+                <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">💊</span>
+                    <span><strong>คำนวณเป๊ะ ไม่มีพลาด:</strong> ด้วย <strong>วิธีคำนวณยาตามวัน</strong> ที่ช่วยให้คุณเช็ค <strong>ระยะห่างวัน</strong> ได้ทันทีโดยไม่ต้องเปิดปฏิทินนับเอง</span>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">📅</span>
+                    <span><strong>ฟีเจอร์ครบ จบในเว็บเดียว:</strong> มาพร้อม <strong>ตารางนัดฉีดวัคซีนผู้ใหญ่</strong> ที่อิงตามมาตรฐานการแพทย์ล่าสุด</span>
+                </li>
+                <li style="display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">🚀</span>
+                    <span><strong>ใช้งานฟรี ไม่ต้องโหลดแอป:</strong> เปิดผ่านเบราว์เซอร์ในมือถือหรือคอมพิวเตอร์ แล้วเริ่มใช้งานได้เลย!</span>
+                </li>
+            </ul>
+        </div>
+
     </main>
 
     <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
@@ -699,6 +709,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js"></script>
+    <script src="app.js?v=1.1"></script>
 </body>
 </html>

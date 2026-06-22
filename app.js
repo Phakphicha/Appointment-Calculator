@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isNaN(days) && days > 0) {
             const nextDate = getToday();
             nextDate.setDate(nextDate.getDate() + days);
-            apptDaysResult.textContent = formatThaiDate(nextDate);
+            apptDaysResult.textContent = formatThaiDateShortWithDay(nextDate);
             apptDaysResultPicker.value = toISODate(nextDate);
         } else {
             apptDaysResult.textContent = '-';
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isNaN(weeks) && weeks > 0) {
             const nextDate = getToday();
             nextDate.setDate(nextDate.getDate() + (weeks * 7));
-            apptWeeksResult.textContent = formatThaiDate(nextDate);
+            apptWeeksResult.textContent = formatThaiDateShortWithDay(nextDate);
             apptWeeksResultPicker.value = toISODate(nextDate);
         } else {
             apptWeeksResult.textContent = '-';
@@ -637,8 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (manualModal && !manualModal.classList.contains('hidden')) {
                 closeManual();
             }
-            if (typeof window.closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
-                window.closeCoffee();
+            if (typeof closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
+                closeCoffee();
             }
         }
     });
@@ -650,21 +650,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenu = document.getElementById('mobileMenu');
     const hamburgerIcon = document.getElementById('hamburgerIcon');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-    // create backdrop for off-canvas menu
-    let menuBackdrop = document.getElementById('mobileMenuBackdrop');
-    if (!menuBackdrop) {
-        menuBackdrop = document.createElement('div');
-        menuBackdrop.id = 'mobileMenuBackdrop';
-        menuBackdrop.className = 'menu-backdrop';
-        document.body.appendChild(menuBackdrop);
-    }
 
     function toggleMobileMenu() {
         if (!mobileMenu || !hamburgerIcon) return;
-        const isOpen = mobileMenu.classList.contains('open');
-        if (!isOpen) {
-            mobileMenu.classList.add('open');
-            menuBackdrop.classList.add('visible');
+        const isHidden = mobileMenu.classList.contains('hidden');
+        if (isHidden) {
+            mobileMenu.classList.remove('hidden');
             hamburgerIcon.classList.remove('ph-list');
             hamburgerIcon.classList.add('ph-x');
         } else {
@@ -674,8 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeMobileMenu() {
         if (!mobileMenu || !hamburgerIcon) return;
-        mobileMenu.classList.remove('open');
-        menuBackdrop.classList.remove('visible');
+        mobileMenu.classList.add('hidden');
         hamburgerIcon.classList.remove('ph-x');
         hamburgerIcon.classList.add('ph-list');
     }
@@ -689,38 +679,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (mobileNavLinks.length > 0) {
         mobileNavLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const targetId = link.getAttribute('href');
-                console.log('mobile-nav click:', targetId);
-                if (targetId && targetId.startsWith('#')) {
-                    // close menu then navigate via hash to ensure click works under overlay
-                    e.preventDefault();
-                    closeMobileMenu();
-                    setTimeout(() => {
-                        console.log('navigating to', targetId);
-                        // Use location.hash to navigate and allow browser default behavior
-                        window.location.hash = targetId;
-                    }, 300);
-                } else {
-                    closeMobileMenu();
-                }
-            });
+            link.addEventListener('click', closeMobileMenu);
         });
     }
-
-    // Close mobile menu when clicking action buttons
-    const mobileMenuActions = document.querySelectorAll('.mobile-menu-actions button');
-    if (mobileMenuActions.length > 0) {
-        mobileMenuActions.forEach(btn => {
-            btn.addEventListener('click', closeMobileMenu);
-        });
-    }
-
-    // click on backdrop closes menu
-    menuBackdrop.addEventListener('click', closeMobileMenu);
 
     document.addEventListener('click', (e) => {
-        if (mobileMenu && mobileMenu.classList.contains('open') && e.target !== btnHamburger && !btnHamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        if (mobileMenu && !mobileMenu.classList.contains('hidden') && e.target !== btnHamburger && !btnHamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
             closeMobileMenu();
         }
     });
@@ -750,29 +714,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnOpenCoffees.length > 0) {
         btnOpenCoffees.forEach(btn => btn.addEventListener('click', openCoffee));
     }
-    if (btnCloseCoffeeTop) btnCloseCoffeeTop.addEventListener('click', window.closeCoffee);
+    if (btnCloseCoffeeTop) btnCloseCoffeeTop.addEventListener('click', closeCoffee);
 
     if (coffeeModal) {
         coffeeModal.addEventListener('click', (e) => {
-            if (e.target === coffeeModal) window.closeCoffee();
+            if (e.target === coffeeModal) closeCoffee();
         });
     }
-// 1. ดึงข้อมูลปุ่มลิงก์ทั้งหมดในเมนู
-const menuLinks = document.querySelectorAll('.mobile-offcanvas a');
-const mobileMenu = document.querySelector('.mobile-offcanvas');
-const menuBackdrop = document.querySelector('.menu-backdrop');
-
-// 2. สั่งให้ทุกครั้งที่มีการคลิกลิงก์ ให้ทำงานต่อไปนี้
-menuLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        // เอาคลาส .open ออกจากเมนู (เพื่อให้เมนูเลื่อนเก็บ)
-        mobileMenu.classList.remove('open');
-        
-        // เอาคลาส .visible ออกจากฉากหลัง (เพื่อให้ฉากหลังหายไป)
-        menuBackdrop.classList.remove('visible');
-        
-        // (ถ้าคุณมีการล็อคหน้าจอไม่ให้เลื่อนตอนเปิดเมนู ให้ใส่โค้ดนี้เพื่อปลดล็อคด้วย)
-        document.body.style.overflow = ''; 
-    });
 
 });
