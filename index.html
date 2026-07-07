@@ -173,7 +173,7 @@
                         <i class="ph-bold ph-prescription text-lg"></i> คำนวณยา Oseltamivir
                     </a>
                     <a href="#section-renal-osel" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-first-aid text-lg"></i> คำนวณยา Oseltamivir (Renal)
+                        <i class="ph-bold ph-first-aid text-lg"></i> คำนวณยา Oseltamivir (Renal Dose Adjustment)
                     </a>
                     
                     <!-- Action Buttons at the Bottom -->
@@ -859,7 +859,7 @@
                 </div>
 
                 <p class="text-[10px] text-gray-400 text-center mt-2 leading-tight">
-                    <a href="https://www.cdc.gov/flu/pdf/professionals/antivirals/Antiviral-Medications-Table2.pdf" target="_blank" class="hover:underline hover:text-blue-500 transition-colors">Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications</a>
+                    Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications
                 </p>
             </div>
         </section>
@@ -1055,48 +1055,62 @@
             </div>
             
             <!-- Content -->
-            <div class="p-6 overflow-y-auto text-gray-800 space-y-5 flex-grow">
-                <ul class="space-y-4">
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">1</div>
+            <div class="p-6 overflow-y-auto text-gray-700 space-y-4 flex-grow text-sm sm:text-base leading-relaxed">
+                <ul class="space-y-3.5">
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">1</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:</span> 
-                            เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณระยะห่างของวัน:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน</span>
                         </div>
                     </li>
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">2</div>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">2</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณระยะห่างของวัน:</span> 
-                            เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที</span>
                         </div>
                     </li>
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">3</div>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">3</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:</span> 
-                            กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง</span>
                         </div>
                     </li>
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">4</div>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">4</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณอายุคนไข้:</span> 
-                            กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณจำนวนยารายสัปดาห์:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่เริ่มต้นและวันนัดหมาย พร้อมระบุจำนวนยาที่ต้องทานต่อสัปดาห์ ระบบจะคำนวณจำนวนสัปดาห์และสรุปเม็ดยารวมที่ต้องจ่ายให้อัตโนมัติ</span>
                         </div>
                     </li>
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">5</div>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">5</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:</span> 
-                            กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณอายุคนไข้:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)</span>
                         </div>
                     </li>
-                    <li class="flex gap-3">
-                        <div class="mt-1 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">6</div>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">6</div>
                         <div>
-                            <span class="font-bold text-[#163333]">ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:</span> 
-                            เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">7</div>
+                        <div>
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">8</div>
+                        <div>
+                            <span class="font-bold text-[#163333] block mb-1">ฟีเจอร์ตัวช่วยคำนวณยา Oseltamivir:</span> 
+                            <span class="text-gray-600 text-sm sm:text-[15px]">ระบุน้ำหนักตัวหรืออายุของผู้ป่วย พร้อมเลือกรูปแบบการใช้ยา (รักษา หรือ ป้องกัน) ระบบจะประมวลผลขนาดยาที่ต้องรับประทานต่อมื้อ พร้อมสรุปปริมาณยารวมที่ต้องจ่ายให้อัตโนมัติอย่างแม่นยำ</span>
                         </div>
                     </li>
                 </ul>
