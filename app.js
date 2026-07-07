@@ -1049,4 +1049,232 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // -------------------------------------------------------------
+    // 12. Oseltamivir Calculator
+    // -------------------------------------------------------------
+    const oselIndications = document.querySelectorAll('input[name="oselIndication"]');
+    const oselAge = document.getElementById('oselAge');
+    const oselAgeUnit = document.getElementById('oselAgeUnit');
+    const oselWeight = document.getElementById('oselWeight');
+    
+    const oselAlert = document.getElementById('oselAlert');
+    const oselDoseResult = document.getElementById('oselDoseResult');
+    const oselVolumeResult = document.getElementById('oselVolumeResult');
+    const oselFrequencyResult = document.getElementById('oselFrequencyResult');
+    const oselBottlesResult = document.getElementById('oselBottlesResult');
+
+    function calculateOseltamivir() {
+        if (!oselAge || !oselWeight || !oselDoseResult) return;
+
+        let indication = 'treatment';
+        oselIndications.forEach(radio => {
+            if (radio.checked) indication = radio.value;
+        });
+
+        const ageVal = parseFloat(oselAge.value);
+        const ageUnit = oselAgeUnit.value;
+        const weight = parseFloat(oselWeight.value);
+
+        if (isNaN(ageVal) || ageVal < 0) {
+            resetOseltamivir();
+            return;
+        }
+
+        // Convert age to months for easy comparison
+        const ageInMonths = ageUnit === 'years' ? ageVal * 12 : ageVal;
+        const isAdult = ageInMonths >= 13 * 12;
+
+        // Weight is not required for adults (>= 13 years)
+        if (!isAdult && (isNaN(weight) || weight <= 0)) {
+            resetOseltamivir();
+            return;
+        }
+
+        let dose = 0;
+        let showNotRecommended = false;
+
+        if (indication === 'prophylaxis' && ageInMonths < 3) {
+            showNotRecommended = true;
+        } else if (isAdult) {
+            // Age 13+ gets adult dose regardless of weight
+            dose = 75;
+        } else if (ageInMonths < 12) {
+            // Both Treatment and Prophylaxis: age < 1 year -> 3 mg/kg
+            dose = weight * 3;
+        } else {
+            // age 1 to < 13 years
+            if (weight <= 15) {
+                dose = 30;
+            } else if (weight > 15 && weight <= 23) {
+                dose = 45;
+            } else if (weight > 23 && weight <= 40) {
+                dose = 60;
+            } else {
+                dose = 75;
+            }
+        }
+
+        if (showNotRecommended) {
+            oselAlert.classList.remove('hidden');
+            oselDoseResult.textContent = '-';
+            oselVolumeResult.textContent = '-';
+            if(oselFrequencyResult) oselFrequencyResult.textContent = '-';
+            oselBottlesResult.textContent = '-';
+        } else {
+            oselAlert.classList.add('hidden');
+            
+            // Concentration: 6 mg/ml
+            const volume = dose / 6;
+            
+            // Bottles calculation
+            const frequency = indication === 'treatment' ? 2 : 1;
+            const days = indication === 'treatment' ? 5 : 10;
+            const totalVolume = volume * frequency * days;
+            const bottles = Math.ceil(totalVolume / 60);
+
+            // Format numbers to 1 decimal place if needed
+            const formattedDose = Number.isInteger(dose) ? dose.toFixed(1) : dose.toFixed(1);
+            const formattedVolume = Number.isInteger(volume) ? volume.toFixed(1) : volume.toFixed(1);
+            const freqText = frequency === 2 ? 'วันละ 2 ครั้ง' : 'วันละ 1 ครั้ง';
+
+            oselDoseResult.textContent = formattedDose;
+            oselVolumeResult.textContent = formattedVolume;
+            if(oselFrequencyResult) oselFrequencyResult.textContent = freqText;
+            oselBottlesResult.textContent = bottles;
+        }
+    }
+
+    function resetOseltamivir() {
+        if (oselAlert) oselAlert.classList.add('hidden');
+        if (oselDoseResult) {
+            oselDoseResult.textContent = '-';
+            oselVolumeResult.textContent = '-';
+            if(oselFrequencyResult) oselFrequencyResult.textContent = '-';
+            oselBottlesResult.textContent = '-';
+        }
+    }
+
+    if (oselIndications.length > 0) {
+        oselIndications.forEach(radio => radio.addEventListener('change', calculateOseltamivir));
+    }
+    if (oselAge) oselAge.addEventListener('input', calculateOseltamivir);
+    if (oselAgeUnit) oselAgeUnit.addEventListener('change', calculateOseltamivir);
+    if (oselWeight) oselWeight.addEventListener('input', calculateOseltamivir);
+
+    // -------------------------------------------------------------
+    // 13. Renal Dose Adjustment Calculator
+    // -------------------------------------------------------------
+    const renalAge = document.getElementById('renalAge');
+    const renalWeight = document.getElementById('renalWeight');
+    const renalGenders = document.querySelectorAll('input[name="renalGender"]');
+    const renalSCr = document.getElementById('renalSCr');
+    const renalIndications = document.querySelectorAll('input[name="renalIndication"]');
+    const renalDialysis = document.getElementById('renalDialysis');
+    
+    const renalCrClResult = document.getElementById('renalCrClResult');
+    const renalDoseResult = document.getElementById('renalDoseResult');
+
+    function calculateRenalOseltamivir() {
+        if (!renalAge || !renalWeight || !renalSCr || !renalCrClResult || !renalDoseResult) return;
+
+        const age = parseFloat(renalAge.value);
+        const weight = parseFloat(renalWeight.value);
+        const scr = parseFloat(renalSCr.value);
+
+        let gender = 'male';
+        renalGenders.forEach(radio => { if (radio.checked) gender = radio.value; });
+
+        let indication = 'treatment';
+        renalIndications.forEach(radio => { if (radio.checked) indication = radio.value; });
+
+        const dialysis = renalDialysis.value;
+
+        // Reset if inputs are missing or invalid
+        if (isNaN(age) || isNaN(weight) || isNaN(scr) || age <= 0 || weight <= 0 || scr <= 0) {
+            renalCrClResult.innerHTML = `- <span class="text-lg">mL/min</span>`;
+            renalDoseResult.textContent = '-';
+            renalDoseResult.className = "font-bold text-gray-400 text-lg md:text-xl text-center";
+            return;
+        }
+
+        // 1. Calculate CrCl using Cockcroft-Gault
+        let crcl = ((140 - age) * weight) / (72 * scr);
+        if (gender === 'female') {
+            crcl *= 0.85;
+        }
+
+        // Display CrCl
+        renalCrClResult.innerHTML = `${crcl.toFixed(1)} <span class="text-lg">mL/min</span>`;
+
+        // 2. Determine Dose
+        let recommendation = '';
+        let isNotRecommended = false;
+
+        switch (dialysis) {
+            case 'hd':
+                if (indication === 'treatment') {
+                    recommendation = "30 mg immediately, then 30 mg after every hemodialysis cycle (max 5 days)";
+                } else {
+                    recommendation = "30 mg immediately, then 30 mg after alternate hemodialysis cycles";
+                }
+                break;
+            case 'capd':
+                if (indication === 'treatment') {
+                    recommendation = "A single 30 mg dose";
+                } else {
+                    recommendation = "30 mg immediately, then 30 mg once weekly";
+                }
+                break;
+            case 'esrd':
+                recommendation = "TAMIFLU is not recommended";
+                isNotRecommended = true;
+                break;
+            case 'none':
+            default:
+                if (crcl > 60) {
+                    if (indication === 'treatment') {
+                        recommendation = "75 mg twice daily for 5 days";
+                    } else {
+                        recommendation = "75 mg once daily";
+                    }
+                } else if (crcl > 30 && crcl <= 60) {
+                    if (indication === 'treatment') {
+                        recommendation = "30 mg twice daily for 5 days";
+                    } else {
+                        recommendation = "30 mg once daily";
+                    }
+                } else if (crcl > 10 && crcl <= 30) {
+                    if (indication === 'treatment') {
+                        recommendation = "30 mg once daily for 5 days";
+                    } else {
+                        recommendation = "30 mg every other day";
+                    }
+                } else {
+                    recommendation = "TAMIFLU is not recommended";
+                    isNotRecommended = true;
+                }
+                break;
+        }
+
+        renalDoseResult.textContent = recommendation;
+        
+        if (isNotRecommended) {
+            renalDoseResult.className = "font-bold text-red-600 text-lg md:text-xl text-center";
+        } else {
+            renalDoseResult.className = "font-bold text-blue-700 text-lg md:text-xl text-center";
+        }
+    }
+
+    if (renalAge) renalAge.addEventListener('input', calculateRenalOseltamivir);
+    if (renalWeight) renalWeight.addEventListener('input', calculateRenalOseltamivir);
+    if (renalSCr) renalSCr.addEventListener('input', calculateRenalOseltamivir);
+    if (renalDialysis) renalDialysis.addEventListener('change', calculateRenalOseltamivir);
+
+    if (renalGenders.length > 0) {
+        renalGenders.forEach(radio => radio.addEventListener('change', calculateRenalOseltamivir));
+    }
+    if (renalIndications.length > 0) {
+        renalIndications.forEach(radio => radio.addEventListener('change', calculateRenalOseltamivir));
+    }
+
 });
