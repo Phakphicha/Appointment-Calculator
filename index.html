@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KNP3JV6XKN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KNP3JV6XKN');
+    </script>
+    
     <!-- SEO Meta Tags -->
     <title>ระบบคำนวณวันนัดและจำนวนยา | โปรแกรมคำนวณทางการแพทย์ออนไลน์</title>
     <meta name="description" content="เครื่องมือคำนวณวันนัดหมายผู้ป่วย คำนวณจำนวนยา ระยะห่างวัน คำนวณอายุ และตารางนัดฉีดวัคซีนผู้ใหญ่ ใช้งานง่าย แม่นยำ สำหรับบุคลากรทางการแพทย์และบุคคลทั่วไป">
@@ -158,6 +168,12 @@
                     </a>
                     <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
                         <i class="ph-bold ph-table text-lg"></i> ตารางคำนวณวันนัดหมายและจำนวนยา
+                    </a>
+                    <a href="#section-oseltamivir" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-prescription text-lg"></i> คำนวณยา Oseltamivir
+                    </a>
+                    <a href="#section-renal-osel" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-first-aid text-lg"></i> คำนวณยา Oseltamivir (Renal)
                     </a>
                     
                     <!-- Action Buttons at the Bottom -->
@@ -760,6 +776,191 @@
                     </div>
                 </div>
 
+            </div>
+        </section>
+
+        <!-- Oseltamivir Calculator -->
+        <section id="section-oseltamivir" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24 mb-4 mt-8">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-prescription text-xl"></i>
+                </div>
+                <h2 class="text-textdark font-bold text-lg leading-tight text-center">คำนวณยา Oseltamivir</h2>
+            </div>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-5 flex-grow shadow-sm">
+                <!-- Indication -->
+                <div>
+                    <label class="block text-sm font-bold text-textdark mb-2">ข้อบ่งชี้ (Indication)</label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                            <input type="radio" name="oselIndication" value="treatment" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                            <span class="text-sm font-bold text-textdark leading-tight">Treatment<br><span class="text-xs font-bold text-[#24917d]">(5 days, Twice daily)</span></span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                            <input type="radio" name="oselIndication" value="prophylaxis" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                            <span class="text-sm font-bold text-textdark leading-tight">Prophylaxis<br><span class="text-xs font-bold text-[#24917d]">(10 days, Once daily)</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Age -->
+                    <div>
+                        <label class="block text-sm font-bold text-textdark mb-2">อายุ (Age)</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="oselAge" min="0" step="0.1" placeholder="ระบุอายุ..." class="form-input w-full rounded-xl px-4 py-3 text-center min-w-0">
+                            <select id="oselAgeUnit" class="form-select rounded-xl px-2 py-3 text-sm min-w-[80px]">
+                                <option value="months">เดือน</option>
+                                <option value="years" selected>ปี</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Weight -->
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="block text-sm font-bold text-textdark">น้ำหนัก (Weight)</label>
+                            <span class="text-[10px] text-gray-500 font-bold hidden sm:inline">*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)</span>
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="oselWeight" min="0" step="0.1" placeholder="ระบุน้ำหนัก..." class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">kg</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 font-bold mt-1 text-center sm:hidden">*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)</p>
+                    </div>
+                </div>
+
+                <!-- Alert Message -->
+                <div id="oselAlert" class="hidden bg-red-100 text-red-700 p-3 rounded-xl text-sm font-bold text-center flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-warning-circle text-lg"></i> Not recommended สำหรับอายุต่ำกว่า 3 เดือน
+                </div>
+
+                <!-- Results -->
+                <div class="bg-resultbg rounded-xl p-4 flex flex-col gap-4 shadow-sm border-2 border-panelbg/10">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-panelbg/20 text-center items-center">
+                        <div class="py-2 sm:py-0">
+                            <p class="text-xs font-bold text-textdark mb-1">Dose (mg)</p>
+                            <p id="oselDoseResult" class="font-bold text-textdark text-xl">-</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Volume (ml)</p>
+                            <p id="oselVolumeResult" class="font-bold text-blue-700 text-xl">-</p>
+                            <p class="text-[9px] text-gray-500 mt-1">*Concentration: 6 mg/ml.</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Frequency</p>
+                            <p id="oselFrequencyResult" class="font-bold text-orange-600 text-xl">-</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Total Bottles</p>
+                            <p id="oselBottlesResult" class="font-bold text-[#1a5b4b] text-xl">-</p>
+                            <p class="text-[9px] text-gray-500 mt-1">Bottle size: 60 ml.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-gray-400 text-center mt-2 leading-tight">
+                    <a href="https://www.cdc.gov/flu/pdf/professionals/antivirals/Antiviral-Medications-Table2.pdf" target="_blank" class="hover:underline hover:text-blue-500 transition-colors">Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Renal Dose Adjustment Calculator -->
+        <section id="section-renal-osel" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24 mb-4">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-first-aid text-xl"></i>
+                </div>
+                <h2 class="text-textdark font-bold text-[15px] sm:text-lg leading-tight text-center">คำนวณยา Oseltamivir<br><span class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">(Renal Dose Adjustment)</span></h2>
+            </div>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-5 flex-grow shadow-sm">
+                
+                <!-- Patient Data -->
+                <div class="border border-gray-200 rounded-xl p-4 bg-white/50">
+                    <h3 class="text-textdark font-bold mb-3 border-b border-gray-200 pb-2">ข้อมูลผู้ป่วย (Patient Data)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">อายุ (Age)</label>
+                            <div class="relative">
+                                <input type="number" id="renalAge" min="0" placeholder="ระบุอายุ..." class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                                <span class="absolute right-4 top-3 font-bold text-textdark">ปี</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">น้ำหนัก (Weight)</label>
+                            <div class="relative">
+                                <input type="number" id="renalWeight" min="0" step="0.1" placeholder="ระบุน้ำหนัก..." class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                                <span class="absolute right-4 top-3 font-bold text-textdark">kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">เพศ (Gender)</label>
+                            <div class="flex gap-3">
+                                <label class="flex items-center justify-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalGender" value="male" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                                    <span class="text-sm font-bold text-textdark">ชาย (Male)</span>
+                                </label>
+                                <label class="flex items-center justify-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalGender" value="female" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                                    <span class="text-sm font-bold text-textdark">หญิง (Female)</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">Serum Creatinine (SCr)</label>
+                            <div class="relative">
+                                <input type="number" id="renalSCr" min="0" step="0.01" placeholder="ระบุค่า SCr..." class="form-input w-full rounded-xl px-4 py-3 pr-14 text-center">
+                                <span class="absolute right-4 top-3 font-bold text-textdark">mg/dL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Data -->
+                <div class="border border-gray-200 rounded-xl p-4 bg-white/50">
+                    <h3 class="text-textdark font-bold mb-3 border-b border-gray-200 pb-2">ข้อมูลทางคลินิก (Clinical Data)</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">ข้อบ่งชี้ (Indication)</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalIndication" value="treatment" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                                    <span class="text-sm font-bold text-textdark leading-tight">Treatment<br><span class="text-xs font-bold text-[#24917d]">(5 days)</span></span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalIndication" value="prophylaxis" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                                    <span class="text-sm font-bold text-textdark leading-tight">Prophylaxis<br><span class="text-xs font-bold text-[#24917d]">(10 days)</span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">สถานะการฟอกไต (Dialysis Status)</label>
+                            <select id="renalDialysis" class="form-select w-full rounded-xl px-4 py-3 text-sm font-bold text-textdark">
+                                <option value="none" selected>Not on Dialysis</option>
+                                <option value="hd">Hemodialysis</option>
+                                <option value="capd">CAPD</option>
+                                <option value="esrd">ESRD not on dialysis</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="bg-resultbg rounded-xl p-5 flex flex-col gap-4 shadow-sm border-2 border-panelbg/20">
+                    <div class="text-center border-b border-panelbg/10 pb-4">
+                        <p class="text-sm font-bold text-textdark mb-1">Calculated CrCl (Cockcroft-Gault)</p>
+                        <p id="renalCrClResult" class="font-bold text-[#1a5b4b] text-3xl">- <span class="text-lg">mL/min</span></p>
+                    </div>
+                    <div class="text-center pt-2">
+                        <p class="text-sm font-bold text-textdark mb-2">Recommended Dose</p>
+                        <div id="renalDoseResultBox" class="bg-white rounded-xl p-4 shadow-inner border border-gray-100 min-h-[80px] flex items-center justify-center">
+                            <p id="renalDoseResult" class="font-bold text-blue-700 text-lg md:text-xl">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-gray-400 text-center mt-2 leading-tight">
+                    Source: Recommended Dosage Modifications for Treatment and Prophylaxis of Influenza in Adults with Renal Impairment
+                </p>
             </div>
         </section>
 
