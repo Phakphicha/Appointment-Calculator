@@ -15,15 +15,75 @@
     </script>
     
     <!-- SEO Meta Tags -->
-    <title>ระบบคำนวณวันนัดและจำนวนยา | โปรแกรมคำนวณทางการแพทย์ออนไลน์</title>
-    <meta name="description" content="เครื่องมือคำนวณวันนัดหมายผู้ป่วย คำนวณจำนวนยา ระยะห่างวัน คำนวณอายุ และตารางนัดฉีดวัคซีนผู้ใหญ่ ใช้งานง่าย แม่นยำ สำหรับบุคลากรทางการแพทย์และบุคคลทั่วไป">
-    <meta name="keywords" content="คำนวณวันนัด, คำนวณจำนวนยา, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
+    <title>โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี</title>
+    <meta name="description" content="คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม">
+    <meta name="keywords" content="คำนวณวันนัด, โปรแกรมคำนวณวันนัด, คำนวณจำนวนยา, คำนวณวันนัดคนไข้, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
 
     <!-- Open Graph (Social Media) Meta Tags -->
-    <meta property="og:title" content="ระบบคำนวณวันนัดและจำนวนยาออนไลน์">
-    <meta property="og:description" content="เครื่องมือคำนวณวันนัดหมาย คำนวณยา และวัคซีน ใช้งานฟรี">
+    <meta property="og:title" content="โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี">
+    <meta property="og:description" content="คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม">
     <meta property="og:image" content="https://easymedcal.com/ชื่อไฟล์รูปหน้าปกของคุณ.jpg">
     <meta property="og:url" content="https://easymedcal.com/">
+
+    <!-- Structured Data (Schema.org): FAQPage & WebApplication for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "โปรแกรมคำนวณวันนัด คนไข้และยา",
+          "alternateName": "EasyMedCal - ระบบคำนวณวันนัด",
+          "url": "https://easymedcal.com/",
+          "description": "คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "THB"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "โปรแกรมคำนวณวันนัด ทำงานอย่างไร?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "เพียงเลือกวันที่เริ่มต้น และกรอกจำนวนวันที่ต้องการนัด (เช่น อีก 30 วัน) หรือจำนวนสัปดาห์ (เช่น อีก 4 สัปดาห์, 12 สัปดาห์) ระบบจะคำนวณวันนัดหมายครั้งถัดไปให้อัตโนมัติ พร้อมแสดงชื่อวันในสัปดาห์ และช่วยคำนวณจำนวนเม็ดยาที่ต้องจ่ายให้พอดีกับวันนัดได้ทันที"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "วิธีคำนวณจำนวนยาให้พอดีกับวันนัดหมายคนไข้ทำอย่างไร?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "เลือกวันที่เริ่มต้นและวันนัดถัดไป ระบบจะคำนวณระยะห่างระหว่างวันและจำนวนสัปดาห์ทั้งหมด จากนั้นระบุจำนวนยาที่รับประทานต่อวันหรือต่อสัปดาห์ ระบบจะประมวลผลยอดรวมเม็ดยาที่ต้องจ่ายอย่างแม่นยำ พร้อมปัดเศษขึ้นเป็นเม็ดเต็มเสมอ"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "สามารถคำนวณวันนัดฉีดวัคซีนและยาคุมกำเนิดได้หรือไม่?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "ได้ครับ ระบบมีฟังก์ชันคำนวณวันนัดฉีดวัคซีนผู้ใหญ่ตามมาตรฐานปี 2026 (เช่น พิษสุนัขบ้า, ไวรัสตับอักเสบบี, บาดทะยัก) และมีฟังก์ชันคำนวณวันนัดฉีดยาคุมกำเนิดทั้งแบบ 1 เดือน (28 วัน) และแบบ 3 เดือน (84 วัน)"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "โปรแกรมคำนวณวันนัดนี้ใช้งานได้ฟรีหรือไม่ และต้องติดตั้งแอปไหม?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "ใช้งานได้ฟรี 100% โดยไม่ต้องติดตั้งแอปพลิเคชันหรือลงทะเบียน สามารถเปิดใช้งานผ่านเว็บบราวเซอร์ได้ทันที ทั้งบนโทรศัพท์มือถือ แท็บเล็ต และคอมพิวเตอร์"
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     
     <!-- Favicon and App Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -1088,6 +1148,54 @@
                 </li>
             </ul>
         </div>
+
+        <!-- FAQ Section (Visible for Users & SEO / Rich Snippets Validation) -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm my-8 border border-gray-100">
+            <h2 class="text-xl font-bold text-[#1a5b4b] mb-4 flex items-center gap-2">
+                <i class="ph-fill ph-question text-2xl text-[#24917d]"></i> คำถามที่พบบ่อยเกี่ยวกับการคำนวณวันนัด (FAQ)
+            </h2>
+            <div class="space-y-4">
+                <details class="group bg-[#f8faf9] rounded-xl p-4 border border-gray-200/70 [&_summary::-webkit-details-marker]:hidden" open>
+                    <summary class="flex items-center justify-between cursor-pointer font-bold text-textdark hover:text-[#24917d] transition">
+                        <span>โปรแกรมคำนวณวันนัด ทำงานอย่างไร?</span>
+                        <i class="ph-bold ph-caret-down text-lg text-gray-500 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+                        เพียงเลือกวันที่เริ่มต้น และกรอกจำนวนวันที่ต้องการนัด (เช่น อีก 30 วัน) หรือจำนวนสัปดาห์ (เช่น อีก 4 สัปดาห์, 12 สัปดาห์) ระบบจะคำนวณวันนัดหมายครั้งถัดไปให้อัตโนมัติ พร้อมแสดงชื่อวันในสัปดาห์ และช่วยคำนวณจำนวนเม็ดยาที่ต้องจ่ายให้พอดีกับวันนัดได้ทันที
+                    </p>
+                </details>
+
+                <details class="group bg-[#f8faf9] rounded-xl p-4 border border-gray-200/70 [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex items-center justify-between cursor-pointer font-bold text-textdark hover:text-[#24917d] transition">
+                        <span>วิธีคำนวณจำนวนยาให้พอดีกับวันนัดหมายคนไข้ทำอย่างไร?</span>
+                        <i class="ph-bold ph-caret-down text-lg text-gray-500 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+                        เลือกวันที่เริ่มต้นและวันนัดถัดไป ระบบจะคำนวณระยะห่างระหว่างวันและจำนวนสัปดาห์ทั้งหมด จากนั้นระบุจำนวนยาที่รับประทานต่อวันหรือต่อสัปดาห์ ระบบจะประมวลผลยอดรวมเม็ดยาที่ต้องจ่ายอย่างแม่นยำ พร้อมปัดเศษขึ้นเป็นเม็ดเต็มเสมอ
+                    </p>
+                </details>
+
+                <details class="group bg-[#f8faf9] rounded-xl p-4 border border-gray-200/70 [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex items-center justify-between cursor-pointer font-bold text-textdark hover:text-[#24917d] transition">
+                        <span>สามารถคำนวณวันนัดฉีดวัคซีนและยาคุมกำเนิดได้หรือไม่?</span>
+                        <i class="ph-bold ph-caret-down text-lg text-gray-500 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+                        ได้ครับ ระบบมีฟังก์ชันคำนวณวันนัดฉีดวัคซีนผู้ใหญ่ตามมาตรฐานปี 2026 (เช่น พิษสุนัขบ้า, ไวรัสตับอักเสบบี, บาดทะยัก) และมีฟังก์ชันคำนวณวันนัดฉีดยาคุมกำเนิดทั้งแบบ 1 เดือน (28 วัน) และแบบ 3 เดือน (84 วัน)
+                    </p>
+                </details>
+
+                <details class="group bg-[#f8faf9] rounded-xl p-4 border border-gray-200/70 [&_summary::-webkit-details-marker]:hidden">
+                    <summary class="flex items-center justify-between cursor-pointer font-bold text-textdark hover:text-[#24917d] transition">
+                        <span>โปรแกรมคำนวณวันนัดนี้ใช้งานได้ฟรีหรือไม่ และต้องติดตั้งแอปไหม?</span>
+                        <i class="ph-bold ph-caret-down text-lg text-gray-500 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+                        ใช้งานได้ฟรี 100% โดยไม่ต้องติดตั้งแอปพลิเคชันหรือลงทะเบียน สามารถเปิดใช้งานผ่านเว็บบราวเซอร์ได้ทันที ทั้งบนโทรศัพท์มือถือ แท็บเล็ต และคอมพิวเตอร์
+                    </p>
+                </details>
+            </div>
+        </section>
 
     </main>
 
