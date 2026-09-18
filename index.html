@@ -530,16 +530,40 @@
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
                     <div>
                         <label for="apptDays" data-i18n="s3_days_label" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
-                        <div class="relative">
+                        <div class="relative mb-3">
                             <input type="number" id="apptDays" min="1" placeholder="เช่น 30" data-i18n-ph="ph_eg_30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
                             <span data-i18n="unit_day" class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
                         </div>
+                        <!-- Quick Presets -->
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="7">7 วัน</button>
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="14">14 วัน</button>
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="28">28 วัน (4 สัปดาห์)</button>
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="30">30 วัน (1 เดือน)</button>
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="60">60 วัน (2 เดือน)</button>
+                            <button type="button" class="btn-preset-day px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-days="90">90 วัน (3 เดือน)</button>
+                        </div>
                     </div>
                     <div class="flex-grow"></div>
-                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group">
                         <p data-i18n="s3_result_label" class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
-                        <p id="apptDaysResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
+                        <p id="apptDaysResult" class="text-xl md:text-2xl font-bold text-textdark mb-1">-</p>
                         
+                        <!-- Weekend Warning & Adjust Container -->
+                        <div id="apptDaysWeekendWarning" class="hidden mt-2 pt-2 border-t border-black/10">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/25 text-amber-950 border border-amber-600/30 mb-2">
+                                <i class="ph-bold ph-warning"></i> <span id="apptDaysWeekendText">ตรงกับวันหยุด</span>
+                            </span>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <button type="button" id="btnApptDaysToFri" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <i class="ph-bold ph-arrow-left"></i> <span data-i18n="btn_shift_fri">เลื่อนเป็นวันศุกร์</span>
+                                </button>
+                                <button type="button" id="btnApptDaysToMon" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <span data-i18n="btn_shift_mon">เลื่อนเป็นวันจันทร์</span> <i class="ph-bold ph-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Clickable calendar to preview date -->
                         <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
                             <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
@@ -560,16 +584,39 @@
                 <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
                     <div>
                         <label for="apptWeeks" data-i18n="s4_weeks_label" class="block text-sm font-bold text-textdark mb-2">จำนวนสัปดาห์</label>
-                        <div class="relative">
+                        <div class="relative mb-3">
                             <input type="number" id="apptWeeks" min="1" placeholder="เช่น 4" data-i18n-ph="ph_eg_4" class="form-input w-full rounded-xl px-4 py-3 pr-16 text-center">
                             <span data-i18n="unit_week" class="absolute right-4 top-3 font-bold text-textdark">สัปดาห์</span>
                         </div>
+                        <!-- Quick Presets -->
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <button type="button" class="btn-preset-week px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-weeks="1">1 สัปดาห์</button>
+                            <button type="button" class="btn-preset-week px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-weeks="2">2 สัปดาห์</button>
+                            <button type="button" class="btn-preset-week px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-weeks="4">4 สัปดาห์</button>
+                            <button type="button" class="btn-preset-week px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-weeks="8">8 สัปดาห์</button>
+                            <button type="button" class="btn-preset-week px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#24917d]/15 text-[#163333] hover:bg-[#24917d] hover:text-white transition" data-weeks="12">12 สัปดาห์</button>
+                        </div>
                     </div>
                     <div class="flex-grow"></div>
-                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group">
                         <p data-i18n="s3_result_label" class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
-                        <p id="apptWeeksResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
+                        <p id="apptWeeksResult" class="text-xl md:text-2xl font-bold text-textdark mb-1">-</p>
                         
+                        <!-- Weekend Warning & Adjust Container -->
+                        <div id="apptWeeksWeekendWarning" class="hidden mt-2 pt-2 border-t border-black/10">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/25 text-amber-950 border border-amber-600/30 mb-2">
+                                <i class="ph-bold ph-warning"></i> <span id="apptWeeksWeekendText">ตรงกับวันหยุด</span>
+                            </span>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <button type="button" id="btnApptWeeksToFri" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <i class="ph-bold ph-arrow-left"></i> <span data-i18n="btn_shift_fri">เลื่อนเป็นวันศุกร์</span>
+                                </button>
+                                <button type="button" id="btnApptWeeksToMon" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <span data-i18n="btn_shift_mon">เลื่อนเป็นวันจันทร์</span> <i class="ph-bold ph-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
                             <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
                             <input type="date" id="apptWeeksResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
@@ -577,6 +624,20 @@
                     </div>
                 </div>
             </section>
+            </div>
+
+            <!-- Quick Glance Appointment Summary Widget -->
+            <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-md border border-white/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <h3 class="text-base sm:text-lg font-bold text-[#1a5b4b] flex items-center gap-2">
+                        <i class="ph-fill ph-lightning text-xl text-amber-500"></i>
+                        <span data-i18n="quick_glance_title">สรุปวันนัดหมายด่วนยอดนิยม (คำนวณจากวันนี้)</span>
+                    </h3>
+                    <span class="text-xs font-medium text-gray-500" id="quickGlanceTodayLabel"></span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3" id="quickGlanceGrid">
+                    <!-- Dynamic cards filled by app.js: 7 days, 14 days, 28 days, 30 days, 60 days, 90 days -->
+                </div>
             </div>
 
             <!-- Row 3 -->

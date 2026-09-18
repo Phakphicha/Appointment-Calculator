@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
     const translations = {
         TH: {
-            title_main: "โปรแกรมคำนวณวันนัดและปริมาณยา",
+            title_main: "โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี",
             tooltip_coffee: "สนับสนุนค่ากาแฟ",
             tooltip_help: "คู่มือการใช้งาน",
             nav_datediff: "คำนวณระยะห่างของวัน",
@@ -76,6 +76,19 @@ document.addEventListener('DOMContentLoaded', () => {
             s4_title_1: "คำนวณวันนัด",
             s4_title_2: "จากจำนวนสัปดาห์",
             s4_weeks_label: "จำนวนสัปดาห์",
+            // Quick Presets & Weekend Warning
+            btn_shift_fri: "เลื่อนเป็นวันศุกร์",
+            btn_shift_mon: "เลื่อนเป็นวันจันทร์",
+            weekend_sat_warn: "ตรงกับวันเสาร์ (วันหยุดตรวจ)",
+            weekend_sun_warn: "ตรงกับวันอาทิตย์ (วันหยุดตรวจ)",
+            quick_glance_title: "สรุปวันนัดหมายด่วนยอดนิยม (คำนวณจากวันนี้)",
+            quick_glance_today: "อิงจากวันที่ปัจจุบัน: ",
+            qg_1w: "1 สัปดาห์ (7 วัน)",
+            qg_2w: "2 สัปดาห์ (14 วัน)",
+            qg_4w: "4 สัปดาห์ (28 วัน)",
+            qg_1m: "1 เดือน (30 วัน)",
+            qg_2m: "2 เดือน (60 วัน)",
+            qg_3m: "3 เดือน (90 วัน)",
             // Section 5 & 6
             s5_title: "คำนวณอายุ",
             s5_dob_label: "วัน/เดือน/ปีเกิด",
@@ -218,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ph_eg_30: "เช่น 30"
         },
         EN: {
-            title_main: "Medical Appointment & Medication Calculator",
+            title_main: "Medical Appointment & Medication Calculator | EasyMedCal",
             tooltip_coffee: "Buy me a coffee",
             tooltip_help: "User Manual",
             nav_datediff: "Date Difference Calculator",
@@ -265,6 +278,19 @@ document.addEventListener('DOMContentLoaded', () => {
             s4_title_1: "Next Appointment",
             s4_title_2: "by Weeks",
             s4_weeks_label: "Number of Weeks",
+            // Quick Presets & Weekend Warning
+            btn_shift_fri: "Shift to Friday",
+            btn_shift_mon: "Shift to Monday",
+            weekend_sat_warn: "Falls on Saturday (Closed)",
+            weekend_sun_warn: "Falls on Sunday (Closed)",
+            quick_glance_title: "Quick Appointment Summary (From Today)",
+            quick_glance_today: "Based on today: ",
+            qg_1w: "1 Week (7 days)",
+            qg_2w: "2 Weeks (14 days)",
+            qg_4w: "4 Weeks (28 days)",
+            qg_1m: "1 Month (30 days)",
+            qg_2m: "2 Months (60 days)",
+            qg_3m: "3 Months (90 days)",
             // Section 5 & 6
             s5_title: "Age Calculator",
             s5_dob_label: "Date of Birth",
@@ -547,6 +573,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof calculateOseltamivir === 'function') calculateOseltamivir();
         if (typeof calculateRenalOseltamivir === 'function') calculateRenalOseltamivir();
         if (typeof calculateContraceptive === 'function') calculateContraceptive();
+        if (typeof renderQuickGlanceWidget === 'function') renderQuickGlanceWidget();
+        if (typeof updatePresetLabels === 'function') updatePresetLabels();
     }
 
     // Set current year in Footer on startup
@@ -852,11 +880,80 @@ document.addEventListener('DOMContentLoaded', () => {
     medDoseCustom.addEventListener('input', calculateMedication);
 
     // -------------------------------------------------------------
+    // Helper: Check weekend (Sat/Sun) and render warning + shift buttons
+    // -------------------------------------------------------------
+    function checkWeekendAndWarn(dateObj, warningEl, textEl, toFriBtn, toMonBtn, onShiftCallback) {
+        if (!dateObj || isNaN(dateObj)) {
+            if (warningEl) warningEl.classList.add('hidden');
+            return;
+        }
+        const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            if (warningEl) warningEl.classList.remove('hidden');
+            const isSat = dayOfWeek === 6;
+            const lang = window.currentLang || 'TH';
+            if (textEl) {
+                textEl.textContent = isSat 
+                    ? (translations[lang].weekend_sat_warn || 'ตรงกับวันเสาร์ (วันหยุดตรวจ)') 
+                    : (translations[lang].weekend_sun_warn || 'ตรงกับวันอาทิตย์ (วันหยุดตรวจ)');
+            }
+            // If Saturday: Friday is -1 day, Monday is +2 days
+            // If Sunday: Friday is -2 days, Monday is +1 day
+            const diffToFri = isSat ? -1 : -2;
+            const diffToMon = isSat ? 2 : 1;
+
+            if (toFriBtn) {
+                toFriBtn.onclick = (e) => {
+                    e.preventDefault();
+                    onShiftCallback(diffToFri);
+                };
+            }
+            if (toMonBtn) {
+                toMonBtn.onclick = (e) => {
+                    e.preventDefault();
+                    onShiftCallback(diffToMon);
+                };
+            }
+        } else {
+            if (warningEl) warningEl.classList.add('hidden');
+        }
+    }
+
+    // Update preset chip highlights
+    function updatePresetHighlight(type, val) {
+        if (type === 'day') {
+            document.querySelectorAll('.btn-preset-day').forEach(b => {
+                if (parseInt(b.getAttribute('data-days')) === val) {
+                    b.classList.remove('bg-[#24917d]/15', 'text-[#163333]');
+                    b.classList.add('bg-[#24917d]', 'text-white', 'shadow-sm');
+                } else {
+                    b.classList.add('bg-[#24917d]/15', 'text-[#163333]');
+                    b.classList.remove('bg-[#24917d]', 'text-white', 'shadow-sm');
+                }
+            });
+        } else if (type === 'week') {
+            document.querySelectorAll('.btn-preset-week').forEach(b => {
+                if (parseInt(b.getAttribute('data-weeks')) === val) {
+                    b.classList.remove('bg-[#24917d]/15', 'text-[#163333]');
+                    b.classList.add('bg-[#24917d]', 'text-white', 'shadow-sm');
+                } else {
+                    b.classList.add('bg-[#24917d]/15', 'text-[#163333]');
+                    b.classList.remove('bg-[#24917d]', 'text-white', 'shadow-sm');
+                }
+            });
+        }
+    }
+
+    // -------------------------------------------------------------
     // 3. Next Appointment by Days
     // -------------------------------------------------------------
     const apptDaysInput = document.getElementById('apptDays');
     const apptDaysResult = document.getElementById('apptDaysResult');
     const apptDaysResultPicker = document.getElementById('apptDaysResultPicker');
+    const apptDaysWeekendWarning = document.getElementById('apptDaysWeekendWarning');
+    const apptDaysWeekendText = document.getElementById('apptDaysWeekendText');
+    const btnApptDaysToFri = document.getElementById('btnApptDaysToFri');
+    const btnApptDaysToMon = document.getElementById('btnApptDaysToMon');
 
     function calculateApptDays() {
         const days = parseInt(apptDaysInput.value);
@@ -865,12 +962,35 @@ document.addEventListener('DOMContentLoaded', () => {
             nextDate.setDate(nextDate.getDate() + days);
             apptDaysResult.textContent = formatThaiDateShortWithDay(nextDate);
             apptDaysResultPicker.value = toISODate(nextDate);
+            checkWeekendAndWarn(nextDate, apptDaysWeekendWarning, apptDaysWeekendText, btnApptDaysToFri, btnApptDaysToMon, (diff) => {
+                const newDays = days + diff;
+                if (newDays > 0) {
+                    apptDaysInput.value = newDays;
+                    calculateApptDays();
+                }
+            });
+            updatePresetHighlight('day', days);
         } else {
             apptDaysResult.textContent = '-';
             apptDaysResultPicker.value = '';
+            if (apptDaysWeekendWarning) apptDaysWeekendWarning.classList.add('hidden');
+            updatePresetHighlight('day', null);
         }
     }
-    apptDaysInput.addEventListener('input', calculateApptDays);
+    if (apptDaysInput) {
+        apptDaysInput.addEventListener('input', calculateApptDays);
+    }
+
+    // Day presets click events
+    document.querySelectorAll('.btn-preset-day').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const d = parseInt(btn.getAttribute('data-days'));
+            if (!isNaN(d)) {
+                apptDaysInput.value = d;
+                calculateApptDays();
+            }
+        });
+    });
 
     // -------------------------------------------------------------
     // 4. Next Appointment by Weeks
@@ -878,6 +998,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const apptWeeksInput = document.getElementById('apptWeeks');
     const apptWeeksResult = document.getElementById('apptWeeksResult');
     const apptWeeksResultPicker = document.getElementById('apptWeeksResultPicker');
+    const apptWeeksWeekendWarning = document.getElementById('apptWeeksWeekendWarning');
+    const apptWeeksWeekendText = document.getElementById('apptWeeksWeekendText');
+    const btnApptWeeksToFri = document.getElementById('btnApptWeeksToFri');
+    const btnApptWeeksToMon = document.getElementById('btnApptWeeksToMon');
 
     function calculateApptWeeks() {
         const weeks = parseInt(apptWeeksInput.value);
@@ -886,12 +1010,136 @@ document.addEventListener('DOMContentLoaded', () => {
             nextDate.setDate(nextDate.getDate() + (weeks * 7));
             apptWeeksResult.textContent = formatThaiDateShortWithDay(nextDate);
             apptWeeksResultPicker.value = toISODate(nextDate);
+            checkWeekendAndWarn(nextDate, apptWeeksWeekendWarning, apptWeeksWeekendText, btnApptWeeksToFri, btnApptWeeksToMon, (diff) => {
+                const totalDays = (weeks * 7) + diff;
+                if (apptDaysInput) {
+                    apptDaysInput.value = totalDays;
+                    calculateApptDays();
+                    const sec = document.getElementById('section-appt-days');
+                    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+            updatePresetHighlight('week', weeks);
         } else {
             apptWeeksResult.textContent = '-';
             apptWeeksResultPicker.value = '';
+            if (apptWeeksWeekendWarning) apptWeeksWeekendWarning.classList.add('hidden');
+            updatePresetHighlight('week', null);
         }
     }
-    apptWeeksInput.addEventListener('input', calculateApptWeeks);
+    if (apptWeeksInput) {
+        apptWeeksInput.addEventListener('input', calculateApptWeeks);
+    }
+
+    // Week presets click events
+    document.querySelectorAll('.btn-preset-week').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const w = parseInt(btn.getAttribute('data-weeks'));
+            if (!isNaN(w)) {
+                apptWeeksInput.value = w;
+                calculateApptWeeks();
+            }
+        });
+    });
+
+    // -------------------------------------------------------------
+    // Quick Glance Appointment Summary Widget
+    // -------------------------------------------------------------
+    function renderQuickGlanceWidget() {
+        const grid = document.getElementById('quickGlanceGrid');
+        const todayLabel = document.getElementById('quickGlanceTodayLabel');
+        if (!grid) return;
+
+        const today = getToday();
+        const lang = window.currentLang || 'TH';
+        if (todayLabel) {
+            todayLabel.textContent = `${translations[lang].quick_glance_today || 'อิงจากวันนี้: '} ${formatThaiDateShort(today)}`;
+        }
+
+        const presets = [
+            { labelKey: 'qg_1w', defaultLabel: '1 สัปดาห์ (7 วัน)', days: 7 },
+            { labelKey: 'qg_2w', defaultLabel: '2 สัปดาห์ (14 วัน)', days: 14 },
+            { labelKey: 'qg_4w', defaultLabel: '4 สัปดาห์ (28 วัน)', days: 28 },
+            { labelKey: 'qg_1m', defaultLabel: '1 เดือน (30 วัน)', days: 30 },
+            { labelKey: 'qg_2m', defaultLabel: '2 เดือน (60 วัน)', days: 60 },
+            { labelKey: 'qg_3m', defaultLabel: '3 เดือน (90 วัน)', days: 90 },
+        ];
+
+        grid.innerHTML = '';
+        presets.forEach(p => {
+            const targetDate = new Date(today);
+            targetDate.setDate(today.getDate() + p.days);
+            const dayOfWeek = targetDate.getDay();
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            
+            const card = document.createElement('div');
+            card.className = `p-3 rounded-xl border transition-all text-center flex flex-col justify-between cursor-pointer hover:shadow-md hover:border-[#24917d] ${
+                isWeekend ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-white border-gray-100 text-textdark'
+            }`;
+            
+            card.addEventListener('click', () => {
+                if (apptDaysInput) {
+                    apptDaysInput.value = p.days;
+                    calculateApptDays();
+                    const targetSec = document.getElementById('section-appt-days');
+                    if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            const dayName = new Intl.DateTimeFormat(lang === 'EN' ? 'en-US' : 'th-TH', { weekday: 'short' }).format(targetDate);
+            const dateStr = new Intl.DateTimeFormat(lang === 'EN' ? 'en-US' : 'th-TH', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: lang === 'EN' ? 'numeric' : '2-digit' 
+            }).format(targetDate);
+
+            const labelText = (translations[lang] && translations[lang][p.labelKey]) ? translations[lang][p.labelKey] : p.defaultLabel;
+            const weekendText = lang === 'EN' ? ' (Weekend)' : ' (หยุด)';
+
+            card.innerHTML = `
+                <div class="text-[11px] sm:text-xs font-bold text-[#1a5b4b] mb-1 truncate" title="${labelText}">${labelText}</div>
+                <div class="text-xs sm:text-sm font-bold text-textdark">${dateStr}</div>
+                <div class="mt-1 flex items-center justify-center">
+                    <span class="inline-block text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                        isWeekend ? 'bg-amber-200/70 text-amber-900' : 'bg-[#24917d]/15 text-[#163333]'
+                    }">${dayName}${isWeekend ? weekendText : ''}</span>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Function to update preset button labels on language change
+    function updatePresetLabels() {
+        const lang = window.currentLang || 'TH';
+        document.querySelectorAll('.btn-preset-day').forEach(btn => {
+            const days = parseInt(btn.getAttribute('data-days'));
+            if (lang === 'EN') {
+                if (days === 7) btn.textContent = '7 Days';
+                else if (days === 14) btn.textContent = '14 Days';
+                else if (days === 28) btn.textContent = '28 Days (4 Wks)';
+                else if (days === 30) btn.textContent = '30 Days (1 Mo)';
+                else if (days === 60) btn.textContent = '60 Days (2 Mos)';
+                else if (days === 90) btn.textContent = '90 Days (3 Mos)';
+            } else {
+                if (days === 7) btn.textContent = '7 วัน';
+                else if (days === 14) btn.textContent = '14 วัน';
+                else if (days === 28) btn.textContent = '28 วัน (4 สัปดาห์)';
+                else if (days === 30) btn.textContent = '30 วัน (1 เดือน)';
+                else if (days === 60) btn.textContent = '60 วัน (2 เดือน)';
+                else if (days === 90) btn.textContent = '90 วัน (3 เดือน)';
+            }
+        });
+
+        document.querySelectorAll('.btn-preset-week').forEach(btn => {
+            const weeks = parseInt(btn.getAttribute('data-weeks'));
+            if (lang === 'EN') {
+                btn.textContent = `${weeks} ${weeks === 1 ? 'Week' : 'Weeks'}`;
+            } else {
+                btn.textContent = `${weeks} สัปดาห์`;
+            }
+        });
+    }
 
     // -------------------------------------------------------------
     // 7. Weekly Medication Calculator
@@ -1953,5 +2201,9 @@ document.addEventListener('DOMContentLoaded', () => {
             setLanguage('EN');
         });
     });
+
+    // Initial render for Quick Glance & Presets
+    renderQuickGlanceWidget();
+    updatePresetLabels();
 
 });
