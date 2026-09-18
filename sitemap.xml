@@ -2,8 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url>
       <loc>https://easymedcal.com/</loc>
-      <lastmod>2026-06-21</lastmod>
-      <changefreq>monthly</changefreq>
+      <lastmod>2026-09-18</lastmod>
+      <changefreq>weekly</changefreq>
       <priority>1.0</priority>
+   </url>
+   <url>
+      <loc>https://easymedcal.com/articles/adult-vaccine-schedule-2026</loc>
+      <lastmod>2026-09-18</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
    </url>
 </urlset>
