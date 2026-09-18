@@ -1,1280 +1,1239 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VacPass: สมุดบันทึกวัคซีนดิจิทัล (Digital Vaccine Passport)</title>
-    <!-- Google Fonts: Prompt & Inter -->
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KNP3JV6XKN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KNP3JV6XKN');
+    </script>
+    
+    <!-- SEO Meta Tags -->
+    <title>ระบบคำนวณวันนัดและจำนวนยา | โปรแกรมคำนวณทางการแพทย์ออนไลน์</title>
+    <meta name="description" content="เครื่องมือคำนวณวันนัดหมายผู้ป่วย คำนวณจำนวนยา ระยะห่างวัน คำนวณอายุ และตารางนัดฉีดวัคซีนผู้ใหญ่ ใช้งานง่าย แม่นยำ สำหรับบุคลากรทางการแพทย์และบุคคลทั่วไป">
+    <meta name="keywords" content="คำนวณวันนัด, คำนวณจำนวนยา, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
+
+    <!-- Open Graph (Social Media) Meta Tags -->
+    <meta property="og:title" content="ระบบคำนวณวันนัดและจำนวนยาออนไลน์">
+    <meta property="og:description" content="เครื่องมือคำนวณวันนัดหมาย คำนวณยา และวัคซีน ใช้งานฟรี">
+    <meta property="og:image" content="https://easymedcal.com/ชื่อไฟล์รูปหน้าปกของคุณ.jpg">
+    <meta property="og:url" content="https://easymedcal.com/">
+    
+    <!-- Favicon and App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Google Fonts: Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome 6 for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- LINE LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Glacier Mist Aura Background Structure -->
-    <div class="aura-bg">
-        <div class="aura-layer-1" aria-hidden="true"></div>
-        <div class="aura-layer-2" aria-hidden="true"></div>
-        
-        <!-- Main Content Wrapper (Above Aura Layers) -->
-        <div class="aura-content-wrapper" style="position: relative; z-index: 1;">
-            
-            <!-- App Main Wrapper -->
-            <div class="app-container">
-        
-        <!-- App Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <div class="logo" id="logoBrand" style="cursor: pointer;">
-                    <div class="logo-icon-wrap">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div class="logo-text-group">
-                        <h1>VacPass <span>สมุดบันทึกวัคซีนดิจิทัล</span></h1>
-                    </div>
-                </div>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-                <!-- Top Navigation Bar -->
-                <nav class="header-nav-menu" id="headerNavMenu">
-                    <button class="header-nav-link active" id="navLinkHome" title="หน้าแรก">
-                        <i class="fa-solid fa-house"></i> หน้าแรก
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        pagebg: '#163333',
+                        panelbg: '#102727',
+                        cardouter: '#2b7a6b',
+                        cardinner: '#fdf8ee',
+                        textdark: '#1a3b3b',
+                        inputbg: '#f3f1eb',
+                        resultbg: '#ffc395'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css?v=1.1">
+    <style>
+        .form-input, .form-select {
+            background-color: #f3f1eb;
+            border: none;
+            color: #1a3b3b;
+            font-weight: 500;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #2b7a6b;
+        }
+        ::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+        /* Scrollbar for navigator */
+        .nav-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .nav-scroll::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .nav-scroll::-webkit-scrollbar-thumb {
+            background: #2b7a6b;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-pagebg text-textdark font-sans min-h-screen selection:bg-resultbg selection:text-textdark relative">
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Desktop/Tablet Header Area -->
+        <header class="hidden md:block relative w-full mb-8">
+            <!-- Floating Buttons Stack (Right Side) -->
+            <div class="absolute top-1 right-2 xl:right-0 flex flex-col items-end gap-2.5 z-[60]">
+                <!-- Language Switcher (TH / EN Toggle Switch) -->
+                <div class="bg-[#102727] p-1 rounded-full flex items-center gap-1 border border-white/20 shadow-lg">
+                    <button id="btnLangTH" class="btnLangTH px-3 py-1.5 rounded-full text-xs font-bold transition bg-[#24917d] text-white">TH</button>
+                    <button id="btnLangEN" class="btnLangEN px-3 py-1.5 rounded-full text-xs font-bold transition text-white/70 hover:text-white">EN</button>
+                </div>
+                <!-- Coffee & Help Buttons Row -->
+                <div class="flex items-center gap-2">
+                    <!-- Coffee Button -->
+                    <button class="btnOpenCoffee w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#ffc395] hover:bg-[#e0ab82] text-[#24917d] rounded-full transition shadow-lg group relative border border-white/20">
+                        <i class="ph-bold ph-coffee text-xl md:text-2xl"></i>
+                        <!-- Tooltip -->
+                        <span data-i18n="tooltip_coffee" class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">สนับสนุนค่ากาแฟ</span>
                     </button>
-                    <button class="header-nav-link" id="navLinkPromo" title="สิทธิ & แพ็กเกจวัคซีน">
-                        <i class="fa-solid fa-tags" style="color: #ee4d2d;"></i> สิทธิ & แพ็กเกจ
-                    </button>
-                    <button class="header-nav-link" id="navLinkArticles" title="บทความวัคซีนผู้ใหญ่">
-                        <i class="fa-solid fa-newspaper" style="color: var(--primary);"></i> บทความวัคซีน
-                    </button>
-                    <button class="header-nav-link" id="navLinkAuth" title="เข้าสู่ระบบ">
-                        <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
-                    </button>
-                </nav>
-                
-                <div class="header-actions">
-                    <button id="themeToggleBtn" class="icon-btn" title="เปลี่ยนธีมสว่าง/มืด" aria-label="สลับธีม">
-                        <i class="fa-solid fa-moon"></i>
+                    <!-- Help Button -->
+                    <button class="btnOpenManual w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#24917d] hover:bg-[#1f7a69] text-white rounded-full transition shadow-lg group relative border border-white/20">
+                        <i class="ph-bold ph-question text-xl md:text-2xl"></i>
+                        <!-- Tooltip -->
+                        <span data-i18n="tooltip_help" class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">คู่มือการใช้งาน</span>
                     </button>
                 </div>
+            </div>
+
+            <!-- Desktop Header Banner (Centered) -->
+            <div class="bg-panelbg rounded-[2rem] mx-auto max-w-4xl py-4 px-6 md:py-5 md:px-8 flex items-center justify-center gap-3 md:gap-5 shadow-lg relative z-40 border border-white/20">
+                <div class="bg-[#24917d] text-white w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <i class="ph-fill ph-calendar-blank text-2xl md:text-4xl"></i>
+                </div>
+                <h1 data-i18n="title_main" class="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-sm">ระบบคำนวณวันนัดและจำนวนยา</h1>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="app-main">
-            
-            <!-- SCREEN 1: MODERN BENTO HERO & LANDING PAGE -->
-            <section id="screen-landing" class="screen-section active">
+        <!-- Hamburger Menu (Visible on All Devices) -->
+        <div class="mb-8 relative">
+            <!-- Mobile Headline Banner (Hidden on Desktop/Tablet) -->
+            <div class="md:hidden bg-[#1a5b4b] rounded-[2rem] py-3 px-3 sm:py-4 sm:px-5 flex items-center justify-center gap-2 sm:gap-4 shadow-xl min-w-0 relative z-40 border border-white/10 mx-auto w-full max-w-md overflow-hidden">
+                <!-- Outer white circle, inner green circle -->
+                <div class="bg-white w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center flex-shrink-0 shadow-md p-1">
+                    <div class="bg-[#1a5b4b] w-full h-full rounded-full flex items-center justify-center">
+                        <i class="ph-fill ph-calendar-blank text-xl sm:text-3xl text-white drop-shadow-sm"></i>
+                    </div>
+                </div>
+                <h1 data-i18n="title_main" class="text-[14px] min-[375px]:text-base sm:text-xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-sm">ระบบคำนวณวันนัดและจำนวนยา</h1>
+            </div>
+
+            <!-- Floating Quick Language Switcher (Mobile Top-Right) -->
+            <div class="md:hidden fixed top-4 right-3 z-50 bg-[#102727]/95 backdrop-blur-md p-1 rounded-full flex items-center gap-1 border border-white/20 shadow-lg">
+                <button class="btnLangTH px-2.5 py-1 rounded-full text-[11px] font-bold transition bg-[#24917d] text-white">TH</button>
+                <button class="btnLangEN px-2.5 py-1 rounded-full text-[11px] font-bold transition text-white/70 hover:text-white">EN</button>
+            </div>
+
+            <!-- Hamburger Tab (Fixed to viewport) -->
+            <div class="fixed top-4 left-0 z-50">
+                <button id="btnHamburger" class="bg-[#244c41] text-[#fff2d1] hover:bg-[#1a3830] transition pl-4 pr-5 py-3 rounded-r-full focus:outline-none shadow-lg flex items-center justify-center border border-white/10 border-l-0">
+                    <i class="ph-bold ph-list text-3xl drop-shadow-sm" id="hamburgerIcon"></i>
+                </button>
                 
-                <div class="landing-bento-hero">
-                    <!-- Left Bento: Value Proposition & Actions -->
-                    <div class="landing-hero-card">
-                        <div>
-                            <div class="landing-authority-badge">
-                                <i class="fa-solid fa-shield-virus"></i> Digital Vaccine Passport
-                            </div>
-                            
-                            <h1 class="landing-hero-title">
-                                พาสปอร์ตวัคซีนดิจิทัล<br>
-                                <span class="gradient-text">แม่นยำ ครบถ้วน เพื่อทุกช่วงวัย</span>
-                            </h1>
-                            
-                            <p class="landing-hero-subtitle">
-                                วิเคราะห์ความต้องการวัคซีนเฉพาะบุคคลตามอายุ โรคประจำตัว และภาวะสุขภาพ บันทึกประวัติ และแจ้งเตือนเข็มกระตุ้นอัตโนมัติ ภายใต้มาตรฐานการแพทย์
-                            </p>
-
-                            <!-- Main CTAs -->
-                            <div class="landing-cta-group">
-                                <button id="btnGetStarted" class="btn btn-primary btn-lg btn-block pulse-btn">
-                                    <i class="fa-solid fa-play"></i> เริ่มต้นใช้งาน
-                                </button>
-                                <button id="btnLandingLineLogin" class="btn btn-line btn-lg btn-block">
-                                    <i class="fa-brands fa-line" style="font-size: 20px;"></i> เข้าสู่ระบบทันทีด้วย LINE
-                                </button>
-                            </div>
-
-                            <div class="landing-login-hint">
-                                <span>มีบัญชีผู้ใช้อยู่แล้ว?</span> 
-                                <button class="btn-text" id="btnLandingSignIn">เข้าสู่ระบบด้วยชื่อผู้ใช้</button>
-                            </div>
+                <!-- Mobile Dropdown Menu -->
+                <div id="mobileMenu" class="hidden bg-panelbg/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/10 flex flex-col gap-2 mt-2 absolute top-full left-4 w-[calc(100vw-2rem)] max-w-sm max-h-[75vh] overflow-y-auto z-50">
+                    <!-- Language Switcher (Mobile) -->
+                    <div class="pb-2 mb-2 border-b border-white/20 flex items-center justify-between px-2">
+                        <span class="text-xs font-semibold text-white/80">Language / ภาษา</span>
+                        <div class="bg-[#163333] p-1 rounded-full flex items-center gap-1 border border-white/10">
+                            <button id="btnLangTHMobile" class="btnLangTH px-3 py-1 rounded-full text-xs font-bold transition bg-[#24917d] text-white">TH</button>
+                            <button id="btnLangENMobile" class="btnLangEN px-3 py-1 rounded-full text-xs font-bold transition text-white/70 hover:text-white">EN</button>
                         </div>
                     </div>
 
-                    <!-- Right Bento: Live Preview Simulation Card (High Credibility Proof) -->
-                    <div class="landing-preview-card">
-                        <div class="preview-card-header">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i class="fa-solid fa-address-card" style="color: var(--primary);"></i>
-                                <span style="font-size: 13px; font-weight: 600;">ตัวอย่างบัตรพาสปอร์ตวัคซีน</span>
-                            </div>
-                            <span class="preview-badge-live">
-                                <span class="live-dot"></span> ระบบพร้อมใช้งาน
-                            </span>
-                        </div>
-
-                        <!-- Simulated User Profile -->
-                        <div class="preview-user-bar">
-                            <div class="preview-avatar">
-                                <i class="fa-solid fa-user"></i>
-                            </div>
-                            <div class="preview-user-details">
-                                <h5>คุณวิภาวรรณ (อายุ 32 ปี)</h5>
-                                <p>หญิง • ไม่มีโรคประจำตัว • สิทธิบัตรทอง</p>
-                            </div>
-                        </div>
-
-                        <!-- Simulated Vaccine Cards -->
-                        <div class="preview-vaccine-list">
-                            <!-- Item 1: HPV -->
-                            <div class="preview-item">
-                                <div class="preview-item-left">
-                                    <div class="preview-item-icon" style="background: rgba(147,51,234,0.1); color: #9333ea;">
-                                        <i class="fa-solid fa-shield-virus"></i>
-                                    </div>
-                                    <div>
-                                        <div class="preview-item-name">วัคซีน HPV 9 สายพันธุ์</div>
-                                        <div class="preview-item-sub">เข็มถัดไป: อีก 2 เดือน</div>
-                                    </div>
-                                </div>
-                                <div class="dose-stepper" title="ฉีดแล้ว 1 จาก 3 เข็ม">
-                                    <span class="dose-dot filled"></span>
-                                    <span class="dose-dot current"></span>
-                                    <span class="dose-dot"></span>
-                                </div>
-                            </div>
-
-                            <!-- Item 2: Influenza -->
-                            <div class="preview-item">
-                                <div class="preview-item-left">
-                                    <div class="preview-item-icon" style="background: rgba(5,150,105,0.1); color: #059669;">
-                                        <i class="fa-solid fa-syringe"></i>
-                                    </div>
-                                    <div>
-                                        <div class="preview-item-name">วัคซีนไข้หวัดใหญ่ 2025</div>
-                                        <div class="preview-item-sub">ได้รับแล้ว (สถานะครอบคลุม)</div>
-                                    </div>
-                                </div>
-                                <div class="dose-stepper" title="ฉีดครบประจำปี">
-                                    <span class="dose-dot filled"></span>
-                                </div>
-                            </div>
-
-                            <!-- Item 3: Tdap -->
-                            <div class="preview-item">
-                                <div class="preview-item-left">
-                                    <div class="preview-item-icon" style="background: rgba(2,132,199,0.1); color: #0284c7;">
-                                        <i class="fa-solid fa-calendar-check"></i>
-                                    </div>
-                                    <div>
-                                        <div class="preview-item-name">วัคซีนคอตีบ-บาดทะยัก-ไอกรน</div>
-                                        <div class="preview-item-sub">กระตุ้นซ้ำ พ.ศ. 2578 (อีก 9 ปี)</div>
-                                    </div>
-                                </div>
-                                <div class="dose-stepper" title="ครบกำหนด">
-                                    <span class="dose-dot filled"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 14px; text-align: center;">
-                            <span style="font-size: 11px; color: var(--text-muted);">
-                                <i class="fa-solid fa-bell" style="color: var(--warning);"></i> มีระบบส่งแจ้งเตือนเข้า LINE เมื่อถึงเวลานัดหมาย
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4 Feature Highlights Grid -->
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-emerald"><i class="fa-solid fa-stethoscope"></i></div>
-                        <h3 class="feature-title">วิเคราะห์เฉพาะบุคคล</h3>
-                        <p class="feature-desc">ประเมินวัคซีนตามอายุ โรคเรื้อรัง และการตั้งครรภ์ ตามมาตรฐานแพทย์ปี 2568</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon icon-teal"><i class="fa-solid fa-bell"></i></div>
-                        <h3 class="feature-title">แจ้งเตือนนัดหมายอัตโนมัติ</h3>
-                        <p class="feature-desc">ส่งแจ้งเตือนผ่าน LINE ทันทีก่อนถึงกำหนดฉีด พร้อมซิงค์เข้าปฏิทินมือถือ</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon icon-blue"><i class="fa-solid fa-hospital"></i></div>
-                        <h3 class="feature-title">ค้นหาจุดบริการใกล้คุณ</h3>
-                        <p class="feature-desc">ค้นหา รพ.รัฐ, รพ.สต., คลินิก และศูนย์สาธารณสุข พร้อมคำนวณระยะทางจริง</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon icon-purple"><i class="fa-solid fa-tags"></i></div>
-                        <h3 class="feature-title">ค้นหา โปรโมชั่น</h3>
-                        <p class="feature-desc">ตรวจสอบสิทธิรับวัคซีนฟรีตามเกณฑ์ และค้นหาแพ็กเกจวัคซีนราคาพิเศษจากสถานพยาบาลชั้นนำ</p>
-                    </div>
-                </div>
-
-                <!-- LANDING SECTION: VACCINE PACKAGES & DEALS -->
-                <div class="landing-section-block" id="landing-promos-section" style="margin-top: 50px;">
-                    <div class="landing-section-header" style="text-align: center; margin-bottom: 24px;">
-                        <div class="step-indicator-pill" style="margin: 0 auto 10px auto; background: rgba(238, 77, 45, 0.1); color: #ee4d2d; border-color: rgba(238, 77, 45, 0.25);">
-                            <i class="fa-solid fa-tags"></i> สิทธิประโยชน์ & แพ็กเกจวัคซีน
-                        </div>
-                        <h2 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
-                            สิทธิประโยชน์ & แพ็กเกจวัคซีนแนะนำ
-                        </h2>
-                        <p style="font-size: 14px; color: var(--text-secondary); max-width: 620px; margin: 0 auto;">
-                            เปรียบเทียบสิทธิวัคซีนฟรีภาครัฐ และแพ็กเกจ E-Coupon ราคาพิเศษจาก Shopee Mall และโรงพยาบาลชั้นนำ
-                        </p>
-                    </div>
-
-                    <!-- Landing Search & Filter Controls -->
-                    <div class="finder-controls-card" style="margin-bottom: 20px;">
-                        <div class="finder-search-row" style="margin-bottom: 14px;">
-                            <div class="finder-search-input-wrap" style="position: relative; width: 100%;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="landingPromoSearchInput" class="form-input" placeholder="ค้นหาวัคซีน, แพ็กเกจ, หรือโรงพยาบาล..." style="padding-left: 40px; width: 100%;">
-                            </div>
-                        </div>
-                        <div class="finder-filter-chips">
-                            <button class="chip-btn active" data-landing-promo-filter="all">แพ็กเกจทั้งหมด (26)</button>
-                            <button class="chip-btn" data-landing-promo-filter="shopee"><i class="fa-solid fa-bag-shopping" style="color: #ee4d2d;"></i> Shopee Mall E-Coupon</button>
-                            <button class="chip-btn" data-landing-promo-filter="rama"><i class="fa-solid fa-hospital" style="color: var(--primary);"></i> รามาธิบดีศรีอยุธยา</button>
-                            <button class="chip-btn" data-landing-promo-filter="rajavithi"><i class="fa-solid fa-building-columns" style="color: #059640;"></i> รพ.ราชวิถี (รพ.รัฐ)</button>
-                            <button class="chip-btn" data-landing-promo-filter="hpv">วัคซีน HPV</button>
-                            <button class="chip-btn" data-landing-promo-filter="zoster">วัคซีนงูสวัด</button>
-                            <button class="chip-btn" data-landing-promo-filter="flu">วัคซีนไข้หวัดใหญ่</button>
-                        </div>
-                    </div>
-
-                    <!-- Landing Promo Grid -->
-                    <div class="promo-packages-grid" id="landingPromoPackagesGrid">
-                        <!-- Injected Dynamically by JS -->
-                    </div>
-                </div>
-
-                <!-- LANDING SECTION: HEALTH ARTICLES & KNOWLEDGE BASE -->
-                <div class="landing-section-block" id="landing-articles-section" style="margin-top: 60px;">
-                    <div class="landing-section-header" style="text-align: center; margin-bottom: 24px;">
-                        <div class="step-indicator-pill" style="margin: 0 auto 10px auto; background: rgba(2, 132, 199, 0.1); color: var(--primary); border-color: rgba(2, 132, 199, 0.25);">
-                            <i class="fa-solid fa-newspaper"></i> คลังความรู้เรื่องวัคซีน
-                        </div>
-                        <h2 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
-                            บทความและความรู้เรื่องวัคซีนผู้ใหญ่
-                        </h2>
-                        <p style="font-size: 14px; color: var(--text-secondary); max-width: 620px; margin: 0 auto;">
-                            สาระน่ารู้ทางการแพทย์ที่ถูกต้อง อัปเดตแนวทางวัคซีนผู้ใหญ่และผู้สูงอายุปี 2568-2569
-                        </p>
-                    </div>
-
-                    <!-- Landing Articles Filter Chips -->
-                    <div class="finder-controls-card" style="margin-bottom: 20px;">
-                        <div class="finder-filter-chips" style="justify-content: center;">
-                            <button class="chip-btn active" data-landing-article-filter="all">บทความทั้งหมด</button>
-                            <button class="chip-btn" data-landing-article-filter="guide">คู่มือวัคซีนผู้ใหญ่</button>
-                            <button class="chip-btn" data-landing-article-filter="senior">ผู้สูงวัย 50-60+</button>
-                            <button class="chip-btn" data-landing-article-filter="women">สตรีและวัยรุ่น</button>
-                            <button class="chip-btn" data-landing-article-filter="chronic">กลุ่มโรคเรื้อรัง</button>
-                        </div>
-                    </div>
-
-                    <!-- Landing Articles Grid -->
-                    <div class="articles-grid" id="landingArticlesGrid">
-                        <!-- Injected Dynamically by JS -->
-                    </div>
-                </div>
-
-                <!-- LANDING SECTION: BOTTOM CALL-TO-ACTION BANNER -->
-                <div class="landing-cta-banner">
-                    <div class="cta-heart-icon">
-                        <i class="fa-solid fa-heart-pulse"></i>
-                    </div>
-                    <h3 class="cta-headline-title">
-                        รู้หรือไม่? คุณควรได้รับวัคซีนชนิดใดบ้างในวัยของคุณ
-                    </h3>
-                    <p class="cta-headline-desc">
-                        ทำแบบประเมินสุขภาพฟรีเพียง 1 นาที ระบบจะวิเคราะห์วัคซีนที่จำเป็นตามอายุและโรคประจำตัว พร้อมสร้างสมุดวัคซีนดิจิทัลส่วนตัวให้ทันที
-                    </p>
-                    <button class="btn btn-primary btn-lg pulse-btn" id="btnLandingCtaAssess" style="padding: 13px 34px; font-size: 15.5px; font-weight: 600; box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);">
-                        <i class="fa-solid fa-play"></i> เริ่มต้นประเมินวัคซีนของคุณ ฟรีทันที
-                    </button>
-                </div>
-
-                <!-- LANDING SECTION: MEDICAL DISCLAIMER & STANDARDS -->
-                <div class="medical-disclaimer-box" style="margin-top: 32px; background: rgba(248, 250, 252, 0.9); border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; font-size: 12.5px; color: #64748b; line-height: 1.65;">
-                    <div style="display: flex; align-items: flex-start; gap: 14px;">
-                        <div style="background: rgba(2, 132, 199, 0.1); color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i class="fa-solid fa-file-shield" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <strong style="color: #1e293b; font-size: 13.5px; display: block; margin-bottom: 6px;">
-                                ข้อจำกัดความรับผิดชอบทางการแพทย์และมาตรฐานข้อมูล (Medical Disclaimer)
-                            </strong>
-                            <p style="margin-bottom: 6px;">
-                                • <b>ข้อมูลเพื่อการศึกษาและวางแผนสุขภาพ:</b> ข้อมูลและผลการวิเคราะห์ในระบบ VacPass พัฒนาขึ้นโดยอ้างอิงแนวทางเวชปฏิบัติการให้วัคซีนในผู้ใหญ่และผู้สูงอายุ พ.ศ. 2569 โดยสมาคมโรคติดเชื้อแห่งประเทศไทย (IDAT) จัดทำขึ้นเพื่อให้ความรู้และเป็นเครื่องมือช่วยจำเท่านั้น <u>ไม่สามารถใช้ทดแทนการตรวจ วินิจฉัย การสั่งจ่ายยา หรือคำปรึกษาจากแพทย์หรือบุคลากรทางการแพทย์ผู้เชี่ยวชาญได้</u>
-                            </p>
-                            <p style="margin-bottom: 6px;">
-                                • <b>กลุ่มภาวะสุขภาพเฉพาะ:</b> สตรีมีครรภ์ ผู้ป่วยโรคเรื้อรังรุนแรง ผู้มีภาวะภูมิคุ้มกันบกพร่อง หรือมีประวัติแพ้วัคซีนรุนแรง จำเป็นต้องปรึกษาแพทย์ประจำตัวก่อนเข้ารับการฉีดวัคซีนทุกครั้ง
-                            </p>
-                            <p style="margin-bottom: 0;">
-                                • <b>ข้อมูลบันทึกส่วนบุคคล (Self-Reported):</b> สมุดบันทึกนี้เป็นข้อมูลที่ผู้ใช้งานบันทึกด้วยตนเอง <u>มิใช่เอกสารรับรองการสร้างเสริมภูมิคุ้มกันโรคอย่างเป็นทางการจากกระทรวงสาธารณสุข (เช่น ระบบหมอพร้อม)</u> และไม่สามารถนำไปใช้อ้างอิงทางกฎหมายหรือการเดินทางระหว่างประเทศแทนใบรับรองแพทย์ทางการได้
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- SCREEN 2: AUTHENTICATION (Login for existing accounts) -->
-            <section id="screen-auth" class="screen-section">
-                <div class="card auth-card">
-                    <div id="login-container">
-                        <div class="form-header" style="text-align: center;">
-                            <div class="step-indicator-pill"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</div>
-                            <h2>เข้าสู่ระบบใช้งาน</h2>
-                            <p>เข้าสู่ระบบเพื่อดูตารางแนะนำวัคซีนและประวัติสุขภาพของคุณ</p>
-                        </div>
-
-                        <!-- LINE 1-Click Login Button -->
-                        <div style="margin-bottom: 18px;">
-                            <button id="lineLoginBtn" class="btn btn-line btn-block" style="padding: 12px 18px; font-size: 14px;">
-                                <i class="fa-brands fa-line" style="font-size: 20px;"></i> เข้าสู่ระบบด้วย LINE
-                            </button>
-                        </div>
-
-                        <div class="auth-separator">
-                            <span>หรือเข้าสู่ระบบด้วยชื่อผู้ใช้ / อีเมล</span>
-                        </div>
-
-                        <form id="loginForm">
-                            <div class="form-group">
-                                <label for="login-username" class="group-label">เบอร์โทรศัพท์, ชื่อผู้ใช้งาน หรือ อีเมล</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-phone input-icon"></i>
-                                    <input type="text" id="login-username" placeholder="เบอร์โทรศัพท์ 10 หลัก, username หรือ email" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="login-password" class="group-label">รหัสผ่าน (Password)</label>
-                                <div class="input-with-icon" style="position: relative;">
-                                    <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="login-password" placeholder="ระบุรหัสผ่านของคุณ" required style="padding-right: 42px;">
-                                    <button type="button" class="btn-pass-toggle" id="toggleLoginPassBtn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 4px;" aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="auth-error" id="login-error-msg"></div>
-                            <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                เข้าสู่ระบบ <i class="fa-solid fa-right-to-bracket icon-right"></i>
-                            </button>
-                        </form>
-                        
-                        <div style="text-align: center; margin-top: 10px;">
-                            <button class="btn-text" id="btnOpenForgotPassword" style="font-size: 12px; color: var(--text-muted);">
-                                <i class="fa-solid fa-key"></i> ลืมรหัสผ่าน / ตั้งรหัสผ่านใหม่ด้วยเบอร์โทรศัพท์
-                            </button>
-                        </div>
-
-                        <div class="auth-toggle">
-                            <span>ยังไม่มีบัญชีผู้ใช้?</span> <button class="btn-text" id="goToRegisterFromLogin">ลงทะเบียนใหม่</button>
-                        </div>
-                        <div style="text-align: center; margin-top: 14px;">
-                            <button class="btn-text" id="btnBackToLandingFromAuth"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- SCREEN 3: REGISTRATION & HEALTH PROFILE FORM -->
-            <section id="screen-profile" class="screen-section">
-                <div class="card form-card">
-                    <div class="form-header">
-                        <div class="step-indicator-pill"><i class="fa-solid fa-file-medical"></i> ข้อมูลสุขภาพเพื่อการวิเคราะห์</div>
-                        <h2>ลงทะเบียนและประเมินข้อมูลสุขภาพ</h2>
-                        <p>กรอกข้อมูลสุขภาพและกำหนดรหัสผ่านเพื่อเข้าใช้งานและรับผลวิเคราะห์วัคซีนเฉพาะบุคคล</p>
-                    </div>
-
-                    <!-- Quick LINE Login Banner -->
-                    <div id="regLineBanner" style="margin-bottom: 20px; background: rgba(6, 199, 85, 0.08); border: 1px solid rgba(6, 199, 85, 0.25); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-brands fa-line" style="font-size: 26px; color: #06C755;"></i>
-                            <div>
-                                <div style="font-weight: 600; font-size: 13px; color: var(--text-color);">มี LINE หรือไม่?</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">เข้าใช้งานทันทีใน 1 คลิก ไม่ต้องจำรหัสผ่าน</div>
-                            </div>
-                        </div>
-                        <button type="button" id="btnQuickLineLogin" class="btn btn-line" style="padding: 6px 14px; font-size: 12px;">
-                            <i class="fa-brands fa-line"></i> เข้าสู่ระบบด้วย LINE
+                    <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-blank text-lg"></i> <span data-i18n="nav_datediff">คำนวณวันนัด</span>
+                    </a>
+                    <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-pill text-lg"></i> <span data-i18n="nav_med">คำนวณจำนวนยา</span>
+                    </a>
+                    <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-plus text-lg"></i> <span data-i18n="nav_apptdays">คำนวณวันนัดจากจำนวนวัน</span>
+                    </a>
+                    <a href="#section-appt-weeks" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-star text-lg"></i> <span data-i18n="nav_apptweeks">คำนวณวันนัดจากจำนวนสัปดาห์</span>
+                    </a>
+                    <a href="#section-age" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-user text-lg"></i> <span data-i18n="nav_age">คำนวณอายุ</span>
+                    </a>
+                    <a href="#section-year" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-arrows-left-right text-lg"></i> <span data-i18n="nav_year">แปลงปี พ.ศ./ค.ศ.</span>
+                    </a>
+                    <a href="#section-vaccine" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-syringe text-lg"></i> <span data-i18n="nav_vaccine">คำนวณวันนัดฉีดวัคซีนผู้ใหญ่</span>
+                    </a>
+                    <a href="#section-appt-table" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-table text-lg"></i> <span data-i18n="nav_table">ตารางคำนวณวันนัดหมายและจำนวนยา</span>
+                    </a>
+                    <a href="#section-oseltamivir" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-prescription text-lg"></i> <span data-i18n="nav_osel">คำนวณยา Oseltamivir</span>
+                    </a>
+                    <a href="#section-renal-osel" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-first-aid text-lg"></i> <span data-i18n="nav_renal">คำนวณยา Oseltamivir (Renal Dose Adjustment)</span>
+                    </a>
+                    <a href="#section-contraceptive" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-heart text-lg"></i> <span data-i18n="nav_contra">คำนวณวันนัดฉีดยาคุม</span>
+                    </a>
+                    
+                    <!-- Action Buttons at the Bottom -->
+                    <div class="mt-4 pt-4 border-t border-white/20 flex flex-col gap-3">
+                        <button class="btnOpenCoffee mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-[#ffc395] hover:bg-[#e0ab82] text-[#1a5b4b] px-4 py-3 rounded-xl text-sm font-bold shadow-md transition">
+                            <i class="ph-bold ph-coffee text-lg"></i> <span data-i18n="btn_coffee">สนับสนุนค่ากาแฟ</span>
+                        </button>
+                        <button class="btnOpenManual mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-[#1a5b4b] hover:bg-[#134237] text-white px-4 py-3 rounded-xl text-sm font-bold shadow-md transition border border-white/10">
+                            <i class="ph-bold ph-question text-lg"></i> <span data-i18n="btn_manual">คู่มือการใช้งานระบบ</span>
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <form id="profileForm" novalidate>
-                        
-                        <!-- 1. Phone & Full Name -->
-                        <div class="form-row-grid">
-                            <div class="form-group">
-                                <label for="phone" class="group-label">เบอร์โทรศัพท์มือถือ <span class="required">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-phone input-icon"></i>
-                                    <input type="tel" id="phone" maxlength="12" placeholder="08x-xxx-xxxx" inputmode="numeric" required>
-                                </div>
-                                <div id="phoneNotice" style="display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.4;"></div>
-                                <span class="input-hint">📱 ใช้เป็นเบอร์หลักในการเข้าสู่ระบบและรับการแจ้งเตือน</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="fullName" class="group-label">ชื่อ - นามสกุล <span class="required">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-user input-icon"></i>
-                                    <input type="text" id="fullName" placeholder="เช่น นายสมชาย ใจดี" required>
-                                </div>
-                                <span class="input-hint">สำหรับแสดงผลในสมุดบันทึกวัคซีน</span>
-                            </div>
-                        </div>
+        <div class="space-y-4 pt-2 w-full">
 
-                        <!-- 4. Password & Confirm Password in 2 columns -->
-                        <div class="form-row-grid">
-                            <div class="form-group">
-                                <label for="regPassword" class="group-label">กำหนดรหัสผ่าน (Password) <span class="required">*</span></label>
-                                <div class="input-with-icon" style="position: relative;">
-                                    <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="regPassword" minlength="6" placeholder="กำหนดรหัสผ่าน (อย่างน้อย 6 ตัวอักษร)" required style="padding-right: 42px;">
-                                    <button type="button" class="btn-pass-toggle" id="toggleRegPassBtn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 4px;" aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <span class="input-hint">อย่างน้อย 6 ตัวอักษร สำหรับเข้าสู่ระบบ</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="regConfirmPassword" class="group-label">ยืนยันรหัสผ่าน (Confirm Password) <span class="required">*</span></label>
-                                <div class="input-with-icon" style="position: relative;">
-                                    <i class="fa-solid fa-shield-halved input-icon"></i>
-                                    <input type="password" id="regConfirmPassword" minlength="6" placeholder="พิมพ์รหัสผ่านอีกครั้ง" required style="padding-right: 42px;">
-                                    <button type="button" class="btn-pass-toggle" id="toggleRegConfirmPassBtn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 4px;" aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                                <span class="input-hint" id="regPasswordMatchHint">พิมพ์รหัสผ่านทั้ง 2 ช่องให้ตรงกัน</span>
+            <!-- Row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+            <!-- 1. Date Difference Calculator -->
+            <section id="section-date-diff" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-blank text-xl"></i>
+                    </div>
+                    <h2 data-i18n="s1_title" class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัด<br>จากระยะห่างของวัน</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s1_start_label" class="block text-sm font-bold text-textdark">วันที่เริ่มต้น (ค่าเริ่มต้น: วันนี้)</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="diffStartDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                             </div>
                         </div>
-
-                        <!-- 3. Email & Optional Thai National ID (13 Digits) -->
-                        <div class="form-row-grid">
-                            <div class="form-group">
-                                <label for="email" class="group-label">อีเมล (Email) <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(ไม่บังคับ)</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="email" placeholder="example@email.com">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="nationalId" class="group-label">เลขบัตรประชาชน 13 หลัก <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(ไม่บังคับ)</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-id-card input-icon"></i>
-                                    <input type="text" id="nationalId" maxlength="17" placeholder="x-xxxx-xxxxx-xx-x" inputmode="numeric">
-                                </div>
-                                <div id="nationalIdNotice" style="display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.4;"></div>
-                                <span class="input-hint">ระบุเฉพาะเมื่อต้องการให้ออกในสมุดรับรองวัคซีนทางการ</span>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="diffStartDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="diffStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="diffStartYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s1_target_label" class="block text-sm font-bold text-textdark">วันนัดที่ต้องการ</label>
+                            <!-- Calendar icon shortcut that syncs -->
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="diffDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                             </div>
                         </div>
-
-                        <!-- 4. Date of Birth -->
-                        <div class="form-group">
-                            <label for="dob" class="group-label">วัน/เดือน/ปี เกิด <span class="required">*</span></label>
-                            <div class="input-with-icon">
-                                <i class="fa-solid fa-calendar-days input-icon"></i>
-                                <input type="date" id="dob" required>
-                            </div>
-                            <span class="input-hint">ใช้คำนวณอายุจริงในการประเมินชนิดวัคซีน (เช่น ไข้หวัดใหญ่ขนาดสูง, RSV, หรือ นิวโมค็อกคัส)</span>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="diffDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="diffMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="diffYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
                         </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm relative group">
+                        <p data-i18n="s1_result_label" class="text-sm font-bold text-textdark mb-1">ระยะห่างจากวันนี้</p>
+                        <p id="dateDiffResult" class="text-3xl font-bold text-textdark">- วัน</p>
+                    </div>
+                </div>
+            </section>
 
-                        <!-- 5. Gender Selection -->
-                        <div class="form-group">
-                            <label class="group-label">เพศสภาพ <span class="required">*</span></label>
-                            <div class="radio-card-grid cols-2">
-                                <label class="radio-card">
-                                    <input type="radio" name="gender" value="male" checked>
-                                    <div class="radio-card-content">
-                                        <div class="radio-icon"><i class="fa-solid fa-mars"></i></div>
-                                        <div class="radio-details">
-                                            <span class="radio-title">ชาย (Male)</span>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="radio-card">
-                                    <input type="radio" name="gender" value="female">
-                                    <div class="radio-card-content">
-                                        <div class="radio-icon"><i class="fa-solid fa-venus"></i></div>
-                                        <div class="radio-details">
-                                            <span class="radio-title">หญิง (Female)</span>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 6. Pregnancy Status (Conditional) -->
-                        <div id="pregnancy-toggle-group" class="form-group conditional-group">
-                            <div class="toggle-card">
-                                <div class="toggle-info">
-                                    <span class="toggle-title"><i class="fa-solid fa-person-pregnant"></i> อยู่ระหว่างการตั้งครรภ์? (Pregnant)</span>
-                                    <span class="toggle-desc">เพื่อแนะนำวัคซีนจำเป็นปกป้องมารดาและทารก และหลีกเลี่ยงวัคซีนที่เป็นข้อห้ามเด็ดขาด</span>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="isPregnant" name="isPregnant">
-                                    <span class="slider"></span>
-                                </label>
+            <!-- 2. Medication Calculator -->
+            <section id="section-medication" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-pill text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-[15px] sm:text-base leading-tight text-center"><span data-i18n="s2_title_1">คำนวณจำนวนยาตามขนาด<br>ยาที่แพทย์สั่ง</span> <span data-i18n="s2_title_tag" class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">ต่อวัน</span></h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s2_start_label" class="block text-sm font-bold text-textdark">วันที่เริ่มต้น</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medDailyStartPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                             </div>
                         </div>
-
-                        <!-- 7. Gestational Weeks (Conditional inside Pregnancy) -->
-                        <div id="gestational-group" class="form-group conditional-group">
-                            <label for="gestationalWeeks" class="group-label">อายุครรภ์ปัจจุบัน <span class="required">*</span></label>
-                            <div class="input-with-icon">
-                                <i class="fa-solid fa-clock-rotate-left input-icon"></i>
-                                <input type="number" id="gestationalWeeks" min="1" max="42" placeholder="ระบุจำนวนสัปดาห์ (เช่น 24)">
-                            </div>
-                            <span class="input-hint">แนะนำฉีด Tdap ในสัปดาห์ที่ 20-32 และ RSV bivalent ในสัปดาห์ที่ 24-36 ของการตั้งครรภ์</span>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medDailyStartDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medDailyStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medDailyStartYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
                         </div>
-
-                        <!-- 8. Underlying Conditions Checkboxes -->
-                        <div class="form-group">
-                            <label class="group-label">โรคประจำตัว หรือปัจจัยเสี่ยงส่วนบุคคล <span class="sub-label">(เลือกได้มากกว่า 1 ข้อ)</span></label>
-                            <div class="checkbox-card-stack">
-                                <label class="checkbox-card">
-                                    <input type="checkbox" name="conditions" value="chronic">
-                                    <div class="checkbox-card-content">
-                                        <div class="checkbox-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                                        <div class="checkbox-details">
-                                            <span class="checkbox-title">โรคเรื้อรัง (Diabetes, Heart, Lung, Kidney)</span>
-                                            <span class="checkbox-desc">เบาหวาน, โรคหัวใจ, โรคปอดเรื้อรัง (เช่น หอบหืด, ถุงลมโป่งพอง), โรคไตเรื้อรัง</span>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="checkbox-card">
-                                    <input type="checkbox" name="conditions" value="immunocompromised">
-                                    <div class="checkbox-card-content">
-                                        <div class="checkbox-icon"><i class="fa-solid fa-shield-virus"></i></div>
-                                        <div class="checkbox-details">
-                                            <span class="checkbox-title">ภาวะภูมิคุ้มกันบกพร่อง (Immunocompromised / HIV / Cancer)</span>
-                                            <span class="checkbox-desc">ผู้ติดเชื้อ HIV, ผู้ป่วยมะเร็งที่ได้รับยาเคมีบำบัด หรือยากดภูมิคุ้มกัน</span>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="checkbox-card active-none">
-                                    <input type="checkbox" name="conditions" value="none" id="profile-condition-none" checked>
-                                    <div class="checkbox-card-content">
-                                        <div class="checkbox-icon"><i class="fa-solid fa-circle-check"></i></div>
-                                        <div class="checkbox-details">
-                                            <span class="checkbox-title">ไม่มีภาวะเสี่ยงหรือโรคประจำตัว</span>
-                                            <span class="checkbox-desc">ร่างกายปกติ แข็งแรงดี ไม่มีข้อบ่งชี้พิเศษ</span>
-                                        </div>
-                                    </div>
-                                </label>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s2_end_label" class="block text-sm font-bold text-textdark">วันนัดหมาย</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medDailyEndPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                             </div>
                         </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medDailyEndDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medDailyEndMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medDailyEndYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="medDays" data-i18n="s2_days_label" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
+                        <div class="relative">
+                            <input type="number" id="medDays" min="1" placeholder="เช่น 30" data-i18n-ph="ph_eg_30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span data-i18n="unit_day" class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="medDoseDropdown" data-i18n="s2_dose_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                        <select id="medDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center text-sm md:text-base">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="0.25">1/4 เม็ด</option>
+                            <option value="0.5">1/2 เม็ด</option>
+                            <option value="1">1 เม็ด</option>
+                            <option value="1.5">1.5 เม็ด</option>
+                            <option value="2">2 เม็ด</option>
+                            <option value="2.5">2.5 เม็ด</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="medDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p data-i18n="s2_result_label" class="text-sm font-bold text-textdark mb-1">จำนวนยาที่ต้องจ่าย</p>
+                        <p id="medResult" class="text-3xl font-bold text-textdark">- เม็ด</p>
+                    </div>
+                </div>
+            </section>
 
-                        <!-- PDPA Explicit Consent Box -->
-                        <div class="pdpa-consent-box">
-                            <label class="pdpa-consent-label">
-                                <input type="checkbox" id="profilePdpaConsent" checked required>
-                                <span>
-                                    ข้าพเจ้ายินยอมให้ระบบจัดเก็บและประมวลผลข้อมูลสุขภาพเพื่อวิเคราะห์คำแนะนำวัคซีนและแจ้งเตือนนัดหมายตาม <a class="pdpa-link" id="viewPdpaTermsBtn">นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)</a>
-                                </span>
+            <!-- Weekly Medication Calculator -->
+            <section id="section-medication-weekly" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-pill text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-[15px] sm:text-base leading-tight text-center"><span data-i18n="s_wm_title_1">คำนวณจำนวนยาตามขนาด<br>ยาที่แพทย์สั่ง</span> <span data-i18n="s_wm_title_tag" class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">ต่อสัปดาห์</span></h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s_wm_start_label" class="block text-sm font-bold text-textdark">วันที่เริ่มต้น</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medWeeklyStartPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medWeeklyStartDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medWeeklyStartMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medWeeklyStartYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s_wm_end_label" class="block text-sm font-bold text-textdark">วันนัดหมาย</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="medWeeklyEndPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="medWeeklyEndDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="medWeeklyEndMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="medWeeklyEndYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="medWeeklyDose" data-i18n="s_wm_dose_label" class="block text-sm font-bold text-textdark mb-2">จำนวนเม็ดยาต่อสัปดาห์</label>
+                        <select id="medWeeklyDose" class="form-select w-full rounded-xl px-4 py-3 text-center text-sm md:text-base">
+                            <option value="">--เลือกจำนวนเม็ด--</option>
+                            <option value="1">1 เม็ด / สัปดาห์</option>
+                            <option value="2">2 เม็ด / สัปดาห์</option>
+                            <option value="3">3 เม็ด / สัปดาห์</option>
+                            <option value="4">4 เม็ด / สัปดาห์</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="medWeeklyDoseCustom" min="1" placeholder="ระบุจำนวนเม็ด" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
+                    </div>
+                    <div>
+                        <label data-i18n="s_wm_days_check_label" class="block text-sm font-bold text-textdark mb-2">ระบุวันที่ทานยาในสัปดาห์ (เพื่อความแม่นยำ)</label>
+                        <div class="grid grid-cols-7 gap-1 sm:gap-2">
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="1" class="med-weekly-day hidden">
+                                <span data-i18n="day_mon" class="text-xs sm:text-sm font-bold text-textdark">จ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="2" class="med-weekly-day hidden">
+                                <span data-i18n="day_tue" class="text-xs sm:text-sm font-bold text-textdark">อ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="3" class="med-weekly-day hidden">
+                                <span data-i18n="day_wed" class="text-xs sm:text-sm font-bold text-textdark">พ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="4" class="med-weekly-day hidden">
+                                <span data-i18n="day_thu" class="text-xs sm:text-sm font-bold text-textdark">พฤ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="5" class="med-weekly-day hidden">
+                                <span data-i18n="day_fri" class="text-xs sm:text-sm font-bold text-textdark">ศ.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="6" class="med-weekly-day hidden">
+                                <span data-i18n="day_sat" class="text-xs sm:text-sm font-bold text-textdark">ส.</span>
+                            </label>
+                            <label class="flex flex-col items-center justify-center bg-white border-2 border-transparent rounded-xl p-1 sm:p-2 cursor-pointer hover:bg-gray-50 transition has-[:checked]:border-[#24917d] has-[:checked]:bg-[#24917d]/10">
+                                <input type="checkbox" value="0" class="med-weekly-day hidden">
+                                <span data-i18n="day_sun" class="text-xs sm:text-sm font-bold text-textdark text-red-600">อา.</span>
                             </label>
                         </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary btn-block btn-lg" id="saveProfileBtn">
-                            บันทึกข้อมูลและดูผลประเมินวัคซีนทันที <i class="fa-solid fa-arrow-right icon-right"></i>
-                        </button>
-
-                        <div style="text-align: center; margin-top: 14px;">
-                            <button type="button" class="btn-text" id="btnBackToLandingFromProfile"><i class="fa-solid fa-arrow-left"></i> ย้อนกลับหน้าหลัก</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p class="text-sm font-bold text-textdark mb-1"><span data-i18n="s_wm_total_time">ระยะเวลาทั้งหมด: </span><span id="medWeeklyDuration">-</span></p>
+                        <p data-i18n="s_wm_total_pills" class="text-sm font-bold text-textdark mb-3">จำนวนยาที่ต้องจ่ายรวม</p>
+                        <p id="medWeeklyResult" class="text-3xl font-bold text-textdark">- เม็ด</p>
+                    </div>
                 </div>
             </section>
+            </div>
 
+            <!-- Row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            <!-- SCREEN 4: DASHBOARD HUB (Smart Analysis, Logbook, Clinics, Benefits) -->
-            <section id="screen-dashboard-hub" class="screen-section">
-                <!-- User Account & Profile Banner -->
-                <div class="profile-banner-card">
-                    <div class="profile-summary">
-                        <div class="profile-avatar" id="userAvatarContainer">
-                            <i class="fa-solid fa-circle-user"></i>
-                        </div>
-                        <div class="profile-info">
-                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
-                                <h3 id="currentUserName">ผู้ใช้: loading...</h3>
-                                <span id="lineLinkedBadge" class="line-badge" style="display: none;">
-                                    <i class="fa-brands fa-line"></i> เชื่อมต่อ LINE แล้ว
-                                </span>
-                            </div>
-                            <p id="currentUserProfileText">ข้อมูลอายุ: กำลังวิเคราะห์...</p>
-                        </div>
+            <!-- 3. Next Appt by Days -->
+            <section id="section-appt-days" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-plus text-xl"></i>
                     </div>
-                    <div class="banner-buttons">
-                        <button class="btn btn-outline btn-sm" id="editProfileBtn" title="แก้ไขข้อมูล">
-                            <i class="fa-solid fa-user-pen"></i> แก้ไขสุขภาพ
-                        </button>
-                        <button class="btn btn-outline btn-sm" id="notifSettingsBtn" title="ตั้งค่าการแจ้งเตือน">
-                            <i class="fa-solid fa-bell"></i> แจ้งเตือน LINE
-                        </button>
-                        <button class="btn btn-outline btn-sm" id="exportDataBtn" title="ส่งออกประวัติ (PDPA)">
-                            <i class="fa-solid fa-file-export"></i> ส่งออกข้อมูล
-                        </button>
-                        <button class="btn btn-outline btn-sm danger-border" id="logoutBtn" title="ออกจากระบบ">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
-                        </button>
-                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center"><span data-i18n="s3_title_1">คำนวณวันนัด</span><br><span data-i18n="s3_title_2">จากจำนวนวัน</span></h2>
                 </div>
-
-                <!-- Dashboard Main Layout with Collapsible Sidebar -->
-                <div class="dashboard-layout-container">
-                    
-                    <!-- Collapsible Sidebar Navigation -->
-                    <aside class="dashboard-sidebar" id="dashboardSidebar">
-                        <div class="sidebar-header">
-                            <span class="sidebar-title"><i class="fa-solid fa-bars-staggered"></i> เมนูระบบ</span>
-                            <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="ย่อ / ขยาย แถบเมนู" aria-label="ย่อหรือขยายเมนู">
-                                <i class="fa-solid fa-chevron-left" id="sidebarToggleIcon"></i>
-                            </button>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="apptDays" data-i18n="s3_days_label" class="block text-sm font-bold text-textdark mb-2">จำนวนวันนัด</label>
+                        <div class="relative">
+                            <input type="number" id="apptDays" min="1" placeholder="เช่น 30" data-i18n-ph="ph_eg_30" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span data-i18n="unit_day" class="absolute right-4 top-3 font-bold text-textdark">วัน</span>
                         </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                        <p data-i18n="s3_result_label" class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
+                        <p id="apptDaysResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
                         
-                        <nav class="sidebar-nav-list">
-                            <button class="sidebar-nav-item active" id="tabNavAnalysis" title="วิเคราะห์วัคซีน (Smart Analysis)">
-                                <div class="sidebar-nav-icon"><i class="fa-solid fa-stethoscope"></i></div>
-                                <div class="sidebar-nav-text">
-                                    <span class="nav-title-th">วิเคราะห์วัคซีน</span>
-                                    <span class="nav-title-en">Smart Analysis</span>
-                                </div>
-                            </button>
-                            
-                            <button class="sidebar-nav-item" id="tabNavLogbook" title="สมุดบันทึก (Logbook)">
-                                <div class="sidebar-nav-icon"><i class="fa-solid fa-book-medical"></i></div>
-                                <div class="sidebar-nav-text">
-                                    <span class="nav-title-th">สมุดบันทึก</span>
-                                    <span class="nav-title-en">Logbook</span>
-                                </div>
-                            </button>
-                            
-                            <button class="sidebar-nav-item" id="tabNavNearby" title="จุดบริการใกล้ฉัน (Nearby Clinics)">
-                                <div class="sidebar-nav-icon"><i class="fa-solid fa-location-dot"></i></div>
-                                <div class="sidebar-nav-text">
-                                    <span class="nav-title-th">จุดบริการใกล้ฉัน</span>
-                                    <span class="nav-title-en">Nearby Clinics</span>
-                                </div>
-                            </button>
-                            
-                            <button class="sidebar-nav-item" id="tabNavPromo" title="สิทธิ & แพ็กเกจ (Benefits & Promo)">
-                                <div class="sidebar-nav-icon"><i class="fa-solid fa-shield-heart"></i></div>
-                                <div class="sidebar-nav-text">
-                                    <span class="nav-title-th">สิทธิ & แพ็กเกจ</span>
-                                    <span class="nav-title-en">Benefits & Promo</span>
-                                </div>
-                            </button>
-
-                            <button class="sidebar-nav-item" id="tabNavArticles" title="บทความวัคซีน (Health Articles)">
-                                <div class="sidebar-nav-icon"><i class="fa-solid fa-newspaper"></i></div>
-                                <div class="sidebar-nav-text">
-                                    <span class="nav-title-th">บทความวัคซีน</span>
-                                    <span class="nav-title-en">Health Articles</span>
-                                </div>
-                            </button>
-                        </nav>
-                    </aside>
-
-                    <!-- Main Dashboard Content Area -->
-                    <div class="dashboard-main-content">
-
-                <!-- SUB-SCREEN C: Smart Vaccine Analysis Dashboard -->
-                <div id="sub-screen-analysis" class="sub-screen-container active">
-                    <!-- Medical Advisory Notice Banner -->
-                    <div class="analysis-medical-notice" style="background: rgba(2, 132, 199, 0.08); border-left: 4px solid var(--primary); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55;">
-                        <i class="fa-solid fa-circle-info" style="color: var(--primary); font-size: 17px; margin-top: 2px; flex-shrink: 0;"></i>
-                        <div>
-                            <span style="font-weight: 600; color: var(--text-main);">คำแนะนำทางการแพทย์ (Clinical Notice):</span> 
-                            ผลการวิเคราะห์นี้จัดทำขึ้นตามแนวทางเวชปฏิบัติการให้วัคซีนในผู้ใหญ่และผู้สูงอายุ (สมาคมโรคติดเชื้อแห่งประเทศไทย IDAT 2026) เพื่อช่วยวางแผนสุขภาพเบื้องต้น กรุณาปรึกษาแพทย์หรือบุคลากรทางการแพทย์ก่อนรับวัคซีนทุกครั้ง โดยเฉพาะผู้ที่มีโรคประจำตัวหรือหญิงตั้งครรภ์
+                        <!-- Clickable calendar to preview date -->
+                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
+                            <input type="date" id="apptDaysResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
-                    </div>
-
-                    <!-- SECTION 1: Highly Recommended (วัคซีนแนะนำเป็นพิเศษ) -->
-                    <div class="vaccine-analysis-section">
-                        <div class="section-badge-title">
-                            <div class="section-indicator success-indicator"></div>
-                            <h3>วัคซีนที่จำเป็นตามข้อแนะนำ (Highly Recommended)</h3>
-                        </div>
-                        <p class="section-desc-text">วัคซีนที่มีความสำคัญสูงที่กลุ่มตัวชี้วัดสุขภาพของคุณควรได้รับอย่างเร่งด่วนตามปี 2568</p>
-                        <div class="vaccine-grid" id="highlyRecommendedGrid">
-                            <!-- Injected Dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- SECTION 2: Risk-Based/Optional (วัคซีนทางเลือก) -->
-                    <div class="vaccine-analysis-section">
-                        <div class="section-badge-title">
-                            <div class="section-indicator info-indicator"></div>
-                            <h3>วัคซีนทางเลือก / ตามความเสี่ยง (Risk-Based & Optional)</h3>
-                        </div>
-                        <p class="section-desc-text">วัคซีนทางเลือกเพื่อการป้องกันที่มีประสิทธิภาพเพิ่มเติม หรือปรับเปลี่ยนตามปัจจัยส่วนบุคคล</p>
-                        <div class="vaccine-grid" id="optionalRecommendedGrid">
-                            <!-- Injected Dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- SECTION 3: Contraindicated (ข้อห้ามเด็ดขาด) -->
-                    <div class="vaccine-analysis-section" id="contraindicatedSection" style="display: none;">
-                        <div class="section-badge-title">
-                            <div class="section-indicator danger-indicator"></div>
-                            <h3 style="color: var(--danger);">ข้อห้ามเด็ดขาดทางแพทยศาสตร์ (Contraindicated)</h3>
-                        </div>
-                        <p class="section-desc-text" style="color: var(--danger);">⚠️ ห้ามใช้วัคซีนกลุ่มนี้ในสภาวะสุขภาพปัจจุบันของคุณเด็ดขาด เนื่องจากอาจทำให้เกิดอันตรายรุนแรงต่อชีวิตหรือบุตรในครรภ์</p>
-                        <div class="vaccine-grid" id="contraindicatedGrid">
-                            <!-- Injected Dynamically -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SUB-SCREEN D: Personal Vaccine Logbook & Stepper Roadmap -->
-                <div id="sub-screen-logbook" class="sub-screen-container">
-                    
-                    <!-- 1. Top Vaccine Coverage & Roadmap Summary -->
-                    <div class="logbook-hero-progress-card">
-                        <div class="logbook-progress-header">
-                            <div>
-                                <div class="step-indicator-pill" style="margin-bottom: 6px; background: rgba(2, 132, 199, 0.1); color: var(--primary); border-color: rgba(2, 132, 199, 0.25);">
-                                    <i class="fa-solid fa-book-medical"></i> แผนที่วัคซีนส่วนบุคคล (Vaccine Roadmap)
-                                </div>
-                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text-main);">สถานะการรับวัคซีนของคุณ (Vaccination Status)</h3>
-                                <p style="font-size: 13px; color: var(--text-secondary);" id="logbookCoverageSubtitle">วิเคราะห์ตามอายุและประวัติสุขภาพของคุณ</p>
-                            </div>
-                            <div class="logbook-progress-percent-badge" id="logbookCoveragePercent">
-                                ได้รับแล้ว 0%
-                            </div>
-                        </div>
-
-                        <!-- Progress Bar Track -->
-                        <div class="logbook-progress-track">
-                            <div class="logbook-progress-fill" id="logbookProgressFill" style="width: 0%;"></div>
-                        </div>
-
-                        <!-- 4 Stat Metrics Filter Chips -->
-                        <div class="logbook-metric-chips-row">
-                            <button class="logbook-metric-chip active" data-roadmap-filter="all" id="chipFilterAll">
-                                <span class="metric-chip-icon"><i class="fa-solid fa-list-check"></i></span>
-                                <span class="metric-chip-label">ทั้งหมด</span>
-                                <span class="metric-chip-count" id="statAllCount">0</span>
-                            </button>
-                            <button class="logbook-metric-chip" data-roadmap-filter="urgent" id="chipFilterUrgent">
-                                <span class="metric-chip-icon" style="color: #0284c7;"><i class="fa-solid fa-bolt"></i></span>
-                                <span class="metric-chip-label">แนะนำช่วงนี้</span>
-                                <span class="metric-chip-count" id="statUrgentCount">0</span>
-                            </button>
-                            <button class="logbook-metric-chip" data-roadmap-filter="inprogress" id="chipFilterInProgress">
-                                <span class="metric-chip-icon" style="color: #d97706;"><i class="fa-solid fa-hourglass-half"></i></span>
-                                <span class="metric-chip-label">อยู่ระหว่างคอร์ส</span>
-                                <span class="metric-chip-count" id="statInProgressCount">0</span>
-                            </button>
-                            <button class="logbook-metric-chip" data-roadmap-filter="completed" id="chipFilterCompleted">
-                                <span class="metric-chip-icon" style="color: #059640;"><i class="fa-solid fa-circle-check"></i></span>
-                                <span class="metric-chip-label">ฉีดครบแล้ว</span>
-                                <span class="metric-chip-count" id="statCompletedCount">0</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 2. Dynamic Vaccine Stepper Cards Grid -->
-                    <div class="logbook-stepper-grid" id="logbookStepperGrid">
-                        <!-- Dynamic Stepper Roadmap Cards Injected by JS -->
-                    </div>
-
-                    <!-- 3. Vaccination History Logbook Table -->
-                    <div class="logbook-history-wrapper" style="margin-top: 36px;">
-                        <div class="logbook-actions-row">
-                            <div>
-                                <h4 style="font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">
-                                    <i class="fa-solid fa-clock-rotate-left"></i> ประวัติการฉีดวัคซีนที่บันทึกแล้ว
-                                </h4>
-                                <span style="font-size: 12.5px; color: var(--text-muted);">รายการประวัติวัคซีนสะสมในสมุดพาสปอร์ตส่วนบุคคลของคุณ</span>
-                                <div style="margin-top: 4px; display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); background: rgba(100, 116, 139, 0.08); padding: 3px 8px; border-radius: 6px;">
-                                    <i class="fa-solid fa-user-pen" style="color: var(--primary);"></i> ข้อมูลบันทึกส่วนบุคคล (Self-Reported) • มิใช่เอกสารรับรองราชการ
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-sm" id="addNewRecordBtn">
-                                <i class="fa-solid fa-plus"></i> เพิ่มประวัติวัคซีน
-                            </button>
-                        </div>
-
-                        <div class="logbook-table-container">
-                            <table class="logbook-table" id="logbookHistoryTable">
-                                <thead>
-                                    <tr>
-                                        <th>ชื่อวัคซีน (Vaccine)</th>
-                                        <th>ยี่ห้อ/แบรนด์ (Brand)</th>
-                                        <th>เข็มที่ (Dose)</th>
-                                        <th>วันที่ได้รับ</th>
-                                        <th>สถานที่รับวัคซีน</th>
-                                        <th>การจัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="logbookHistoryBody">
-                                    <!-- Dynamic rows here -->
-                                </tbody>
-                            </table>
-                            
-                            <!-- Empty state message -->
-                            <div class="empty-log-state" id="emptyLogState">
-                                <i class="fa-regular fa-folder-open"></i>
-                                <p>ยังไม่มีบันทึกประวัติการฉีดวัคซีนในระบบ</p>
-                                <span class="sub-text">คุณสามารถกดปุ่ม "เพิ่มประวัติวัคซีน" ด้านบนเพื่อเริ่มต้นบันทึกข้อมูล</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SUB-SCREEN E: Nearby Vaccine Services -->
-                <div id="sub-screen-nearby" class="sub-screen-container">
-                    <div class="promo-section-title">
-                        <h3><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> ค้นหาจุดบริการฉีดวัคซีนใกล้ฉัน</h3>
-                        <p>ค้นหาโรงพยาบาลรัฐ, รพ.สต., ศูนย์บริการสาธารณสุข และคลินิกใกล้ตัวคุณ พร้อมระบบนำทาง</p>
-                    </div>
-
-                    <!-- Filter Controls -->
-                    <div class="finder-controls-card">
-                        <div class="finder-search-row">
-                            <input type="text" id="nearbySearchInput" class="finder-input" placeholder="พิมพ์ชื่อโรงพยาบาล, รพ.สต., หรือจังหวัด...">
-                            <button class="btn btn-primary btn-sm" id="btnUseMyLocation">
-                                <i class="fa-solid fa-crosshairs"></i> ใช้พิกัดปัจจุบัน (GPS)
-                            </button>
-                        </div>
-                        <div class="finder-filter-chips">
-                            <button class="chip-btn active" data-filter="all">ทั้งหมด</button>
-                            <button class="chip-btn" data-filter="gov">โรงพยาบาลรัฐ / ศูนย์การแพทย์</button>
-                            <button class="chip-btn" data-filter="subdist">รพ.สต. / ศูนย์สาธารณสุข</button>
-                            <button class="chip-btn" data-filter="private">รพ.เอกชน / คลินิก</button>
-                        </div>
-                    </div>
-
-                    <!-- Nearby List Container -->
-                    <div class="nearby-list-grid" id="nearbyClinicsGrid">
-                        <!-- Dynamic Clinics Injected Here -->
-                    </div>
-                </div>
-
-                <!-- SUB-SCREEN F: Universal Public Benefits & Promotions -->
-                <!-- SUB-SCREEN F: Universal Public Benefits & Promotions -->
-                <div id="sub-screen-promo" class="sub-screen-container">
-                    <div class="promo-section-title">
-                        <h3><i class="fa-solid fa-tags" style="color: #ee4d2d;"></i> สิทธิประโยชน์ & แพ็กเกจวัคซีนแนะนำ</h3>
-                        <p>เปรียบเทียบสิทธิวัคซีนฟรีภาครัฐ และแพ็กเกจ E-Coupon ราคาพิเศษจากโรงพยาบาลชั้นนำ</p>
-                    </div>
-
-                    <!-- Search & Filter Controls -->
-                    <div class="finder-controls-card" style="margin-bottom: 20px;">
-                        <div class="finder-search-row" style="margin-bottom: 14px;">
-                            <div class="finder-search-input-wrap" style="position: relative; width: 100%;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="promoSearchInput" class="form-input" placeholder="ค้นหาวัคซีน, แพ็กเกจ, หรือโรงพยาบาล..." style="padding-left: 40px; width: 100%;">
-                            </div>
-                        </div>
-                        <div class="finder-filter-chips">
-                            <button class="chip-btn active" data-promo-filter="all">แพ็กเกจทั้งหมด (26)</button>
-                            <button class="chip-btn" data-promo-filter="shopee"><i class="fa-solid fa-bag-shopping" style="color: #ee4d2d;"></i> Shopee Mall E-Coupon</button>
-                            <button class="chip-btn" data-promo-filter="rama"><i class="fa-solid fa-hospital" style="color: var(--primary);"></i> รามาธิบดีศรีอยุธยา</button>
-                            <button class="chip-btn" data-promo-filter="rajavithi"><i class="fa-solid fa-building-columns" style="color: #059640;"></i> รพ.ราชวิถี (รพ.รัฐ)</button>
-                            <button class="chip-btn" data-promo-filter="hpv">วัคซีน HPV</button>
-                            <button class="chip-btn" data-promo-filter="zoster">วัคซีนงูสวัด</button>
-                            <button class="chip-btn" data-promo-filter="flu">วัคซีนไข้หวัดใหญ่</button>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Promo Packages Injected Here -->
-                    <div class="promo-packages-grid" id="promoPackagesGrid">
-                        <!-- Dynamic Promo Cards Injected by JS -->
-                    </div>
-
-                    <!-- Public Coverage Banner -->
-                    <div class="card" style="background: var(--bg-surface-subtle); border-left: 4px solid var(--primary); margin-top: 30px; padding: 20px;">
-                        <h4 style="color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-certificate"></i> สิทธิประโยชน์วัคซีนฟรีตามกฎหมาย (สปสช. / กรมควบคุมโรค)
-                        </h4>
-                        <ul style="padding-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
-                            <li><b>วัคซีนไข้หวัดใหญ่ตามฤดูกาล:</b> บริการฟรีสำหรับ 7 กลุ่มเสี่ยง (ผู้สูงอายุ 65 ปีขึ้นไป, ผู้มีโรคเรื้อรัง, หญิงตั้งครรภ์ ฯลฯ) ในช่วงรณรงค์ประจำปี</li>
-                            <li><b>วัคซีนคอตีบ-บาดทะยัก (Td):</b> บริการฟรีในสถานพยาบาลของรัฐทุกแห่งเมื่อมีบาดแผลเสี่ยง หรือตามเกณฑ์กระตุ้นทุก 10 ปี</li>
-                            <li><b>วัคซีนเอชพีวี (HPV):</b> สนับสนุนฟรีสำหรับนักเรียนหญิงและกลุ่มเป้าหมายตามนโยบายมะเร็งครบวงจรของกระทรวงสาธารณสุข</li>
-                            <li><b>วัคซีนโควิด-19:</b> บริการตามจุดฉีดของรัฐตามแนวทางเวชปฏิบัติปัจจุบัน</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- SUB-SCREEN G: Health & Vaccine Articles -->
-                <div id="sub-screen-articles" class="sub-screen-container">
-                    <div class="promo-section-title">
-                        <h3><i class="fa-solid fa-newspaper" style="color: var(--primary);"></i> คลังบทความและความรู้เรื่องวัคซีนผู้ใหญ่</h3>
-                        <p>สาระน่ารู้ทางการแพทย์ที่ถูกต้อง อัปเดตแนวทางวัคซีนผู้ใหญ่และผู้สูงอายุปี 2568-2569</p>
-                    </div>
-
-                    <!-- Article Search & Filters -->
-                    <div class="finder-controls-card" style="margin-bottom: 24px;">
-                        <div class="finder-search-row" style="margin-bottom: 14px;">
-                            <div class="finder-search-input-wrap" style="position: relative; width: 100%;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                                <input type="text" id="articleSearchInput" class="form-input" placeholder="ค้นหาบทความวัคซีน, อาการ, ข้อบ่งชี้..." style="padding-left: 40px; width: 100%;">
-                            </div>
-                        </div>
-                        <div class="finder-filter-chips">
-                            <button class="chip-btn active" data-article-filter="all">บทความทั้งหมด</button>
-                            <button class="chip-btn" data-article-filter="guide">คู่มือวัคซีนผู้ใหญ่</button>
-                            <button class="chip-btn" data-article-filter="senior">ผู้สูงวัย 50-60+</button>
-                            <button class="chip-btn" data-article-filter="women">สตรีและวัยรุ่น</button>
-                            <button class="chip-btn" data-article-filter="chronic">กลุ่มโรคเรื้อรัง</button>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Articles Grid -->
-                    <div class="articles-grid" id="articlesGrid">
-                        <!-- Injected Dynamically by JS -->
                     </div>
                 </div>
             </section>
 
-        </main>
-
-        <!-- Modern Footer -->
-        <footer class="app-footer-info">
-            <p>&copy; 2026 VacPass: สมุดบันทึกวัคซีนดิจิทัล • มาตรฐานความปลอดภัยและการคุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
-        </footer>
-
-    </div>
-
-    <!-- MODAL 1: Add / Edit Vaccine Record -->
-    <div class="modal-overlay" id="recordModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <h3 id="modalTitle">บันทึกการรับวัคซีน</h3>
-                    <p class="modal-sub">ระบุรายละเอียดเข็มวัคซีนเพื่อให้ระบบคำนวณและวางแผนกระตุ้นเข็มถัดไป</p>
+            <!-- 4. Next Appt by Weeks -->
+            <section id="section-appt-weeks" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-calendar-star text-xl"></i>
+                    </div>
+                    <h2 class="text-textdark font-bold text-lg leading-tight text-center"><span data-i18n="s4_title_1">คำนวณวันนัด</span><br><span data-i18n="s4_title_2">จากจำนวนสัปดาห์</span></h2>
                 </div>
-                <button class="modal-close-btn" id="recordModalCloseBtn">&times;</button>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="apptWeeks" data-i18n="s4_weeks_label" class="block text-sm font-bold text-textdark mb-2">จำนวนสัปดาห์</label>
+                        <div class="relative">
+                            <input type="number" id="apptWeeks" min="1" placeholder="เช่น 4" data-i18n-ph="ph_eg_4" class="form-input w-full rounded-xl px-4 py-3 pr-16 text-center">
+                            <span data-i18n="unit_week" class="absolute right-4 top-3 font-bold text-textdark">สัปดาห์</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-5 text-center shadow-sm relative group overflow-hidden">
+                        <p data-i18n="s3_result_label" class="text-sm font-bold text-textdark mb-1">วันที่นัดหมาย</p>
+                        <p id="apptWeeksResult" class="text-xl md:text-2xl font-bold text-textdark mb-2">-</p>
+                        
+                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
+                            <input type="date" id="apptWeeksResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            <!-- 5. Age Calculator -->
+            <section id="section-age" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-user text-xl"></i>
+                    </div>
+                    <h2 data-i18n="s5_title" class="text-textdark font-bold text-lg leading-tight text-center">คำนวณอายุ</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label data-i18n="s5_dob_label" class="block text-sm font-bold text-textdark mb-2">วัน/เดือน/ปีเกิด (พ.ศ.)</label>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="ageDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="ageMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="ageYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <div class="flex-grow"></div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
+                        <p data-i18n="s5_result_label" class="text-sm font-bold text-textdark mb-1">อายุ</p>
+                        <p id="ageResult" class="text-2xl font-bold text-textdark">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Year Converter -->
+            <section id="section-year" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-arrows-left-right text-xl"></i>
+                    </div>
+                    <h2 data-i18n="s6_title" class="text-textdark font-bold text-lg leading-tight text-center">แปลงปี พ.ศ. / ค.ศ.</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-4 flex-grow shadow-sm">
+                    <div>
+                        <label for="yearBE" data-i18n="s6_be_label" class="block text-sm font-bold text-textdark mb-2 text-center">ปี พ.ศ.</label>
+                        <input type="number" id="yearBE" placeholder="เช่น 2567" data-i18n-ph="ph_eg_2567" class="form-input w-full rounded-xl px-4 py-3 text-center font-bold text-xl">
+                    </div>
+                    <div class="flex justify-center text-cardouter py-1">
+                        <i class="ph-bold ph-arrows-down-up text-2xl"></i>
+                    </div>
+                    <div>
+                        <label for="yearCE" data-i18n="s6_ce_label" class="block text-sm font-bold text-textdark mb-2 text-center">ปี ค.ศ.</label>
+                        <input type="number" id="yearCE" placeholder="เช่น 2024" data-i18n-ph="ph_eg_2024" class="form-input w-full rounded-xl px-4 py-3 text-center font-bold text-xl">
+                    </div>
+                </div>
+            </section>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="grid grid-cols-1 gap-4">
+
+            <!-- 7. Vaccine Appointment Calculator -->
+            <section id="section-vaccine" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24">
+                <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 w-full">
+                    <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="ph-fill ph-syringe text-xl"></i>
+                    </div>
+                    <h2 data-i18n="s7_title" class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัดฉีดวัคซีนผู้ใหญ่</h2>
+                </div>
+                <div class="bg-cardinner rounded-[1.5rem] p-5 grid grid-cols-1 lg:grid-cols-2 gap-6 shadow-sm">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="vaccineType" data-i18n="s7_type_label" class="block text-sm font-bold text-textdark mb-2">ชนิดวัคซีน</label>
+                            <select id="vaccineType" class="form-select w-full rounded-xl px-4 py-3">
+                                <option value="">-- เลือกวัคซีน --</option>
+                                <option value="HBV">ไวรัสตับอักเสบบี (HBV)</option>
+                                <option value="HPV">เอชพีวี (HPV)</option>
+                                <option value="HAV">ไวรัสตับอักเสบเอ (HAV)</option>
+                                <option value="VZV">อีสุกอีใส (VZV)</option>
+                                <option value="RZV">งูสวัด (RZV)</option>
+                                <option value="MMR">หัด คางทูม หัดเยอรมัน (MMR)</option>
+                                <option value="DENGUE">ไข้เลือดออก (Dengue)</option>
+                                <option value="RABIES">โรคพิษสุนัขบ้า (Rabies)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="vaccineDose" data-i18n="s7_dose_label" class="block text-sm font-bold text-textdark mb-2">เข็มที่ฉีดไปล่าสุด</label>
+                            <select id="vaccineDose" class="form-select w-full rounded-xl px-4 py-3 disabled:opacity-50">
+                                <option value="">-- เลือกเข็ม --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label id="vaccineDateLabel" data-i18n="s7_date_label" class="block text-sm font-bold text-textdark">วันที่ฉีดเข็มล่าสุด</label>
+                                <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                    <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                    <input type="date" id="vaccineDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                                <input type="number" id="vaccineDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                                <select id="vaccineMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                    <option value="">เดือน</option>
+                                    <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                    <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                    <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                    <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                                </select>
+                                <input type="number" id="vaccineYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-resultbg rounded-[1.25rem] p-6 text-center flex flex-col justify-center h-full shadow-sm relative overflow-hidden group">
+                        <p data-i18n="s7_result_label" class="text-sm font-bold text-textdark mb-2">วันนัดฉีดเข็มถัดไป</p>
+                        <div id="vaccineResult" class="text-xl md:text-2xl font-bold text-textdark mb-2 space-y-1">-</div>
+                        <p id="vaccineNote" class="text-xs md:text-sm text-textdark/70 font-medium mt-2 hidden"></p>
+                        
+                        <div class="absolute bottom-4 right-4 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-10 h-10 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                            <i class="ph-bold ph-calendar text-xl absolute pointer-events-none"></i>
+                            <input type="date" id="vaccineResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference and Notes -->
+                <div class="bg-cardinner rounded-[1.5rem] p-5 mt-6 shadow-sm text-sm text-textdark">
+                    <ul class="space-y-3 font-medium">
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-500 text-lg leading-none mt-0.5">&bull;</span>
+                            <span data-i18n="s7_ref_1">การรับวัคซีนเลยกำหนดนัด สามารถให้วัคซีนต่อได้เลย โดยไม่ต้องเริ่มต้นนับใหม่</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-500 text-lg leading-none mt-0.5">&bull;</span>
+                            <span data-i18n="s7_ref_2">การรับวัคซีนเร็วกว่ากำหนดนัด ในกรณีของวัคซีนชนิดเชื้อตาย พิจารณาให้ก่อนนัดได้ไม่เกิน 4 วัน สำหรับวัคซีนชนิดเชื้อมีชีวิตอ่อนฤทธิ์ ไม่แนะนำให้รับวัคซีนเร็วกว่ากำหนดนัด</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 pt-4 border-t border-gray-300/50 text-xs opacity-80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <strong>Reference:</strong> <span data-i18n="s7_ref_source">คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ สมาคมโรคติดเชื้อแห่งประเทศไทย พ.ศ. 2568 - 2569</span>
+                        </div>
+                        <a href="/articles/adult-vaccine-schedule-2026" class="inline-flex items-center gap-1.5 text-cardouter hover:text-emerald-800 underline font-bold text-xs transition">
+                            <i class="ph-bold ph-book-open text-sm"></i>
+                            <span>อ่านคู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ ปี 2569 (ฉบับสมบูรณ์)</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            </div>
+
+        </div>
+
+        <!-- 8. Appointment & Medication Table -->
+        <section id="section-appt-table" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg mt-6 scroll-mt-24">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4 w-full">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-table text-xl"></i>
+                </div>
+                <h2 data-i18n="s8_title" class="text-textdark font-bold text-lg leading-tight text-center">ตารางคำนวณวันนัดหมายและจำนวนยา</h2>
             </div>
             
-            <form id="recordForm">
-                <input type="hidden" id="editRecordId">
-                
-                <div class="modal-body">
-                    <!-- Vaccine Dropdown Select -->
-                    <div class="form-group">
-                        <label for="recordVaccine" class="group-label">ประเภทวัคซีน <span class="required">*</span></label>
-                        <select id="recordVaccine" required class="form-select">
-                            <option value="">-- กรุณาเลือกวัคซีน --</option>
-                            <option value="flu">วัคซีนไข้หวัดใหญ่ขนาดมาตรฐาน (Influenza - Standard)</option>
-                            <option value="flu_hd">วัคซีนไข้หวัดใหญ่ขนาดสูง (Influenza - High-dose)</option>
-                            <option value="tdap">วัคซีนบาดทะยัก-คอตีบ-ไอกรน (Tdap/Td)</option>
-                            <option value="covid">วัคซีนโควิด-19 (COVID-19)</option>
-                            <option value="pneumo">วัคซีนนิวโมค็อกคัส (Pneumococcal/IPD)</option>
-                            <option value="rsv">วัคซีน RSV</option>
-                            <option value="zoster">วัคซีนงูสวัด (Zoster/RZV)</option>
-                            <option value="hpv">วัคซีนป้องกันมะเร็งปากมดลูก (HPV)</option>
-                            <option value="hepb">วัคซีนไวรัสตับอักเสบบี (Hepatitis B)</option>
-                            <option value="dengue">วัคซีนไข้เลือดออก (Dengue)</option>
-                            <option value="mmr">วัคซีนหัด-หัดเยอรมัน-คางทูม (MMR) *ชนิดเชื้อเป็น*</option>
-                            <option value="varicella">วัคซีนอีสุกอีใส (Varicella) *ชนิดเชื้อเป็น*</option>
-                        </select>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-sm">
+                <!-- Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="md:col-span-2">
+                        <label data-i18n="s8_base_label" class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date)</label>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="tblBaseDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="tblBaseMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="tblBaseYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
                     </div>
-
-                    <!-- Dose Selector -->
-                    <div class="form-group">
-                        <label for="recordDose" class="group-label">เข็มที่ได้รับ (Dose) <span class="required">*</span></label>
-                        <select id="recordDose" required class="form-select">
-                            <option value="1">เข็มที่ 1 (Dose 1)</option>
-                            <option value="2">เข็มที่ 2 (Dose 2)</option>
-                            <option value="3">เข็มที่ 3 (Dose 3)</option>
-                            <option value="booster">เข็มกระตุ้นประจำปี (Annual/Booster)</option>
+                    <div class="md:col-span-1">
+                        <label for="tblDoseDropdown" data-i18n="s8_dose_daily_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                        <select id="tblDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="0.25">1/4 เม็ด</option>
+                            <option value="0.5">1/2 เม็ด</option>
+                            <option value="1" selected>1 เม็ด</option>
+                            <option value="1.5">1.5 เม็ด</option>
+                            <option value="2">2 เม็ด</option>
+                            <option value="2.5">2.5 เม็ด</option>
+                            <option value="custom">กำหนดเอง...</option>
                         </select>
+                        <input type="number" id="tblDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                     </div>
+                    <div class="md:col-span-1">
+                        <label for="tblWeeklyDoseDropdown" data-i18n="s8_dose_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
+                        <select id="tblWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <option value="">--เลือกขนาดยา--</option>
+                            <option value="1">1 เม็ด/สัปดาห์</option>
+                            <option value="2">2 เม็ด/สัปดาห์</option>
+                            <option value="3">3 เม็ด/สัปดาห์</option>
+                            <option value="4">4 เม็ด/สัปดาห์</option>
+                            <option value="5">5 เม็ด/สัปดาห์</option>
+                            <option value="6">6 เม็ด/สัปดาห์</option>
+                            <option value="7">7 เม็ด/สัปดาห์</option>
+                            <option value="8">8 เม็ด/สัปดาห์</option>
+                            <option value="custom">กำหนดเอง...</option>
+                        </select>
+                        <input type="number" id="tblWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                    </div>
+                </div>
 
-                    <!-- Date Administered -->
-                    <div class="form-group">
-                        <label for="recordDate" class="group-label">วันที่ได้รับวัคซีน <span class="required">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-calendar-day input-icon"></i>
-                            <input type="date" id="recordDate" required>
+                <!-- Generated Table -->
+                <div class="w-full rounded-xl border border-gray-200 overflow-hidden">
+                    <table class="w-full text-xs md:text-sm text-left">
+                        <thead class="text-[10px] md:text-xs text-white uppercase bg-panelbg leading-tight">
+                            <tr>
+                                <th scope="col" data-i18n="s8_th_time" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tl-xl w-[20%]">ระยะเวลา<br><span class="hidden md:inline">(สัปดาห์ / วัน)</span><span class="md:hidden">(วีค/วัน)</span></th>
+                                <th scope="col" data-i18n="s8_th_date" class="px-1 py-2 md:px-6 md:py-3 text-center w-[30%]">วันที่นัดหมาย<br><span class="hidden md:inline">(วัน/เดือน/ปี พ.ศ.)</span><span class="md:hidden">(พ.ศ.)</span></th>
+                                <th scope="col" data-i18n="s8_th_daily" class="px-1 py-2 md:px-6 md:py-3 text-center w-[25%]">จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class="text-[8px] md:text-[10px] text-gray-400 font-normal">*คำนวณจากขนาดยาที่แพทย์สั่งต่อวัน*</span></th>
+                                <th scope="col" data-i18n="s8_th_weekly" class="px-1 py-2 md:px-6 md:py-3 text-center rounded-tr-xl w-[25%]">จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class="text-[8px] md:text-[10px] text-gray-400 font-normal">*คำนวณจากขนาดยาที่แพทย์สั่งต่อสัปดาห์*</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBody" class="text-textdark">
+                            <!-- JS generates 24 rows here -->
+                            <tr>
+                                <td colspan="4" data-i18n="s8_empty_table" class="px-2 md:px-6 py-4 text-center text-gray-500 text-xs md:text-sm">กรุณาเลือกวันที่และขนาดยาเพื่อคำนวณตาราง</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Custom Day Calculator under table -->
+                <div class="mt-6 pt-6 border-t border-gray-300">
+                    <h3 data-i18n="s8_custom_title" class="text-textdark font-bold mb-4">คำนวณเฉพาะจำนวนวันที่ต้องการ (Custom Days)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="relative w-full">
+                            <label data-i18n="s8_custom_days_label" class="block text-sm font-bold text-textdark mb-2">ระบุจำนวนวัน</label>
+                            <input type="number" id="tblCustomDays" min="1" placeholder="ระบุจำนวนวัน..." data-i18n-ph="ph_specify_days" class="form-input w-full rounded-xl px-4 py-3 pr-12">
+                            <span data-i18n="unit_day" class="absolute right-4 top-[38px] font-bold text-textdark">วัน</span>
+                        </div>
+                        <div>
+                            <label for="tblCustomDaysDoseDropdown" data-i18n="s8_custom_daily_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
+                            <select id="tblCustomDaysDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                                <option value="">--เลือกขนาดยา--</option>
+                                <option value="0.25">1/4 เม็ด</option>
+                                <option value="0.5">1/2 เม็ด</option>
+                                <option value="1" selected>1 เม็ด</option>
+                                <option value="1.5">1.5 เม็ด</option>
+                                <option value="2">2 เม็ด</option>
+                                <option value="2.5">2.5 เม็ด</option>
+                                <option value="custom">กำหนดเอง...</option>
+                            </select>
+                            <input type="number" id="tblCustomDaysDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        </div>
+                        <div>
+                            <label for="tblCustomDaysWeeklyDoseDropdown" data-i18n="s8_custom_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
+                            <select id="tblCustomDaysWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                                <option value="">--เลือกขนาดยา--</option>
+                                <option value="1">1 เม็ด/สัปดาห์</option>
+                                <option value="2">2 เม็ด/สัปดาห์</option>
+                                <option value="3">3 เม็ด/สัปดาห์</option>
+                                <option value="4">4 เม็ด/สัปดาห์</option>
+                                <option value="5">5 เม็ด/สัปดาห์</option>
+                                <option value="6">6 เม็ด/สัปดาห์</option>
+                                <option value="7">7 เม็ด/สัปดาห์</option>
+                                <option value="8">8 เม็ด/สัปดาห์</option>
+                                <option value="custom">กำหนดเอง...</option>
+                            </select>
+                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                         </div>
                     </div>
 
-                    <!-- Brand Name -->
-                    <div class="form-group" id="recordBrandGroup">
-                        <label for="recordBrand" class="group-label">ชื่อการค้า / แบรนด์วัคซีน</label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-tag input-icon"></i>
-                            <select id="recordBrand" class="form-select">
-                                <!-- Dynamically populated by JS -->
+                    <div class="w-full bg-resultbg rounded-xl p-4 flex flex-col sm:flex-row justify-around items-center text-center shadow-sm gap-2">
+                        <div>
+                            <p data-i18n="s8_custom_date_match" class="text-xs font-bold text-textdark">ตรงกับวันที่</p>
+                            <p id="tblCustomDateResult" class="font-bold text-textdark text-lg">-</p>
+                        </div>
+                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
+                        <div>
+                            <p data-i18n="s8_custom_daily_pay" class="text-xs font-bold text-textdark">จ่ายยารายวัน</p>
+                            <p id="tblCustomPillResult" class="font-bold text-textdark text-lg">- เม็ด</p>
+                        </div>
+                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
+                        <div>
+                            <p data-i18n="s8_custom_weekly_pay" class="text-xs font-bold text-textdark">จ่ายยารายสัปดาห์</p>
+                            <p id="tblCustomWeeklyPillResult" class="font-bold text-blue-700 text-lg">- เม็ด</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Oseltamivir Calculator -->
+        <section id="section-oseltamivir" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24 mb-4 mt-8">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-prescription text-xl"></i>
+                </div>
+                <h2 data-i18n="osel_title" class="text-textdark font-bold text-lg leading-tight text-center">คำนวณยา Oseltamivir</h2>
+            </div>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-5 flex-grow shadow-sm">
+                <!-- Indication -->
+                <div>
+                    <label data-i18n="osel_indication_label" class="block text-sm font-bold text-textdark mb-2">ข้อบ่งชี้ (Indication)</label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                            <input type="radio" name="oselIndication" value="treatment" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                            <span class="text-sm font-bold text-textdark leading-tight"><span data-i18n="osel_ind_treatment">Treatment</span><br><span data-i18n="osel_ind_treatment_desc" class="text-xs font-bold text-[#24917d]">(5 days, Twice daily)</span></span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                            <input type="radio" name="oselIndication" value="prophylaxis" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                            <span class="text-sm font-bold text-textdark leading-tight"><span data-i18n="osel_ind_proph">Prophylaxis</span><br><span data-i18n="osel_ind_proph_desc" class="text-xs font-bold text-[#24917d]">(10 days, Once daily)</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Age -->
+                    <div>
+                        <label data-i18n="osel_age_label" class="block text-sm font-bold text-textdark mb-2">อายุ (Age)</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="oselAge" min="0" step="0.1" placeholder="ระบุอายุ..." data-i18n-ph="ph_specify_age" class="form-input w-full rounded-xl px-4 py-3 text-center min-w-0">
+                            <select id="oselAgeUnit" class="form-select rounded-xl px-2 py-3 text-sm min-w-[80px]">
+                                <option value="months">เดือน</option>
+                                <option value="years" selected>ปี</option>
                             </select>
                         </div>
                     </div>
-                    
-                    <!-- Manual Brand Entry -->
-                    <div class="form-group conditional-group" id="recordBrandOtherGroup" style="display: none;">
-                        <label for="recordBrandOther" class="group-label">ระบุชื่อแบรนด์วัคซีนอื่นๆ</label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-pen-clip input-icon"></i>
-                            <input type="text" id="recordBrandOther" placeholder="กรุณาระบุยี่ห้อวัคซีน">
+                    <!-- Weight -->
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                            <label data-i18n="osel_weight_label" class="block text-sm font-bold text-textdark">น้ำหนัก (Weight)</label>
+                            <span data-i18n="osel_weight_note" class="text-[10px] text-gray-500 font-bold hidden sm:inline">*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)</span>
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="oselWeight" min="0" step="0.1" placeholder="ระบุน้ำหนัก..." data-i18n-ph="ph_specify_weight" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                            <span class="absolute right-4 top-3 font-bold text-textdark">kg</span>
+                        </div>
+                        <p data-i18n="osel_weight_note" class="text-[10px] text-gray-500 font-bold mt-1 text-center sm:hidden">*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)</p>
+                    </div>
+                </div>
+
+                <!-- Alert Message -->
+                <div id="oselAlert" class="hidden bg-red-100 text-red-700 p-3 rounded-xl text-sm font-bold text-center flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-warning-circle text-lg"></i> <span data-i18n="osel_alert_not_rec">Not recommended สำหรับอายุต่ำกว่า 3 เดือน</span>
+                </div>
+
+                <!-- Results -->
+                <div class="bg-resultbg rounded-xl p-4 flex flex-col gap-4 shadow-sm border-2 border-panelbg/10">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-panelbg/20 text-center items-center">
+                        <div class="py-2 sm:py-0">
+                            <p class="text-xs font-bold text-textdark mb-1">Dose (mg)</p>
+                            <p id="oselDoseResult" class="font-bold text-textdark text-xl">-</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Volume (ml)</p>
+                            <p id="oselVolumeResult" class="font-bold text-blue-700 text-xl">-</p>
+                            <p class="text-[9px] text-gray-500 mt-1">*Concentration: 6 mg/ml.</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Frequency</p>
+                            <p id="oselFrequencyResult" class="font-bold text-orange-600 text-xl">-</p>
+                        </div>
+                        <div class="py-2 sm:py-0 flex flex-col items-center justify-center">
+                            <p class="text-xs font-bold text-textdark mb-1">Total Bottles</p>
+                            <p id="oselBottlesResult" class="font-bold text-[#1a5b4b] text-xl">-</p>
+                            <p class="text-[9px] text-gray-500 mt-1">Bottle size: 60 ml.</p>
                         </div>
                     </div>
-
-                    <!-- Hospital / Location -->
-                    <div class="form-group">
-                        <label for="recordLocation" class="group-label">โรงพยาบาล / คลินิกที่เข้ารับบริการ</label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-hospital input-icon"></i>
-                            <input type="text" id="recordLocation" placeholder="เช่น รพ.ศูนย์, รพ.สต., คลินิกเวชกรรม">
-                        </div>
-                    </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" id="recordModalCancelBtn">ยกเลิก</button>
-                    <button type="submit" class="btn btn-primary" id="recordSaveBtn">บันทึกประวัติ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 2: Notification & LINE Settings -->
-    <div class="modal-overlay" id="notifModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <h3><i class="fa-brands fa-line" style="color: var(--line-green);"></i> ตั้งค่าการแจ้งเตือน LINE</h3>
-                    <p class="modal-sub">กำหนดความถี่และช่องทางการแจ้งเตือนเมื่อถึงกำหนดฉีดวัคซีน</p>
-                </div>
-                <button class="modal-close-btn" id="notifModalCloseBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="toggle-card" style="margin-bottom: 16px;">
-                    <div class="toggle-info">
-                        <span class="toggle-title"><i class="fa-solid fa-bell"></i> เปิดรับการแจ้งเตือนทาง LINE</span>
-                        <span class="toggle-desc">ระบบจะส่งข้อความแจ้งเตือนเมื่อใกล้ถึงกำหนดฉีดวัคซีนเข็มถัดไป</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="settingNotifyToggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label for="settingAdvanceDays" class="group-label">แจ้งเตือนล่วงหน้า</label>
-                    <select id="settingAdvanceDays" class="form-select">
-                        <option value="7">ล่วงหน้า 7 วัน (แนะนำ)</option>
-                        <option value="3">ล่วงหน้า 3 วัน</option>
-                        <option value="1">ล่วงหน้า 1 วัน</option>
-                    </select>
-                </div>
-
-                <div class="pdpa-consent-box" style="margin-top: 10px;">
-                    <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> 
-                    <b>สิทธิของเจ้าของข้อมูล (PDPA):</b> ท่านสามารถปิดการแจ้งเตือน หรือขอลบข้อมูลประวัติทั้งหมดได้อย่างอิสระทุกเวลา
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" id="notifModalCancelBtn">ปิด</button>
-                <button type="button" class="btn btn-primary" id="saveNotifSettingsBtn">บันทึกการตั้งค่า</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: PDPA Privacy Policy Modal -->
-    <div class="modal-overlay" id="pdpaModal">
-        <div class="modal-card" style="max-width: 600px;">
-            <div class="modal-header">
-                <div>
-                    <h3>นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA Privacy Notice)</h3>
-                    <p class="modal-sub">พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (มาตรา 26: ข้อมูลสุขภาพ)</p>
-                </div>
-                <button class="modal-close-btn" id="pdpaModalCloseBtn">&times;</button>
-            </div>
-            <div class="modal-body" style="max-height: 380px; overflow-y: auto; font-size: 13px; line-height: 1.7; color: var(--text-secondary);">
-                <p><b>1. วัตถุประสงค์ในการจัดเก็บ:</b> ระบบจัดเก็บข้อมูลวันเกิด เพศ สภาวะการตั้งครรภ์ โรคประจำตัว และประวัติการรับวัคซีน เพื่อวัตถุประสงค์ในการประมวลผลคำแนะนำวัคซีนตามเกณฑ์การแพทย์ และแจ้งเตือนกำหนดการรับวัคซีนเท่านั้น</p>
-                <br>
-                <p><b>2. การรักษาความมั่นคงปลอดภัย:</b> ข้อมูลจะถูกจัดเก็บในฐานข้อมูลที่เข้ารหัสความปลอดภัยบน Cloudflare D1 และไม่มีการเปิดเผยหรือจำหน่ายข้อมูลแก่บุคคลภายนอกเชิงพาณิชย์โดยเด็ดขาด</p>
-                <br>
-                <p><b>3. สิทธิของเจ้าของข้อมูล:</b>
-                    <ul style="padding-left: 20px; margin-top: 6px;">
-                        <li><b>สิทธิในการเข้าถึงและโอนย้าย (Portability):</b> ท่านสามารถดาวน์โหลดประวัติสุขภาพของตนเองได้ตลอดเวลาผ่านปุ่ม "ส่งออกข้อมูล"</li>
-                        <li><b>สิทธิในการขอลบข้อมูล (Right to Erasure):</b> ท่านสามารถลบบัญชีและทำลายประวัติวัคซีนทั้งหมดถาวรได้ทันที</li>
-                        <li><b>สิทธิในการถอนความยินยอม:</b> ท่านสามารถปิดระบบแจ้งเตือนได้ทุกเมื่อ</li>
-                    </ul>
+                <p class="text-[10px] text-gray-400 text-center mt-2 leading-tight">
+                    Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications
                 </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="pdpaModalCloseFooterBtn">รับทราบและเข้าใจ</button>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- MODAL 4: Reset Password Modal -->
-    <div class="modal-overlay" id="resetPassModal">
-        <div class="modal-card" style="max-width: 500px;">
-            <div class="modal-header">
-                <div>
-                    <h3><i class="fa-solid fa-key" style="color: var(--primary);"></i> ตั้งรหัสผ่านใหม่ (Reset Password)</h3>
-                    <p class="modal-sub">ยืนยันตัวตนด้วยเบอร์โทรศัพท์และวันเกิด เพื่อกำหนดรหัสผ่านใหม่</p>
+        <!-- Renal Dose Adjustment Calculator -->
+        <section id="section-renal-osel" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24 mb-4">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-first-aid text-xl"></i>
                 </div>
-                <button class="modal-close-btn" id="resetPassModalCloseBtn">&times;</button>
+                <h2 class="text-textdark font-bold text-[15px] sm:text-lg leading-tight text-center"><span data-i18n="osel_title">คำนวณยา Oseltamivir</span><br><span data-i18n="renal_subtitle" class="bg-[#1a5b4b] text-white px-2 py-0.5 rounded-md inline-block mt-1 text-sm">(Renal Dose Adjustment)</span></h2>
+            </div>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-5 flex-grow shadow-sm">
+                
+                <!-- Patient Data -->
+                <div class="border border-gray-200 rounded-xl p-4 bg-white/50">
+                    <h3 data-i18n="renal_patient_data" class="text-textdark font-bold mb-3 border-b border-gray-200 pb-2">ข้อมูลผู้ป่วย (Patient Data)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label data-i18n="osel_age_label" class="block text-sm font-bold text-textdark mb-2">อายุ (Age)</label>
+                            <div class="relative">
+                                <input type="number" id="renalAge" min="0" placeholder="ระบุอายุ..." data-i18n-ph="ph_specify_age" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                                <span data-i18n="unit_year" class="absolute right-4 top-3 font-bold text-textdark">ปี</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label data-i18n="osel_weight_label" class="block text-sm font-bold text-textdark mb-2">น้ำหนัก (Weight)</label>
+                            <div class="relative">
+                                <input type="number" id="renalWeight" min="0" step="0.1" placeholder="ระบุน้ำหนัก..." data-i18n-ph="ph_specify_weight" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                                <span class="absolute right-4 top-3 font-bold text-textdark">kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label data-i18n="renal_gender" class="block text-sm font-bold text-textdark mb-2">เพศ (Gender)</label>
+                            <div class="flex gap-3">
+                                <label class="flex items-center justify-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalGender" value="male" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                                    <span data-i18n="renal_male" class="text-sm font-bold text-textdark">ชาย (Male)</span>
+                                </label>
+                                <label class="flex items-center justify-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalGender" value="female" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                                    <span data-i18n="renal_female" class="text-sm font-bold text-textdark">หญิง (Female)</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-textdark mb-2">Serum Creatinine (SCr)</label>
+                            <div class="relative">
+                                <input type="number" id="renalSCr" min="0" step="0.01" placeholder="ระบุค่า SCr..." data-i18n-ph="ph_specify_scr" class="form-input w-full rounded-xl px-4 py-3 pr-14 text-center">
+                                <span class="absolute right-4 top-3 font-bold text-textdark">mg/dL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Data -->
+                <div class="border border-gray-200 rounded-xl p-4 bg-white/50">
+                    <h3 data-i18n="renal_clinical_data" class="text-textdark font-bold mb-3 border-b border-gray-200 pb-2">ข้อมูลทางคลินิก (Clinical Data)</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label data-i18n="osel_indication_label" class="block text-sm font-bold text-textdark mb-2">ข้อบ่งชี้ (Indication)</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalIndication" value="treatment" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4" checked>
+                                    <span class="text-sm font-bold text-textdark leading-tight"><span data-i18n="osel_ind_treatment">Treatment</span><br><span data-i18n="renal_ind_treatment_desc" class="text-xs font-bold text-[#24917d]">(5 days)</span></span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                    <input type="radio" name="renalIndication" value="prophylaxis" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4">
+                                    <span class="text-sm font-bold text-textdark leading-tight"><span data-i18n="osel_ind_proph">Prophylaxis</span><br><span data-i18n="osel_ind_proph_desc" class="text-xs font-bold text-[#24917d]">(10 days)</span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label data-i18n="renal_dialysis_status" class="block text-sm font-bold text-textdark mb-2">สถานะการฟอกไต (Dialysis Status)</label>
+                            <select id="renalDialysis" class="form-select w-full rounded-xl px-4 py-3 text-sm font-bold text-textdark">
+                                <option value="none" selected>Not on Dialysis</option>
+                                <option value="hd">Hemodialysis</option>
+                                <option value="capd">CAPD</option>
+                                <option value="esrd">ESRD not on dialysis</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="bg-resultbg rounded-xl p-5 flex flex-col gap-4 shadow-sm border-2 border-panelbg/20">
+                    <div class="text-center border-b border-panelbg/10 pb-4">
+                        <p class="text-sm font-bold text-textdark mb-1">Calculated CrCl (Cockcroft-Gault)</p>
+                        <p id="renalCrClResult" class="font-bold text-[#1a5b4b] text-3xl">- <span class="text-lg">mL/min</span></p>
+                    </div>
+                    <div class="text-center pt-2">
+                        <p class="text-sm font-bold text-textdark mb-2">Recommended Dose</p>
+                        <div id="renalDoseResultBox" class="bg-white rounded-xl p-4 shadow-inner border border-gray-100 min-h-[80px] flex items-center justify-center">
+                            <p id="renalDoseResult" class="font-bold text-blue-700 text-lg md:text-xl">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-gray-400 text-center mt-2 leading-tight">
+                    Source: Recommended Dosage Modifications for Treatment and Prophylaxis of Influenza in Adults with Renal Impairment
+                </p>
+            </div>
+        </section>
+
+        <!-- Contraceptive Injection Calculator -->
+        <section id="section-contraceptive" class="bg-[#24917d] p-4 rounded-[2rem] flex flex-col shadow-lg scroll-mt-24 mb-4">
+            <div class="bg-cardinner rounded-[1.5rem] p-4 flex items-center justify-center gap-3 shadow-sm mb-4">
+                <div class="bg-panelbg text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="ph-fill ph-calendar-heart text-xl"></i>
+                </div>
+                <h2 data-i18n="s9_title" class="text-textdark font-bold text-lg leading-tight text-center">คำนวณวันนัดฉีดยาคุม</h2>
+            </div>
+            <div class="bg-cardinner rounded-[1.5rem] p-5 flex flex-col gap-5 flex-grow shadow-sm">
+                <!-- Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- Base Date -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label data-i18n="s7_date_label" class="block text-sm font-bold text-textdark">วันที่ฉีดเข็มล่าสุด</label>
+                            <div class="relative w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                                <i class="ph-fill ph-calendar-check text-2xl absolute pointer-events-none"></i>
+                                <input type="date" id="contraDatePicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
+                            <input type="number" id="contraDay" min="1" max="31" placeholder="วัน" data-i18n-ph="ph_day" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                            <select id="contraMonth" class="form-select rounded-xl px-1 py-3 text-center text-sm w-full min-w-0">
+                                <option value="">เดือน</option>
+                                <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+                                <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+                                <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+                                <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+                            </select>
+                            <input type="number" id="contraYear" placeholder="พ.ศ." data-i18n-ph="ph_year" class="form-input rounded-xl px-2 py-3 text-center w-full min-w-0">
+                        </div>
+                    </div>
+                    <!-- Injection Type -->
+                    <div>
+                        <label data-i18n="s9_type_label" class="block text-sm font-bold text-textdark mb-2">ชนิดยาคุมกำเนิด</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <label class="flex items-start gap-2.5 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                <input type="radio" name="contraType" value="1month" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4 mt-0.5" checked>
+                                <div class="flex flex-col">
+                                    <span data-i18n="s9_type_1m" class="text-sm font-bold text-textdark">ชนิด 1 เดือน (28 วัน)</span>
+                                    <span class="text-xs text-gray-500 mt-0.5">(Cyclofem/Mesigyna)</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start gap-2.5 cursor-pointer bg-white px-4 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex-1">
+                                <input type="radio" name="contraType" value="3months" class="text-[#24917d] focus:ring-[#24917d] h-4 w-4 mt-0.5">
+                                <div class="flex flex-col">
+                                    <span data-i18n="s9_type_3m" class="text-sm font-bold text-textdark">ชนิด 3 เดือน (84 วัน)</span>
+                                    <span class="text-xs text-gray-500 mt-0.5">(DMPA/Depo-Provera/Depo-Gestin)</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Area -->
+                <div class="bg-resultbg rounded-xl p-5 text-center flex flex-col justify-center shadow-sm border-2 border-panelbg/20 relative">
+                    <div class="absolute right-4 top-4 w-8 h-8 flex items-center justify-center text-cardouter cursor-pointer hover:bg-gray-200 rounded-full transition">
+                        <i class="ph-fill ph-calendar text-2xl absolute pointer-events-none"></i>
+                        <input type="date" id="contraResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+                    </div>
+                    <p data-i18n="s9_next_appt" class="text-sm font-bold text-textdark mb-2">วันที่นัดหมายครั้งถัดไป</p>
+                    <p id="contraResult" class="font-bold text-[#1a5b4b] text-2xl md:text-3xl">-</p>
+                </div>
+
+                <!-- SEO Text -->
+                <div class="sr-only">โปรแกรมคำนวณวันนัดฉีดยาคุมกำเนิด (Contraceptive Injection) รองรับทั้งการนับวันนัดยาคุมแบบ 1 เดือน (28 วัน) และยาคุมแบบ 3 เดือน (84 วัน) ช่วยพยาบาลนับวันนัดได้อย่างแม่นยำด้วยแอพคํานวณฉีดยาคุม</div>
+            </div>
+        </section>
+
+        <!-- SEO Content -->
+        <div class="seo-content-box" style="background-color: #ffffff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 30px; margin-bottom: 30px; line-height: 1.6;">
+            <h2 style="color: #1a5c40; font-size: 1.1rem; margin-top: 0; margin-bottom: 12px; font-weight: bold;">
+                ทำไมต้องให้ Easymedcal เป็นผู้ช่วยคู่ใจของคุณ?
+            </h2>
+            <p style="color: #4b5563; margin-bottom: 16px;">
+                เราคือ <strong>โปรแกรมคำนวณวันนัดผู้ป่วย</strong> ที่สร้างขึ้นมาเพื่อช่วยแบ่งเบาภาระการทำงานของแพทย์ พยาบาล และเภสัชกร ให้คุณทำงานได้รวดเร็วและแม่นยำยิ่งขึ้น:
+            </p>
+            <ul style="list-style-type: none; padding-left: 0; margin: 0; color: #4b5563;">
+                <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">💊</span>
+                    <span><strong>คำนวณเป๊ะ ไม่มีพลาด:</strong> ด้วย <strong>วิธีคำนวณยาตามวัน</strong> ที่ช่วยให้คุณเช็ค <strong>ระยะห่างวัน</strong> ได้ทันทีโดยไม่ต้องเปิดปฏิทินนับเอง</span>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">📅</span>
+                    <span><strong>ฟีเจอร์ครบ จบในเว็บเดียว:</strong> มาพร้อม <strong>ตารางนัดฉีดวัคซีนผู้ใหญ่</strong> ที่อิงตามมาตรฐานการแพทย์ล่าสุด</span>
+                </li>
+                <li style="display: flex; align-items: flex-start;">
+                    <span style="margin-right: 8px;">🚀</span>
+                    <span><strong>ใช้งานฟรี ไม่ต้องโหลดแอป:</strong> เปิดผ่านเบราว์เซอร์ในมือถือหรือคอมพิวเตอร์ แล้วเริ่มใช้งานได้เลย!</span>
+                </li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
+        <p>Medical Appointment & Medication Calculator &copy; <span id="currentYearBE"></span></p>
+        <div class="flex items-center justify-center gap-2 mt-2">
+            <button class="btnOpenManual inline-flex items-center gap-1 bg-[#163333] text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-[#24917d] transition">
+                <i class="ph-fill ph-question text-sm"></i> <span data-i18n="user_manual_btn">คู่มือการใช้งาน</span>
+            </button>
+            <button class="btnOpenCoffee inline-flex items-center gap-1 bg-[#ffc395] text-[#24917d] px-3 py-1 rounded-full text-xs font-bold hover:bg-[#e0ab82] transition">
+                <i class="ph-fill ph-coffee text-sm"></i> <span data-i18n="support_coffee_btn">สนับสนุนค่ากาแฟ</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Coffee Donation Modal -->
+    <div id="coffeeModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 hidden backdrop-blur-sm p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col relative transform transition-all overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-[#ffc395]">
+                <h2 class="text-xl font-bold text-[#163333] flex items-center gap-2"><i class="ph-fill ph-coffee text-2xl text-[#24917d]"></i> <span data-i18n="support_coffee_btn">สนับสนุนค่ากาแฟ</span></h2>
+                <button id="btnCloseCoffeeTop" class="text-[#163333] hover:text-gray-700 transition">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
             </div>
             
-            <form id="resetPassForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="resetIdentifier" class="group-label">เบอร์โทรศัพท์มือถือ <span class="required">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-phone input-icon"></i>
-                            <input type="tel" id="resetIdentifier" maxlength="12" placeholder="08x-xxx-xxxx" inputmode="numeric" required>
-                        </div>
-                        <span class="input-hint">เบอร์โทรศัพท์ที่เคยใช้ลงทะเบียนไว้</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resetVerifyValue" class="group-label">วัน/เดือน/ปี เกิด <span class="required">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-calendar-days input-icon"></i>
-                            <input type="date" id="resetVerifyValue" required>
-                        </div>
-                        <span class="input-hint">วันเดือนปีเกิดของคุณเพื่อยืนยันความเป็นเจ้าของบัญชี</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resetNewPassword" class="group-label">กำหนดรหัสผ่านใหม่ <span class="required">*</span></label>
-                        <div class="input-with-icon" style="position: relative;">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="resetNewPassword" minlength="6" placeholder="รหัสผ่านใหม่อย่างน้อย 6 ตัวอักษร" required style="padding-right: 42px;">
-                            <button type="button" class="btn-pass-toggle" id="toggleResetNewPassBtn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 4px;" aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resetConfirmNewPassword" class="group-label">ยืนยันรหัสผ่านใหม่ <span class="required">*</span></label>
-                        <div class="input-with-icon" style="position: relative;">
-                            <i class="fa-solid fa-shield-halved input-icon"></i>
-                            <input type="password" id="resetConfirmNewPassword" minlength="6" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง" required style="padding-right: 42px;">
-                            <button type="button" class="btn-pass-toggle" id="toggleResetConfirmNewPassBtn" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 4px;" aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <span class="input-hint" id="resetMatchHint"></span>
-                    </div>
-
-                    <div class="auth-error" id="resetPassErrorMsg" style="display: none; margin-top: 10px;"></div>
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto flex flex-col items-center flex-grow">
+                <h3 data-i18n="coffee_title" class="font-bold text-[#24917d] text-lg text-center mb-4">สนับสนุนค่ากาแฟเพื่อเป็นกำลังใจ ☕</h3>
+                
+                <div class="bg-gray-50 p-3 rounded-2xl shadow-inner mb-6 border border-gray-100">
+                    <img src="https://lh3.googleusercontent.com/d/1OT2fAKWcfKiypu3W4-FAyEvqs_hf9J-x" alt="QR Code PromptPay" class="w-56 h-auto object-contain rounded-xl shadow-md mx-auto mix-blend-multiply">
                 </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" id="resetPassModalCancelBtn">ยกเลิก</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitResetPass">
-                        <i class="fa-solid fa-check"></i> บันทึกรหัสผ่านใหม่
-                    </button>
+                
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full mb-6">
+                    <div class="bg-red-50/70 text-red-800 border border-red-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">☕</span> Nescafe</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-red-700">: 19 .-</div>
+                    </div>
+                    <div class="bg-green-50/70 text-green-800 border border-green-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">🦜</span> Amazon</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-green-700">: 59 .-</div>
+                    </div>
+                    <div class="bg-emerald-50/70 text-emerald-800 border border-emerald-200 p-2 sm:p-3 rounded-xl flex flex-col items-center justify-center shadow-sm hover:shadow transition">
+                        <div class="flex items-center justify-center gap-1 text-xs sm:text-sm font-bold truncate"><span class="text-base sm:text-lg drop-shadow-sm">⭐</span> Starbucks</div>
+                        <div class="text-sm sm:text-base font-bold mt-1 text-emerald-700">: 99 .-</div>
+                    </div>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 5: Export Health Data & Calendar -->
-    <div class="modal-overlay" id="exportModal">
-        <div class="modal-card" style="max-width: 580px;">
-            <div class="modal-header">
-                <div>
-                    <h3><i class="fa-solid fa-file-export" style="color: var(--primary);"></i> ส่งออกข้อมูลประวัติวัคซีน</h3>
-                    <p class="modal-sub">เลือกรูปแบบที่ต้องการนำข้อมูลไปใช้งาน</p>
-                </div>
-                <button class="modal-close-btn" id="exportModalCloseBtn">&times;</button>
-            </div>
-            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
-                <!-- Choice 1: Printable Certificate / PDF -->
-                <div class="export-choice-card" id="btnExportCertificate" style="cursor: pointer;">
-                    <div class="export-choice-icon" style="background: rgba(2, 132, 199, 0.1); color: var(--primary);">
-                        <i class="fa-solid fa-file-medical"></i>
-                    </div>
-                    <div class="export-choice-content">
-                        <div class="export-choice-title">
-                            📄 1. สรุปประวัติวัคซีนส่วนบุคคล (พิมพ์ / บันทึก PDF)
-                            <span class="export-badge-recommended">พกติดตัว/ยื่นแพทย์</span>
-                        </div>
-                        <div class="export-choice-desc">
-                            สรุปประวัติวัคซีนในรูปแบบบัตรพาสปอร์ตส่วนบุคคล สำหรับแสดงต่อแพทย์/พยาบาล เพื่อประกอบการวางแผนการฉีดวัคซีน
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right export-choice-arrow"></i>
-                </div>
-
-                <!-- Choice 2: Calendar Sync (.ics) -->
-                <div class="export-choice-card" id="btnExportCalendar" style="cursor: pointer;">
-                    <div class="export-choice-icon" style="background: rgba(16, 185, 129, 0.1); color: #059640;">
-                        <i class="fa-solid fa-calendar-plus"></i>
-                    </div>
-                    <div class="export-choice-content">
-                        <div class="export-choice-title">
-                            🗓️ 2. ซิงค์กำหนดการฉีดเข็มถัดไปลงปฏิทินมือถือ
-                            <span class="export-badge-popular">สะดวกมาก</span>
-                        </div>
-                        <div class="export-choice-desc">
-                            คำนวณวันนัดเข็มถัดไปให้อัตโนมัติ พร้อมส่งออกไฟล์ .ics สำหรับ Apple Calendar / Google Calendar / Outlook
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right export-choice-arrow"></i>
-                </div>
-
-                <!-- Choice 3: JSON Backup -->
-                <div class="export-choice-card subtle" id="btnExportJsonRaw" style="cursor: pointer;">
-                    <div class="export-choice-icon" style="background: var(--bg-surface-subtle); color: var(--text-muted);">
-                        <i class="fa-solid fa-code"></i>
-                    </div>
-                    <div class="export-choice-content">
-                        <div class="export-choice-title">
-                            💾 3. สำรองข้อมูลส่วนบุคคล (.json)
-                        </div>
-                        <div class="export-choice-desc">
-                            ดาวน์โหลดไฟล์ข้อมูลดิบสำหรับเก็บเป็น Backup ส่วนตัวตามสิทธิ PDPA
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-download export-choice-arrow"></i>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" id="exportModalCancelBtn">ปิดหน้าต่าง</button>
+                
+                <p data-i18n="coffee_scan_text" class="text-xs text-gray-500 text-center bg-gray-50 py-2 px-4 rounded-lg w-full">
+                    สแกนผ่านแอปพลิเคชันธนาคารได้ทุกธนาคาร<br>ขอบคุณสำหรับทุกการสนับสนุนค่ะ 🙏
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Article Detail Reader Modal -->
-    <div class="modal-overlay" id="articleModal">
-        <div class="modal-card" style="max-width: 680px; max-height: 90vh;">
-            <div class="modal-header" style="align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span id="articleModalCategory" class="shopee-badge" style="background: rgba(2, 132, 199, 0.12); color: var(--primary);">คู่มือวัคซีน</span>
-                    <span id="articleModalReadTime" style="font-size: 11.5px; color: var(--text-muted);"><i class="fa-regular fa-clock"></i> 4 นาที</span>
-                </div>
-                <button class="modal-close-btn" id="articleModalCloseBtn" aria-label="ปิดหน้าต่าง">&times;</button>
+    <!-- User Manual Modal -->
+    <div id="manualModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 hidden backdrop-blur-sm p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col relative transform transition-all overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-[#24917d]">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="ph-fill ph-book-open-text text-2xl"></i> <span data-i18n="manual_title">คู่มือการใช้งานระบบ</span></h2>
+                <button id="btnCloseManualTop" class="text-white hover:text-gray-200 transition">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
             </div>
-            <div class="modal-body" id="articleModalBody" style="padding: 24px 28px; line-height: 1.75; font-size: 14px;">
-                <!-- Article Title, Author, Content & Takeaways Injected Here -->
+            
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto text-gray-700 space-y-4 flex-grow text-sm sm:text-base leading-relaxed">
+                <ul class="space-y-3.5">
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">1</div>
+                        <div>
+                            <span data-i18n="manual_1_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณระยะห่างของวัน:</span> 
+                            <span data-i18n="manual_1_desc" class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">2</div>
+                        <div>
+                            <span data-i18n="manual_2_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:</span> 
+                            <span data-i18n="manual_2_desc" class="text-gray-600 text-sm sm:text-[15px]">กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">3</div>
+                        <div>
+                            <span data-i18n="manual_3_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:</span> 
+                            <span data-i18n="manual_3_desc" class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">4</div>
+                        <div>
+                            <span data-i18n="manual_4_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณจำนวนยารายสัปดาห์:</span> 
+                            <span data-i18n="manual_4_desc" class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่เริ่มต้นและวันนัดหมาย พร้อมระบุจำนวนยาที่ต้องทานต่อสัปดาห์ ระบบจะคำนวณจำนวนสัปดาห์และสรุปเม็ดยารวมที่ต้องจ่ายให้อัตโนมัติ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">5</div>
+                        <div>
+                            <span data-i18n="manual_5_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณอายุคนไข้:</span> 
+                            <span data-i18n="manual_5_desc" class="text-gray-600 text-sm sm:text-[15px]">กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">6</div>
+                        <div>
+                            <span data-i18n="manual_6_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:</span> 
+                            <span data-i18n="manual_6_desc" class="text-gray-600 text-sm sm:text-[15px]">กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">7</div>
+                        <div>
+                            <span data-i18n="manual_7_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:</span> 
+                            <span data-i18n="manual_7_desc" class="text-gray-600 text-sm sm:text-[15px]">เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">8</div>
+                        <div>
+                            <span data-i18n="manual_8_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์ตัวช่วยคำนวณยา Oseltamivir:</span> 
+                            <span data-i18n="manual_8_desc" class="text-gray-600 text-sm sm:text-[15px]">ระบุน้ำหนักตัวหรืออายุของผู้ป่วย พร้อมเลือกรูปแบบการใช้ยา (รักษา หรือ ป้องกัน) ระบบจะประมวลผลขนาดยาที่ต้องรับประทานต่อมื้อ พร้อมสรุปปริมาณยารวมที่ต้องจ่ายให้อัตโนมัติอย่างแม่นยำ</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3.5 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100/80 hover:bg-gray-50 transition shadow-sm">
+                        <div class="mt-0.5 bg-[#24917d] text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold shadow">9</div>
+                        <div>
+                            <span data-i18n="manual_9_title" class="font-bold text-[#163333] block mb-1">ฟีเจอร์คำนวณวันนัดฉีดยาคุม:</span> 
+                            <span data-i18n="manual_9_desc" class="text-gray-600 text-sm sm:text-[15px]">เลือกวันที่ฉีดเข็มล่าสุด และชนิดยาคุม (1 เดือน หรือ 3 เดือน) ระบบจะคำนวณวันนัดเข็มถัดไป (บวก 28 วัน หรือ 84 วัน)</span>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button type="button" class="btn btn-outline" id="articleModalCloseFooterBtn">ปิดหน้านี้</button>
-                <div id="articleModalActions">
-                    <!-- Dynamic CTA (e.g. View Vaccine Deals) Injected Here -->
-                </div>
+            
+            <!-- Footer -->
+            <div class="p-5 border-t border-gray-200 bg-gray-50 flex justify-end">
+                <button id="btnCloseManualBottom" data-i18n="close_window" class="bg-[#24917d] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-opacity-90 transition shadow-sm">
+                    ปิดหน้าต่าง
+                </button>
             </div>
         </div>
     </div>
 
-            </div> <!-- End of .aura-content-wrapper -->
-        </div> <!-- End of .aura-bg -->
-
-        <!-- Script Entry -->
-        <script src="app.js"></script>
-    </body>
+    <!-- Scripts -->
+    <script src="app.js?v=1.1"></script>
+</body>
 </html>
