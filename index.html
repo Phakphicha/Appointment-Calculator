@@ -166,8 +166,14 @@
                     <button id="btnLangTH" class="btnLangTH px-3 py-1.5 rounded-full text-xs font-bold transition bg-[#24917d] text-white">TH</button>
                     <button id="btnLangEN" class="btnLangEN px-3 py-1.5 rounded-full text-xs font-bold transition text-white/70 hover:text-white">EN</button>
                 </div>
-                <!-- Coffee & Help Buttons Row -->
+                <!-- Coffee, Help & Article Buttons Row -->
                 <div class="flex items-center gap-2">
+                    <!-- Vaccine Article Guide Button -->
+                    <a href="articles/adult-vaccine-schedule-2026/" class="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#244c41] hover:bg-[#1a3830] text-[#fff2d1] rounded-full transition shadow-lg group relative border border-white/20" title="คู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ 2569">
+                        <i class="ph-bold ph-book-open-text text-xl md:text-2xl"></i>
+                        <!-- Tooltip -->
+                        <span data-i18n="tooltip_article" class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">คู่มือวัคซีนผู้ใหญ่ 2569</span>
+                    </a>
                     <!-- Coffee Button -->
                     <button class="btnOpenCoffee w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#ffc395] hover:bg-[#e0ab82] text-[#24917d] rounded-full transition shadow-lg group relative border border-white/20">
                         <i class="ph-bold ph-coffee text-xl md:text-2xl"></i>
@@ -227,6 +233,11 @@
                             <button id="btnLangENMobile" class="btnLangEN px-3 py-1 rounded-full text-xs font-bold transition text-white/70 hover:text-white">EN</button>
                         </div>
                     </div>
+
+                    <!-- Vaccine Article Guide Link -->
+                    <a href="articles/adult-vaccine-schedule-2026/" class="mobile-nav-link inline-flex items-center gap-2 bg-[#244c41] text-[#fff2d1] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#1a3830] border border-white/20 shadow-sm">
+                        <i class="ph-bold ph-book-open-text text-lg text-amber-300"></i> <span data-i18n="nav_article">คู่มือวัคซีนผู้ใหญ่ 2569 (ฉบับสมบูรณ์)</span>
+                    </a>
 
                     <a href="#section-date-diff" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
                         <i class="ph-bold ph-calendar-blank text-lg"></i> <span data-i18n="nav_datediff">คำนวณวันนัด</span>
@@ -723,6 +734,8 @@
                                 <option value="MMR">หัด คางทูม หัดเยอรมัน (MMR)</option>
                                 <option value="DENGUE">ไข้เลือดออก (Dengue)</option>
                                 <option value="RABIES">โรคพิษสุนัขบ้า (Rabies)</option>
+                                <option value="PNEUMO">นิวโมค็อกคัส (PCV20 / PCV15 / PPSV23)</option>
+                                <option value="TDAP">คอตีบ-บาดทะยัก-ไอกรน (Td / Tdap)</option>
                             </select>
                         </div>
                         <div>
@@ -778,11 +791,11 @@
                     </ul>
                     <div class="mt-4 pt-4 border-t border-gray-300/50 text-xs opacity-80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                            <strong>Reference:</strong> <span data-i18n="s7_ref_source">คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ สมาคมโรคติดเชื้อแห่งประเทศไทย พ.ศ. 2568 - 2569</span>
+                            <strong>Reference:</strong> <span data-i18n="s7_ref_source">คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ พ.ศ. 2569 สมาคมโรคติดเชื้อแห่งประเทศไทย (Recommended Adult and Elderly Immunization 2026)</span>
                         </div>
-                        <a href="/articles/adult-vaccine-schedule-2026" class="inline-flex items-center gap-1.5 text-cardouter hover:text-emerald-800 underline font-bold text-xs transition">
+                        <a href="articles/adult-vaccine-schedule-2026/" class="inline-flex items-center gap-1.5 text-cardouter hover:text-emerald-800 underline font-bold text-xs transition">
                             <i class="ph-bold ph-book-open text-sm"></i>
-                            <span>อ่านคู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ ปี 2569 (ฉบับสมบูรณ์)</span>
+                            <span data-i18n="s7_read_guide">อ่านคู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ ปี 2569 (ฉบับสมบูรณ์)</span>
                         </a>
                     </div>
                 </div>

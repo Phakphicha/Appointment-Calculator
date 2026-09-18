@@ -30,8 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const translations = {
         TH: {
             title_main: "โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี",
+            tooltip_article: "คู่มือวัคซีนผู้ใหญ่ 2569",
             tooltip_coffee: "สนับสนุนค่ากาแฟ",
             tooltip_help: "คู่มือการใช้งาน",
+            nav_article: "คู่มือวัคซีนผู้ใหญ่ 2569 (ฉบับสมบูรณ์)",
             nav_datediff: "คำนวณระยะห่างของวัน",
             nav_med: "คำนวณจำนวนยารายวัน",
             nav_apptdays: "คำนวณวันนัด (วัน)",
@@ -104,7 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             s7_result_label: "วันนัดฉีดเข็มถัดไป",
             s7_ref_1: "การรับวัคซีนเลยกำหนดนัด สามารถให้วัคซีนต่อได้เลย โดยไม่ต้องเริ่มต้นนับใหม่",
             s7_ref_2: "การรับวัคซีนเร็วกว่ากำหนดนัด ในกรณีของวัคซีนชนิดเชื้อตาย พิจารณาให้ก่อนนัดได้ไม่เกิน 4 วัน สำหรับวัคซีนชนิดเชื้อมีชีวิตอ่อนฤทธิ์ ไม่แนะนำให้รับวัคซีนเร็วกว่ากำหนดนัด",
-            s7_ref_source: "Reference: คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ สมาคมโรคติดเชื้อแห่งประเทศไทย พ.ศ. 2568",
+            s7_ref_source: "Reference: คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ พ.ศ. 2569 สมาคมโรคติดเชื้อแห่งประเทศไทย (Recommended Adult and Elderly Immunization 2026)",
+            s7_read_guide: "อ่านคู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ ปี 2569 (ฉบับสมบูรณ์)",
             // Section 8 Table
             s8_title: "ตารางคำนวณวันนัดหมายและจำนวนยา",
             s8_base_label: "วันที่เริ่มต้น (Base Date)",
@@ -232,8 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         EN: {
             title_main: "Medical Appointment & Medication Calculator | EasyMedCal",
+            tooltip_article: "Adult Vaccine Guide 2026",
             tooltip_coffee: "Buy me a coffee",
             tooltip_help: "User Manual",
+            nav_article: "Adult Vaccine Guide 2026 (Complete Edition)",
             nav_datediff: "Date Difference Calculator",
             nav_med: "Daily Medication Calculator",
             nav_apptdays: "Next Appt (by Days)",
@@ -306,7 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
             s7_result_label: "Next Scheduled Dose",
             s7_ref_1: "If an appointment is delayed, vaccination can continue immediately without restarting the series.",
             s7_ref_2: "For early administration: inactivated vaccines may be given up to 4 days before the recommended interval. For live attenuated vaccines, early administration is not recommended.",
-            s7_ref_source: "Reference: Adult and Elderly Immunization Guidelines, Infectious Disease Association of Thailand, 2025",
+            s7_ref_source: "Reference: Recommended Adult and Elderly Immunization 2026, Infectious Diseases Association of Thailand (IDAT)",
+            s7_read_guide: "Read Adult & Elderly Vaccine Schedule 2026 Guide",
             // Section 8 Table
             s8_title: "Appointment & Medication Table",
             s8_base_label: "Start Date (Base Date)",
@@ -512,8 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const vacTypeEN = { "": "-- Select Vaccine --", "HBV": "Hepatitis B (HBV)", "HPV": "HPV", "HAV": "Hepatitis A (HAV)", "VZV": "Varicella / Chickenpox (VZV)", "RZV": "Shingles / Zoster (RZV)", "MMR": "MMR", "DENGUE": "Dengue", "RABIES": "Rabies" };
-        const vacTypeTH = { "": "-- เลือกวัคซีน --", "HBV": "ไวรัสตับอักเสบบี (HBV)", "HPV": "เอชพีวี (HPV)", "HAV": "ไวรัสตับอักเสบเอ (HAV)", "VZV": "อีสุกอีใส (VZV)", "RZV": "งูสวัด (RZV)", "MMR": "หัด คางทูม หัดเยอรมัน (MMR)", "DENGUE": "ไข้เลือดออก (Dengue)", "RABIES": "โรคพิษสุนัขบ้า (Rabies)" };
+        const vacTypeEN = { "": "-- Select Vaccine --", "HBV": "Hepatitis B (HBV)", "HPV": "HPV", "HAV": "Hepatitis A (HAV)", "VZV": "Varicella / Chickenpox (VZV)", "RZV": "Shingles / Zoster (RZV)", "MMR": "MMR", "DENGUE": "Dengue", "RABIES": "Rabies", "PNEUMO": "Pneumococcal (PCV20 / PCV15 / PPSV23)", "TDAP": "Tetanus-Diphtheria-Pertussis (Td / Tdap)" };
+        const vacTypeTH = { "": "-- เลือกวัคซีน --", "HBV": "ไวรัสตับอักเสบบี (HBV)", "HPV": "เอชพีวี (HPV)", "HAV": "ไวรัสตับอักเสบเอ (HAV)", "VZV": "อีสุกอีใส (VZV)", "RZV": "งูสวัด (RZV)", "MMR": "หัด คางทูม หัดเยอรมัน (MMR)", "DENGUE": "ไข้เลือดออก (Dengue)", "RABIES": "โรคพิษสุนัขบ้า (Rabies)", "PNEUMO": "นิวโมค็อกคัส (PCV20 / PCV15 / PPSV23)", "TDAP": "คอตีบ-บาดทะยัก-ไอกรน (Td / Tdap)" };
         const vacSel = document.getElementById('vaccineType');
         if (vacSel) {
             const map = lang === 'EN' ? vacTypeEN : vacTypeTH;
@@ -1354,6 +1360,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const vaccineDateLabel = document.getElementById('vaccineDateLabel');
 
+    function updateVaccineDateLabel() {
+        if (!vaccineDateLabel) return;
+        const type = vaccineType.value;
+        const selDose = vaccineDose.value;
+        const isEn = window.currentLang === 'EN';
+        if (type === 'RABIES') {
+            vaccineDateLabel.textContent = isEn ? 'Start Date (Day 0) / Latest Dose (CE/BE)' : 'วันที่เริ่มฉีด (Day 0) / ฉีดเข็มล่าสุด (พ.ศ.)';
+        } else if (type === 'PNEUMO' && (selDose === 'PPSV23_PREV_GEN' || selDose === 'PPSV23_PREV_IMM')) {
+            vaccineDateLabel.textContent = isEn ? 'Date of PPSV23 Dose (CE/BE)' : 'วันที่ฉีด PPSV23 เข็มล่าสุด (พ.ศ.)';
+        } else if (type === 'PNEUMO' && selDose === 'PCV20') {
+            vaccineDateLabel.textContent = isEn ? 'Date of PCV20 Dose (CE/BE)' : 'วันที่ฉีด PCV20 (พ.ศ.)';
+        } else if (type === 'TDAP' && selDose === 'BOOST_10Y') {
+            vaccineDateLabel.textContent = isEn ? 'Date of Latest Td/Tdap Booster (CE/BE)' : 'วันที่ฉีดเข็มกระตุ้นล่าสุด (พ.ศ.)';
+        } else if (type === 'TDAP' && selDose === 'PREG') {
+            vaccineDateLabel.textContent = isEn ? 'Current Visit / LMP Date (CE/BE)' : 'วันที่มารับบริการ / ตรวจครรภ์ (พ.ศ.)';
+        } else {
+            vaccineDateLabel.textContent = isEn ? 'Latest Dose Date (CE/BE)' : 'วันที่ฉีดเข็มล่าสุด (พ.ศ.)';
+        }
+    }
+
     function populateVaccineDoses() {
         const type = vaccineType.value;
         const currentVal = vaccineDose.value;
@@ -1368,7 +1394,20 @@ document.addEventListener('DOMContentLoaded', () => {
             'RZV': [ { val: '1', text: 'เข็ม 1' } ],
             'MMR': [ { val: '1', text: 'เข็ม 1' } ],
             'DENGUE': [ { val: '1', text: 'เข็ม 1' } ],
-            'RABIES': [ { val: '0', text: 'ผู้ที่ไม่เคยฉีดมาก่อน (5 เข็ม)' }, { val: '1', text: 'ผู้ที่เคยฉีดมาแล้ว (กระตุ้น 2 เข็ม)' } ]
+            'RABIES': [ { val: '0', text: 'ผู้ที่ไม่เคยฉีดมาก่อน (5 เข็ม)' }, { val: '1', text: 'ผู้ที่เคยฉีดมาแล้ว (กระตุ้น 2 เข็ม)' } ],
+            'PNEUMO': [
+                { val: 'PCV20', text: 'สูตร PCV20 เข็มเดียว (จบชุดการฉีด)' },
+                { val: 'PCV15_GEN', text: 'เข็ม 1: PCV15 / PCV13 (กลุ่มเสี่ยงทั่วไป เช่น อายุ ≥65 ปี หรือโรคเรื้อรัง)' },
+                { val: 'PCV15_IMM', text: 'เข็ม 1: PCV15 / PCV13 (กลุ่มภูมิคุ้มกันบกพร่อง / ไม่มีม้าม / CSF leak)' },
+                { val: 'PPSV23_PREV_GEN', text: 'เคยได้รับ PPSV23 มาก่อน (กลุ่มเสี่ยงทั่วไป ต้องการต่อ PCV20)' },
+                { val: 'PPSV23_PREV_IMM', text: 'เคยได้รับ PPSV23 มาก่อน (กลุ่มภูมิคุ้มกันบกพร่อง ต้องการต่อ PCV20)' }
+            ],
+            'TDAP': [
+                { val: '1', text: 'เข็ม 1 (ผู้ไม่เคยได้รับมาก่อน / ไม่ทราบประวัติ)' },
+                { val: '2', text: 'เข็ม 2 (ผู้ที่ฉีดเข็ม 1 มาแล้ว)' },
+                { val: 'BOOST_10Y', text: 'เข็มกระตุ้น (ทุก 10 ปี)' },
+                { val: 'PREG', text: 'หญิงตั้งครรภ์ (Tdap แนะนำช่วงอายุครรภ์ 20–32 สัปดาห์)' }
+            ]
         };
         const rulesEN = {
             'HBV': [ { val: '1', text: 'Dose 1' }, { val: '2', text: 'Dose 2' } ],
@@ -1378,7 +1417,20 @@ document.addEventListener('DOMContentLoaded', () => {
             'RZV': [ { val: '1', text: 'Dose 1' } ],
             'MMR': [ { val: '1', text: 'Dose 1' } ],
             'DENGUE': [ { val: '1', text: 'Dose 1' } ],
-            'RABIES': [ { val: '0', text: 'Never vaccinated (5 doses)' }, { val: '1', text: 'Previously vaccinated (Booster 2 doses)' } ]
+            'RABIES': [ { val: '0', text: 'Never vaccinated (5 doses)' }, { val: '1', text: 'Previously vaccinated (Booster 2 doses)' } ],
+            'PNEUMO': [
+                { val: 'PCV20', text: 'PCV20 single dose regimen (Complete series)' },
+                { val: 'PCV15_GEN', text: 'Dose 1: PCV15 / PCV13 (General risk, age ≥65 or chronic conditions)' },
+                { val: 'PCV15_IMM', text: 'Dose 1: PCV15 / PCV13 (Immunocompromised / Asplenia / CSF leak)' },
+                { val: 'PPSV23_PREV_GEN', text: 'Previously received PPSV23 (General risk, next PCV20)' },
+                { val: 'PPSV23_PREV_IMM', text: 'Previously received PPSV23 (Immunocompromised, next PCV20)' }
+            ],
+            'TDAP': [
+                { val: '1', text: 'Dose 1 (Unvaccinated / Unknown history)' },
+                { val: '2', text: 'Dose 2 (Already had Dose 1)' },
+                { val: 'BOOST_10Y', text: 'Booster (Every 10 years)' },
+                { val: 'PREG', text: 'Pregnant women (Tdap at GA 20–32 weeks)' }
+            ]
         };
 
         const activeRules = isEn ? rulesEN : rulesTH;
@@ -1392,14 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 vaccineDose.appendChild(opt);
             });
             if (currentVal) vaccineDose.value = currentVal;
-            
-            if (vaccineDateLabel) {
-                if (type === 'RABIES') {
-                    vaccineDateLabel.textContent = isEn ? 'Start Date (Day 0) / Latest Dose (CE/BE)' : 'วันที่เริ่มฉีด (Day 0) / ฉีดเข็มล่าสุด (พ.ศ.)';
-                } else {
-                    vaccineDateLabel.textContent = isEn ? 'Latest Dose Date (CE/BE)' : 'วันที่ฉีดเข็มล่าสุด (พ.ศ.)';
-                }
-            }
+            updateVaccineDateLabel();
         } else {
             vaccineDose.disabled = true;
             if (vaccineDateLabel) vaccineDateLabel.textContent = isEn ? 'Latest Dose Date (CE/BE)' : 'วันที่ฉีดเข็มล่าสุด (พ.ศ.)';
@@ -1408,6 +1453,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     vaccineType.addEventListener('change', populateVaccineDoses);
+    vaccineDose.addEventListener('change', () => {
+        updateVaccineDateLabel();
+        calculateVaccine();
+    });
 
     function calculateVaccine() {
         const type = vaccineType.value;
@@ -1445,13 +1494,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                      renderVaccineDose(isEn ? 'Dose 4 (Day 14)' : 'เข็ม 4 (Day 14)', formatThaiDateShortWithDay(dose4)) +
                                      renderVaccineDose(isEn ? 'Dose 5 (Day 28)' : 'เข็ม 5 (Day 28)', formatThaiDateShortWithDay(dose5));
                         pickerDate = dose2;
-                        vaccineNote.textContent = isEn ? '(IM regimen 5 doses)' : '(ฉีดแบบ IM 5 เข็ม)';
+                        vaccineNote.textContent = isEn 
+                            ? 'IM regimen (Deltoid): Day 0, 3, 7, 14, 28 (Never inject into gluteal area). Assess need for Rabies Immunoglobulin (RIG).' 
+                            : 'ฉีดเข้ากล้ามเนื้อ IM (กล้ามเนื้อต้นแขน Deltoid): Day 0, 3, 7, 14, 28 (ห้ามฉีดเข้าสะโพก) และประเมินการให้ RIG ในผู้สัมผัสระดับ 3';
                     } else if (dose === '1') {
                         const dose2 = new Date(vDate); dose2.setDate(dose2.getDate() + 3);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 1 (Day 0)' : 'เข็ม 1 (Day 0)', formatThaiDateShortWithDay(vDate)) +
                                      renderVaccineDose(isEn ? 'Dose 2 (Day 3)' : 'เข็ม 2 (Day 3)', formatThaiDateShortWithDay(dose2));
                         pickerDate = dose2;
-                        vaccineNote.textContent = isEn ? '(Booster 2 doses)' : '(กระตุ้น 2 เข็ม)';
+                        vaccineNote.textContent = isEn 
+                            ? 'Booster 2 doses (Day 0, 3) IM or ID without RIG if previously documented complete rabies vaccination.' 
+                            : 'ฉีดกระตุ้น 2 เข็ม (Day 0, 3) แบบ IM หรือ ID โดยไม่ต้องให้ RIG หากเคยได้รับวัคซีนป้องกันพิษสุนัขบ้าครบชุดมาก่อน';
                     }
                     break;
                 case 'HBV':
@@ -1461,11 +1514,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(dose2)) +
                                      renderVaccineDose(isEn ? 'Dose 3' : 'เข็ม 3', formatThaiDateShortWithDay(dose3));
                         pickerDate = dose2;
-                        vaccineNote.textContent = isEn ? '(Dose 2 is 1 mo after Dose 1, Dose 3 is 6 mos after Dose 1)' : '(เข็ม 2 ห่างจากเข็ม 1 = 1 เดือน, เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
+                        vaccineNote.textContent = isEn 
+                            ? 'Standard schedule: 0, 1, 6 months (Deltoid IM). For hemodialysis patients: consider 40 mcg dose and check Anti-HBs 1-2 months after series.' 
+                            : 'สูตรมาตรฐาน: 0, 1, 6 เดือน (ฉีดเข้ากล้ามต้นแขน Deltoid) / สำหรับผู้ป่วยฟอกไตพิจารณาขนาด 40 mcg และตรวจ Anti-HBs หลังครบชุด 1-2 เดือน';
                     } else if (dose === '2') {
                         nextAppt.setMonth(nextAppt.getMonth() + 5); 
                         resultHTML = renderVaccineDose(isEn ? 'Dose 3' : 'เข็ม 3', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? '(Dose 3 is 6 mos after Dose 1)' : '(เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 3 is given 6 months after Dose 1 (~5 months after Dose 2).' 
+                            : 'เข็ม 3 ฉีดห่างจากเข็ม 1 เป็นเวลา 6 เดือน (ห่างจากเข็ม 2 ประมาณ 5 เดือน)';
                     }
                     break;
                 case 'HPV':
@@ -1475,46 +1533,148 @@ document.addEventListener('DOMContentLoaded', () => {
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(dose2)) +
                                      renderVaccineDose(isEn ? 'Dose 3' : 'เข็ม 3', formatThaiDateShortWithDay(dose3));
                         pickerDate = dose2;
-                        vaccineNote.textContent = isEn ? '(Dose 2 is 2 mos after Dose 1, Dose 3 is 6 mos after Dose 1)' : '(เข็ม 2 ห่างจากเข็ม 1 = 2 เดือน, เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
+                        vaccineNote.textContent = isEn 
+                            ? '3-dose schedule (0, 1-2, 6 mos) for age ≥15 years or immunocompromised. (Age 9-14 years: 2 doses at 0 and 6-12 mos).' 
+                            : 'สูตร 3 เข็ม (0, 1-2, 6 เดือน) สำหรับอายุ ≥15 ปี หรือผู้มีภูมิคุ้มกันบกพร่อง (หากอายุ 9-14 ปี ฉีด 2 เข็มที่ 0 และ 6-12 เดือน)';
                     } else if (dose === '2') {
                         nextAppt.setMonth(nextAppt.getMonth() + 4);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 3' : 'เข็ม 3', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? '(Dose 3 is 6 mos after Dose 1)' : '(เข็ม 3 ห่างจากเข็ม 1 = 6 เดือน)';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 3 is given at least 6 months after Dose 1 (~4 months after Dose 2).' 
+                            : 'เข็ม 3 ฉีดห่างจากเข็ม 1 อย่างน้อย 6 เดือน (ห่างจากเข็ม 2 ประมาณ 4 เดือน)';
                     }
                     break;
                 case 'HAV':
                     if (dose === '1') {
                         nextAppt.setMonth(nextAppt.getMonth() + 6);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? 'Dose 2 is 6 mos after Dose 1' : 'เข็ม 2 ห่างจากเข็ม 1 = 6 เดือน';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 2 is recommended 6–12 months after Dose 1.' 
+                            : 'เข็ม 2 แนะนำฉีดห่างจากเข็ม 1 ในช่วง 6–12 เดือน';
                     }
                     break;
                 case 'VZV':
                     if (dose === '1') {
                         nextAppt.setDate(nextAppt.getDate() + 28);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? 'Dose 2 is 4 weeks (or 1 mo) after Dose 1' : 'เข็ม 2 ห่างจากเข็ม 1 = 4 สัปดาห์ (หรือ 1 เดือน)';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 2 is at least 4 weeks (recommended 4–8 weeks) after Dose 1. Contraindicated in pregnancy and severe immunocompromised.' 
+                            : 'เข็ม 2 ฉีดห่างจากเข็ม 1 อย่างน้อย 4 สัปดาห์ (แนะนำ 4–8 สัปดาห์) ห้ามใช้ในหญิงตั้งครรภ์และผู้มีภาวะภูมิคุ้มกันบกพร่องรุนแรง';
                     }
                     break;
                 case 'MMR':
                     if (dose === '1') {
                         nextAppt.setDate(nextAppt.getDate() + 28);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? 'Dose 2 is 4 weeks after Dose 1' : 'เข็ม 2 ห่างจากเข็ม 1 = 4 สัปดาห์';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 2 is at least 4 weeks after Dose 1. Contraindicated in pregnancy; avoid pregnancy for at least 1 month after dose.' 
+                            : 'เข็ม 2 ฉีดห่างจากเข็ม 1 อย่างน้อย 4 สัปดาห์ ห้ามใช้ในหญิงตั้งครรภ์ และต้องคุมกำเนิดอย่างน้อย 1 เดือนหลังฉีด';
                     }
                     break;
                 case 'RZV':
                     if (dose === '1') {
-                        nextAppt.setMonth(nextAppt.getMonth() + 2);
-                        resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? 'Dose 2 is 2 mos after Dose 1' : 'เข็ม 2 ห่างจากเข็ม 1 = 2 เดือน';
+                        const dose2Min = new Date(vDate); dose2Min.setMonth(dose2Min.getMonth() + 2);
+                        const dose2Max = new Date(vDate); dose2Max.setMonth(dose2Max.getMonth() + 6);
+                        resultHTML = renderVaccineDose(isEn ? 'Dose 2 (Earliest: 2 mos)' : 'เข็ม 2 (เร็วสุด 2 เดือน)', formatThaiDateShortWithDay(dose2Min)) +
+                                     renderVaccineDose(isEn ? 'Dose 2 (Latest: 6 mos)' : 'เข็ม 2 (ไม่เกิน 6 เดือน)', formatThaiDateShortWithDay(dose2Max));
+                        pickerDate = dose2Min;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 2 is given 2–6 months after Dose 1. For immunocompromised, interval can be shortened to 1–2 months (minimum 4 weeks).' 
+                            : 'เข็ม 2 แนะนำฉีดห่าง 2–6 เดือนหลังเข็ม 1 (สำหรับผู้มีภูมิคุ้มกันบกพร่องสามารถร่นระยะห่างเป็น 1–2 เดือนได้ โดยไม่น้อยกว่า 4 สัปดาห์)';
                     }
                     break;
                 case 'DENGUE':
                     if (dose === '1') {
                         nextAppt.setMonth(nextAppt.getMonth() + 3);
                         resultHTML = renderVaccineDose(isEn ? 'Dose 2' : 'เข็ม 2', formatThaiDateShortWithDay(nextAppt));
-                        vaccineNote.textContent = isEn ? 'Dose 2 is 3 mos after Dose 1' : 'เข็ม 2 ห่างจากเข็ม 1 = 3 เดือน';
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 2 is exactly 3 months after Dose 1 (Subcutaneous SC injection. Do NOT administer early. Contraindicated in pregnancy & breastfeeding).' 
+                            : 'เข็ม 2 ฉีดห่างจากเข็ม 1 = 3 เดือน (ฉีดเข้าใต้ผิวหนัง SC ห้ามฉีดก่อนกำหนดนัดเด็ดขาด ห้ามใช้ในหญิงตั้งครรภ์และหญิงให้นมบุตร)';
+                    }
+                    break;
+                case 'PNEUMO':
+                    if (dose === 'PCV20') {
+                        resultHTML = renderVaccineDose(
+                            isEn ? 'PCV20 Series' : 'ชุดวัคซีน PCV20', 
+                            isEn ? 'Completed (Single dose - No booster needed)' : 'เสร็จสิ้นสมบูรณ์ (ฉีดเข็มเดียว ไม่ต้องกระตุ้นซ้ำ)'
+                        );
+                        pickerDate = vDate;
+                        vaccineNote.textContent = isEn 
+                            ? 'PCV20 single dose confers complete protection against 20 serotypes without needing PPSV23.' 
+                            : 'วัคซีน PCV20 ฉีดเพียง 1 เข็ม ให้ภูมิคุ้มกันครอบคลุม 20 สายพันธุ์ โดยไม่ต้องฉีด PPSV23 ตามอีก';
+                    } else if (dose === 'PCV15_GEN') {
+                        const dose2 = new Date(vDate);
+                        dose2.setFullYear(dose2.getFullYear() + 1);
+                        resultHTML = renderVaccineDose(isEn ? 'Dose 2 (PPSV23)' : 'เข็ม 2 (PPSV23)', formatThaiDateShortWithDay(dose2));
+                        pickerDate = dose2;
+                        vaccineNote.textContent = isEn 
+                            ? 'General risk (age ≥65 or chronic conditions): Administer PPSV23 at least 1 year after PCV15 / PCV13.' 
+                            : 'กลุ่มเสี่ยงทั่วไป (อายุ ≥65 ปี หรือผู้มีโรคประจำตัวเรื้อรัง): ฉีด PPSV23 ห่างจาก PCV15 / PCV13 อย่างน้อย 1 ปี';
+                    } else if (dose === 'PCV15_IMM') {
+                        const dose2 = new Date(vDate);
+                        dose2.setDate(dose2.getDate() + 56); // 8 weeks = 56 days
+                        resultHTML = renderVaccineDose(isEn ? 'Dose 2 (PPSV23)' : 'เข็ม 2 (PPSV23)', formatThaiDateShortWithDay(dose2));
+                        pickerDate = dose2;
+                        vaccineNote.textContent = isEn 
+                            ? 'Immunocompromised, asplenia, CSF leak, or cochlear implant: Administer PPSV23 at least 8 weeks after PCV15 / PCV13.' 
+                            : 'กลุ่มภูมิคุ้มกันบกพร่อง / ไม่มีม้าม / น้ำไขสันหลังรั่ว / ผ่าตัดฝังประสาทหูเทียม: ฉีด PPSV23 ห่างจาก PCV15 / PCV13 อย่างน้อย 8 สัปดาห์';
+                    } else if (dose === 'PPSV23_PREV_GEN') {
+                        const nextDose = new Date(vDate);
+                        nextDose.setFullYear(nextDose.getFullYear() + 1);
+                        resultHTML = renderVaccineDose(isEn ? 'Next Dose (PCV20)' : 'เข็มถัดไป (PCV20)', formatThaiDateShortWithDay(nextDose));
+                        pickerDate = nextDose;
+                        vaccineNote.textContent = isEn 
+                            ? 'Previously received PPSV23 (General risk): Administer PCV20 at least 1 year after the last PPSV23 dose.' 
+                            : 'เคยได้รับ PPSV23 มาก่อน (กลุ่มเสี่ยงทั่วไป): ฉีด PCV20 ห่างจากเข็ม PPSV23 ล่าสุดอย่างน้อย 1 ปี';
+                    } else if (dose === 'PPSV23_PREV_IMM') {
+                        const nextDose = new Date(vDate);
+                        nextDose.setFullYear(nextDose.getFullYear() + 5);
+                        resultHTML = renderVaccineDose(isEn ? 'Next Dose (PCV20)' : 'เข็มถัดไป (PCV20)', formatThaiDateShortWithDay(nextDose));
+                        pickerDate = nextDose;
+                        vaccineNote.textContent = isEn 
+                            ? 'Previously received PPSV23 (Immunocompromised): Administer PCV20 at least 5 years after the last PPSV23 dose.' 
+                            : 'เคยได้รับ PPSV23 มาก่อน (กลุ่มภูมิคุ้มกันบกพร่อง): ฉีด PCV20 ห่างจากเข็ม PPSV23 ล่าสุดอย่างน้อย 5 ปี';
+                    }
+                    break;
+                case 'TDAP':
+                    if (dose === '1') {
+                        const dose2 = new Date(vDate); dose2.setMonth(dose2.getMonth() + 1);
+                        const dose3 = new Date(vDate); dose3.setMonth(dose3.getMonth() + 6);
+                        resultHTML = renderVaccineDose(isEn ? 'Dose 2 (Td/Tdap)' : 'เข็ม 2 (Td/Tdap)', formatThaiDateShortWithDay(dose2)) +
+                                     renderVaccineDose(isEn ? 'Dose 3 (Td/Tdap)' : 'เข็ม 3 (Td/Tdap)', formatThaiDateShortWithDay(dose3));
+                        pickerDate = dose2;
+                        vaccineNote.textContent = isEn 
+                            ? 'Catch-up series (0, 1, 6 months): Tdap should replace 1 dose of Td, then booster every 10 years.' 
+                            : 'สูตรเริ่มใหม่ (เดือนที่ 0, 1, 6): ควรให้ Tdap 1 เข็มทดแทน Td จากนั้นกระตุ้น Td/Tdap ทุก 10 ปี';
+                    } else if (dose === '2') {
+                        nextAppt.setMonth(nextAppt.getMonth() + 5);
+                        resultHTML = renderVaccineDose(isEn ? 'Dose 3 (Td/Tdap)' : 'เข็ม 3 (Td/Tdap)', formatThaiDateShortWithDay(nextAppt));
+                        pickerDate = nextAppt;
+                        vaccineNote.textContent = isEn 
+                            ? 'Dose 3 is given at least 6 months after Dose 1 (~5 months after Dose 2).' 
+                            : 'เข็ม 3 ฉีดห่างจากเข็ม 1 อย่างน้อย 6 เดือน (ห่างจากเข็ม 2 ประมาณ 5 เดือน)';
+                    } else if (dose === 'BOOST_10Y') {
+                        const nextBooster = new Date(vDate);
+                        nextBooster.setFullYear(nextBooster.getFullYear() + 10);
+                        resultHTML = renderVaccineDose(isEn ? 'Next Booster (Td/Tdap)' : 'กระตุ้นเข็มถัดไป (Td/Tdap)', formatThaiDateShortWithDay(nextBooster));
+                        pickerDate = nextBooster;
+                        vaccineNote.textContent = isEn 
+                            ? 'Booster every 10 years with Td or Tdap (adults should receive at least 1 lifetime dose of Tdap).' 
+                            : 'ฉีดกระตุ้นทุก 10 ปีด้วย Td หรือ Tdap (ผู้ใหญ่ควรได้รับ Tdap อย่างน้อย 1 ครั้งในชีวิต)';
+                    } else if (dose === 'PREG') {
+                        resultHTML = renderVaccineDose(
+                            isEn ? 'Recommended Timing' : 'ช่วงเวลาที่แนะนำ', 
+                            isEn ? 'Gestational Age 20 – 32 weeks' : 'อายุครรภ์ 20 – 32 สัปดาห์'
+                        );
+                        pickerDate = vDate;
+                        vaccineNote.textContent = isEn 
+                            ? 'Administer 1 dose of Tdap during EVERY pregnancy, ideally between GA 20–32 weeks (or anytime prior to delivery).' 
+                            : 'แนะนำฉีด Tdap 1 เข็มทุกการตั้งครรภ์ ในช่วงอายุครรภ์ 20–32 สัปดาห์ (หรือจนถึงก่อนคลอด) เพื่อส่งผ่านแอนติบอดีป้องกันไอกรนสู่ทารก';
                     }
                     break;
             }
