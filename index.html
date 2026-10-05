@@ -1270,7 +1270,12 @@
     </main>
 
     <footer class="mt-4 py-6 text-center text-sm text-[#2b7a6b]">
-        <p>Medical Appointment & Medication Calculator &copy; <span id="currentYearBE"></span></p>
+        <!-- Medical Disclaimer -->
+        <div role="note" class="max-w-3xl mx-auto mb-5 px-4 py-3 text-left text-xs leading-relaxed text-[#5b4a36] bg-[#fff7ef] border border-[#ffd9b8] rounded-xl flex items-start gap-2">
+            <i class="ph-fill ph-warning-circle text-base text-[#e08a3c] flex-shrink-0 mt-0.5" aria-hidden="true"></i>
+            <p><strong data-i18n="disclaimer_title">ข้อจำกัดความรับผิดชอบ:</strong> <span data-i18n="disclaimer_text">ผลการคำนวณจาก EasyMedCal เป็นเครื่องมือช่วยอำนวยความสะดวกสำหรับบุคลากรทางการแพทย์เท่านั้น ไม่สามารถใช้แทนการวินิจฉัย คำแนะนำ หรือดุลยพินิจทางวิชาชีพของแพทย์และเภสัชกรได้ ผู้ใช้งานควรตรวจสอบผลลัพธ์กับแนวทางเวชปฏิบัติ เอกสารกำกับยา และบริบทของผู้ป่วยแต่ละรายทุกครั้งก่อนนำไปใช้ ผู้พัฒนาไม่รับผิดชอบต่อความเสียหายใด ๆ ที่เกิดจากการนำผลการคำนวณไปใช้</span></p>
+        </div>
+        <p>Medical Appointment &amp; Medication Calculator &copy; <span id="currentYearBE"></span></p>
         <div class="flex items-center justify-center gap-2 mt-2">
             <button class="btnOpenManual inline-flex items-center gap-1 bg-[#163333] text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-[#24917d] transition">
                 <i class="ph-fill ph-question text-sm"></i> <span data-i18n="user_manual_btn">คู่มือการใช้งาน</span>
@@ -1417,6 +1422,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js?v=1.2"></script>
+    <script src="app.js?v=1.3"></script>
 </body>
 </html>
