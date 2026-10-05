@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KNP3JV6XKN"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-KNP3JV6XKN');
-    </script>
+    <!-- Google Analytics: loaded only after cookie consent (PDPA) - see consent.js -->
+    <script src="consent.js?v=1.0" defer></script>
     
     <!-- SEO Meta Tags -->
     <title>โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี</title>
@@ -1286,6 +1279,11 @@
                 <i class="ph-fill ph-coffee text-sm"></i> <span data-i18n="support_coffee_btn">สนับสนุนค่ากาแฟ</span>
             </button>
         </div>
+        <div class="flex items-center justify-center gap-3 mt-3 text-xs">
+            <a href="privacy.html" class="underline hover:text-[#163333] transition" data-i18n="privacy_link">นโยบายความเป็นส่วนตัว</a>
+            <span aria-hidden="true">•</span>
+            <button type="button" data-cookie-settings class="underline hover:text-[#163333] transition" data-i18n="cookie_settings_link">ตั้งค่าคุกกี้</button>
+        </div>
     </footer>
 
     <!-- Coffee Donation Modal -->
@@ -1419,6 +1417,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js?v=1.1"></script>
+    <script src="app.js?v=1.2"></script>
 </body>
 </html>
