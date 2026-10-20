@@ -236,7 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ph_specify_scr: "ระบุค่า SCr...",
             ph_specify_dose: "ระบุตัวเลขขนาดยา",
             ph_specify_pills: "ระบุจำนวนเม็ด",
-            ph_eg_30: "เช่น 30"
+            ph_eg_30: "เช่น 30",
+            btn_copy: "คัดลอกผลลัพธ์",
+            btn_copied: "คัดลอกแล้ว!",
+            btn_reset: "ล้างค่า",
+            toast_copied: "คัดลอกผลลัพธ์ลงคลิปบอร์ดแล้ว",
+            toast_reset: "ล้างข้อมูลเรียบร้อยแล้ว",
+            holiday_prefix: "ตรงกับวันหยุดราชการ: "
         },
         EN: {
             title_main: "Medical Appointment & Medication Calculator | EasyMedCal",
@@ -446,7 +452,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ph_specify_scr: "Enter SCr...",
             ph_specify_dose: "Enter dose number",
             ph_specify_pills: "Enter pill count",
-            ph_eg_30: "e.g. 30"
+            ph_eg_30: "e.g. 30",
+            btn_copy: "Copy Result",
+            btn_copied: "Copied!",
+            btn_reset: "Reset",
+            toast_copied: "Copied result to clipboard",
+            toast_reset: "Calculator reset",
+            holiday_prefix: "Public Holiday: "
         }
     };
 
@@ -712,6 +724,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const diffDatePicker = document.getElementById('diffDatePicker');
     const dateDiffResult = document.getElementById('dateDiffResult');
     const medDaysInput = document.getElementById('medDays');
+    const diffWeekendWarning = document.getElementById('diffWeekendWarning');
+    const diffWeekendText = document.getElementById('diffWeekendText');
+    const btnDiffToFri = document.getElementById('btnDiffToFri');
+    const btnDiffToMon = document.getElementById('btnDiffToMon');
     
     // Initialize with today's date
     const todayDiff = getToday();
@@ -741,6 +757,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             dateDiffResult.textContent = `${diffDays} ${window.currentLang === 'EN' ? 'Days' : 'วัน'}`;
             
+            if (typeof checkWeekendAndWarn === 'function') {
+                checkWeekendAndWarn(targetDate, diffWeekendWarning, diffWeekendText, btnDiffToFri, btnDiffToMon, (shiftDays) => {
+                    const shifted = new Date(targetDate);
+                    shifted.setDate(shifted.getDate() + shiftDays);
+                    syncDateToFields(shifted, diffDayInput, diffMonthInput, diffYearInput);
+                    calculateDateDiff();
+                });
+            }
+
             // Auto-fill Med Days
             medDaysInput.value = diffDays;
             medDaysInput.dispatchEvent(new Event('input'));
@@ -771,6 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             dateDiffResult.textContent = `- ${window.currentLang === 'EN' ? 'Days' : 'วัน'}`;
             diffDatePicker.value = '';
+            if (diffWeekendWarning) diffWeekendWarning.classList.add('hidden');
         }
     }
 
@@ -896,38 +922,166 @@ document.addEventListener('DOMContentLoaded', () => {
     medDoseCustom.addEventListener('input', calculateMedication);
 
     // -------------------------------------------------------------
-    // Helper: Check weekend (Sat/Sun) and render warning + shift buttons
+    // Helper: Thai Public Holidays & Weekend Detection + Shift
     // -------------------------------------------------------------
+    const THAI_FIXED_HOLIDAYS = {
+        '01-01': { th: 'วันขึ้นปีใหม่', en: "New Year's Day" },
+        '04-06': { th: 'วันจักรี', en: 'Chakri Memorial Day' },
+        '04-13': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+        '04-14': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+        '04-15': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+        '05-04': { th: 'วันฉัตรมงคล', en: 'Coronation Day' },
+        '06-03': { th: 'วันเฉลิมฯ พระบรมราชินี', en: "H.M. The Queen's Birthday" },
+        '07-28': { th: 'วันเฉลิมฯ ร.10', en: "H.M. The King's Birthday" },
+        '08-12': { th: 'วันแม่แห่งชาติ', en: "Mother's Day" },
+        '10-13': { th: 'วันนวมินทรมหาราช', en: 'King Bhumibol Memorial Day' },
+        '10-23': { th: 'วันปิยมหาราช', en: 'Chulalongkorn Day' },
+        '12-05': { th: 'วันพ่อแห่งชาติ', en: "Father's Day" },
+        '12-10': { th: 'วันรัฐธรรมนูญ', en: 'Constitution Day' },
+        '12-31': { th: 'วันสิ้นปี', en: "New Year's Eve" }
+    };
+
+    const THAI_YEAR_SPECIFIC_HOLIDAYS = {
+        // 2025 (พ.ศ. 2568)
+        '2025-02-12': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+        '2025-04-07': { th: 'ชดเชยวันจักรี', en: 'Sub. Chakri Day' },
+        '2025-04-16': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+        '2025-05-05': { th: 'ชดเชยวันฉัตรมงคล', en: 'Sub. Coronation Day' },
+        '2025-05-09': { th: 'วันพืชมงคล', en: 'Royal Ploughing Day' },
+        '2025-05-11': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+        '2025-05-12': { th: 'ชดเชยวันวิสาขบูชา', en: 'Sub. Visakha Bucha Day' },
+        '2025-07-10': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+        '2025-07-11': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+        // 2026 (พ.ศ. 2569)
+        '2026-01-02': { th: 'วันหยุดพิเศษปีใหม่', en: 'Special New Year Holiday' },
+        '2026-03-03': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+        '2026-04-16': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+        '2026-05-11': { th: 'วันพืชมงคล', en: 'Royal Ploughing Day' },
+        '2026-05-31': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+        '2026-06-01': { th: 'ชดเชยวันวิสาขบูชา', en: 'Sub. Visakha Bucha Day' },
+        '2026-07-29': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+        '2026-07-30': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+        '2026-12-07': { th: 'ชดเชยวันพ่อแห่งชาติ', en: "Sub. Father's Day" },
+        // 2027 (พ.ศ. 2570)
+        '2027-02-20': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+        '2027-02-22': { th: 'ชดเชยวันมาฆบูชา', en: 'Sub. Makha Bucha Day' },
+        '2027-05-20': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+        '2027-07-18': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+        '2027-07-19': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+        '2027-07-20': { th: 'ชดเชยวันอาสาฬหบูชา', en: 'Sub. Asanha Bucha Day' },
+        '2027-10-25': { th: 'ชดเชยวันปิยมหาราช', en: 'Sub. Chulalongkorn Day' },
+        '2027-12-06': { th: 'ชดเชยวันพ่อแห่งชาติ', en: "Sub. Father's Day" },
+        // 2028 (พ.ศ. 2571)
+        '2028-01-03': { th: 'ชดเชยวันขึ้นปีใหม่', en: "Sub. New Year's Day" },
+        '2028-03-09': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+        '2028-04-17': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+        '2028-05-08': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+        '2028-06-05': { th: 'ชดเชยวันเฉลิมฯ พระบรมราชินี', en: "Sub. Queen's Birthday" },
+        '2028-07-06': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+        '2028-07-07': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+        '2028-08-14': { th: 'ชดเชยวันแม่แห่งชาติ', en: "Sub. Mother's Day" },
+        '2028-12-11': { th: 'ชดเชยวันรัฐธรรมนูญ', en: 'Sub. Constitution Day' }
+    };
+
+    function getThaiHolidayInfo(dateObj) {
+        if (!dateObj || isNaN(dateObj)) {
+            return { isHoliday: false, isWeekend: false, isNonWorking: false, nameTH: '', nameEN: '' };
+        }
+        const iso = toISODate(dateObj);
+        const mmdd = iso.slice(5);
+        const dayOfWeek = dateObj.getDay();
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+        let holiday = THAI_YEAR_SPECIFIC_HOLIDAYS[iso] || THAI_FIXED_HOLIDAYS[mmdd] || null;
+
+        // Automatic substitute check for fixed holidays falling on Sat/Sun if not already in specific map
+        if (!holiday && dayOfWeek === 1) {
+            const sunDate = new Date(dateObj);
+            sunDate.setDate(sunDate.getDate() - 1);
+            const satDate = new Date(dateObj);
+            satDate.setDate(satDate.getDate() - 2);
+            const sunFixed = THAI_FIXED_HOLIDAYS[toISODate(sunDate).slice(5)];
+            const satFixed = THAI_FIXED_HOLIDAYS[toISODate(satDate).slice(5)];
+            if (sunFixed) {
+                holiday = { th: `ชดเชย${sunFixed.th}`, en: `Sub. ${sunFixed.en}` };
+            } else if (satFixed) {
+                holiday = { th: `ชดเชย${satFixed.th}`, en: `Sub. ${satFixed.en}` };
+            }
+        }
+
+        const isHoliday = !!holiday;
+        return {
+            isHoliday,
+            isWeekend,
+            isNonWorking: isHoliday || isWeekend,
+            nameTH: holiday ? holiday.th : '',
+            nameEN: holiday ? holiday.en : ''
+        };
+    }
+
+    function findNearestWorkingDay(dateObj, direction) {
+        const step = direction < 0 ? -1 : 1;
+        const candidate = new Date(dateObj);
+        let diffDays = 0;
+        for (let i = 0; i < 14; i++) {
+            candidate.setDate(candidate.getDate() + step);
+            diffDays += step;
+            const info = getThaiHolidayInfo(candidate);
+            if (!info.isNonWorking) {
+                return { date: candidate, diffDays };
+            }
+        }
+        return { date: candidate, diffDays };
+    }
+
     function checkWeekendAndWarn(dateObj, warningEl, textEl, toFriBtn, toMonBtn, onShiftCallback) {
         if (!dateObj || isNaN(dateObj)) {
             if (warningEl) warningEl.classList.add('hidden');
             return;
         }
+        const info = getThaiHolidayInfo(dateObj);
         const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
+
+        if (info.isNonWorking) {
             if (warningEl) warningEl.classList.remove('hidden');
             const isSat = dayOfWeek === 6;
             const lang = window.currentLang || 'TH';
+
             if (textEl) {
-                textEl.textContent = isSat 
-                    ? (translations[lang].weekend_sat_warn || 'ตรงกับวันเสาร์ (วันหยุดตรวจ)') 
-                    : (translations[lang].weekend_sun_warn || 'ตรงกับวันอาทิตย์ (วันหยุดตรวจ)');
+                if (info.isHoliday) {
+                    const hName = lang === 'EN' ? info.nameEN : info.nameTH;
+                    const prefix = translations[lang].holiday_prefix || (lang === 'EN' ? 'Public Holiday: ' : 'ตรงกับวันหยุดราชการ: ');
+                    textEl.textContent = `${prefix}${hName}`;
+                } else {
+                    textEl.textContent = isSat 
+                        ? (translations[lang].weekend_sat_warn || 'ตรงกับวันเสาร์ (วันหยุดตรวจ)') 
+                        : (translations[lang].weekend_sun_warn || 'ตรงกับวันอาทิตย์ (วันหยุดตรวจ)');
+                }
             }
-            // If Saturday: Friday is -1 day, Monday is +2 days
-            // If Sunday: Friday is -2 days, Monday is +1 day
-            const diffToFri = isSat ? -1 : -2;
-            const diffToMon = isSat ? 2 : 1;
+
+            const prevWork = findNearestWorkingDay(dateObj, -1);
+            const nextWork = findNearestWorkingDay(dateObj, 1);
+
+            const fmtBtnDate = (d) => {
+                const wd = new Intl.DateTimeFormat(lang === 'EN' ? 'en-US' : 'th-TH', { weekday: 'short' }).format(d);
+                const dm = new Intl.DateTimeFormat(lang === 'EN' ? 'en-US' : 'th-TH', { day: 'numeric', month: 'short' }).format(d);
+                return lang === 'EN' ? `Shift to ${wd}, ${dm}` : `เลื่อนเป็น ${wd} ${dm}`;
+            };
 
             if (toFriBtn) {
+                const span = toFriBtn.querySelector('span');
+                if (span) span.textContent = fmtBtnDate(prevWork.date);
                 toFriBtn.onclick = (e) => {
                     e.preventDefault();
-                    onShiftCallback(diffToFri);
+                    onShiftCallback(prevWork.diffDays);
                 };
             }
             if (toMonBtn) {
+                const span = toMonBtn.querySelector('span');
+                if (span) span.textContent = fmtBtnDate(nextWork.date);
                 toMonBtn.onclick = (e) => {
                     e.preventDefault();
-                    onShiftCallback(diffToMon);
+                    onShiftCallback(nextWork.diffDays);
                 };
             }
         } else {
@@ -1085,12 +1239,12 @@ document.addEventListener('DOMContentLoaded', () => {
         presets.forEach(p => {
             const targetDate = new Date(today);
             targetDate.setDate(today.getDate() + p.days);
-            const dayOfWeek = targetDate.getDay();
-            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            const hInfo = getThaiHolidayInfo(targetDate);
+            const isNonWorking = hInfo.isNonWorking;
             
             const card = document.createElement('div');
             card.className = `p-3 rounded-xl border transition-all text-center flex flex-col justify-between cursor-pointer hover:shadow-md hover:border-[#24917d] ${
-                isWeekend ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-white border-gray-100 text-textdark'
+                isNonWorking ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-white border-gray-100 text-textdark'
             }`;
             
             card.addEventListener('click', () => {
@@ -1110,15 +1264,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }).format(targetDate);
 
             const labelText = (translations[lang] && translations[lang][p.labelKey]) ? translations[lang][p.labelKey] : p.defaultLabel;
-            const weekendText = lang === 'EN' ? ' (Weekend)' : ' (หยุด)';
+            let statusSuffix = '';
+            if (hInfo.isHoliday) {
+                const hName = lang === 'EN' ? hInfo.nameEN : hInfo.nameTH;
+                statusSuffix = ` (${hName})`;
+            } else if (hInfo.isWeekend) {
+                statusSuffix = lang === 'EN' ? ' (Weekend)' : ' (หยุด)';
+            }
 
             card.innerHTML = `
                 <div class="text-[11px] sm:text-xs font-bold text-[#1a5b4b] mb-1 truncate" title="${labelText}">${labelText}</div>
                 <div class="text-xs sm:text-sm font-bold text-textdark">${dateStr}</div>
                 <div class="mt-1 flex items-center justify-center">
-                    <span class="inline-block text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                        isWeekend ? 'bg-amber-200/70 text-amber-900' : 'bg-[#24917d]/15 text-[#163333]'
-                    }">${dayName}${isWeekend ? weekendText : ''}</span>
+                    <span class="inline-block text-[10px] px-2 py-0.5 rounded-full font-bold truncate max-w-full ${
+                        isNonWorking ? 'bg-amber-200/70 text-amber-900' : 'bg-[#24917d]/15 text-[#163333]'
+                    }" title="${dayName}${statusSuffix}">${dayName}${statusSuffix}</span>
                 </div>
             `;
             grid.appendChild(card);
@@ -1813,13 +1973,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pills = (!isNaN(dose) && dose > 0) ? Math.ceil(dose * days) : '-';
                 const weeklyPills = (!isNaN(weeklyDose) && weeklyDose > 0) ? Math.ceil(weeklyDose * week) : '-';
                 
+                const hInfo = getThaiHolidayInfo(targetDate);
+                let holidayBadge = '';
+                if (hInfo.isHoliday) {
+                    const hLabel = window.currentLang === 'EN' ? hInfo.nameEN : hInfo.nameTH;
+                    holidayBadge = `<span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">${hLabel}</span>`;
+                } else if (hInfo.isWeekend) {
+                    const wLabel = window.currentLang === 'EN' ? 'Weekend' : 'เสาร์-อาทิตย์';
+                    holidayBadge = `<span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-gray-100 text-gray-600">${wLabel}</span>`;
+                }
+
                 // Zebra striping classes
                 const bgClass = week % 2 === 0 ? 'bg-panelbg/5' : 'bg-white';
 
                 html += `
                     <tr class="border-b border-gray-200 hover:bg-resultbg/50 transition ${bgClass}">
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center font-medium"><div class="flex flex-col items-center whitespace-nowrap"><span>${week} ${wkStr}</span><span class="text-[10px] md:text-xs text-gray-500">(${days} ${dyStr})</span></div></td>
-                        <td class="px-1 md:px-6 py-2 md:py-3 text-center whitespace-nowrap">${formatThaiDateShort(targetDate)}</td>
+                        <td class="px-1 md:px-6 py-2 md:py-3 text-center whitespace-nowrap"><div class="flex flex-col items-center"><span>${formatThaiDateShort(targetDate)}</span>${holidayBadge}</div></td>
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center font-bold text-cardouter text-base md:text-lg">${pills}</td>
                         <td class="px-1 md:px-6 py-2 md:py-3 text-center font-bold text-blue-700 text-base md:text-lg">${weeklyPills}</td>
                     </tr>
@@ -2290,6 +2460,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const contraResult = document.getElementById('contraResult');
     const contraResultPicker = document.getElementById('contraResultPicker');
     const contraTypes = document.getElementsByName('contraType');
+    const contraWeekendWarning = document.getElementById('contraWeekendWarning');
+    const contraWeekendText = document.getElementById('contraWeekendText');
+    const btnContraToFri = document.getElementById('btnContraToFri');
+    const btnContraToMon = document.getElementById('btnContraToMon');
+    let contraShiftOffset = 0;
 
     // Initialize with today's date
     const todayContra = getToday();
@@ -2298,8 +2473,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contraDatePicker) contraDatePicker.value = toISODate(todayContra);
     }
 
-    function calculateContraceptive() {
+    function calculateContraceptive(keepShift) {
         if (!contraDay || !contraMonth || !contraYear || !contraResult) return;
+        if (!keepShift) contraShiftOffset = 0;
 
         const cd = parseInt(contraDay.value);
         const cm = parseInt(contraMonth.value);
@@ -2309,12 +2485,14 @@ document.addEventListener('DOMContentLoaded', () => {
             contraResult.textContent = '-';
             if (contraDatePicker) contraDatePicker.value = '';
             if (contraResultPicker) contraResultPicker.value = '';
+            if (contraWeekendWarning) contraWeekendWarning.classList.add('hidden');
             return;
         }
 
         const baseDate = new Date(toCEYear(cyBE), cm - 1, cd);
         if (isNaN(baseDate.getTime())) {
             contraResult.textContent = '-';
+            if (contraWeekendWarning) contraWeekendWarning.classList.add('hidden');
             return;
         }
 
@@ -2326,13 +2504,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const nextAppt = new Date(baseDate);
         if (selectedType === '1month') {
-            nextAppt.setDate(nextAppt.getDate() + 28);
+            nextAppt.setDate(nextAppt.getDate() + 28 + contraShiftOffset);
         } else {
-            nextAppt.setDate(nextAppt.getDate() + 84);
+            nextAppt.setDate(nextAppt.getDate() + 84 + contraShiftOffset);
         }
 
         contraResult.textContent = formatThaiDateShortWithDay(nextAppt);
         if (contraResultPicker) contraResultPicker.value = toISODate(nextAppt);
+
+        checkWeekendAndWarn(nextAppt, contraWeekendWarning, contraWeekendText, btnContraToFri, btnContraToMon, (diff) => {
+            contraShiftOffset += diff;
+            calculateContraceptive(true);
+        });
     }
 
     if (contraDay) contraDay.addEventListener('input', calculateContraceptive);
@@ -2372,8 +2555,355 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initial render for Quick Glance & Presets
+    // -------------------------------------------------------------
+    // 16. Copy Result & Reset Calculator Features + Toast Notification
+    // -------------------------------------------------------------
+    let toastTimeout = null;
+    function showToast(msg) {
+        let toast = document.getElementById('emc-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'emc-toast';
+            toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] bg-[#102727] text-white px-4 py-2.5 rounded-full shadow-xl border border-white/20 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all duration-200 opacity-0 pointer-events-none translate-y-2';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<i class="ph-fill ph-check-circle text-emerald-400 text-lg"></i> <span>${msg}</span>`;
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-2');
+        }, 2000);
+    }
+
+    function copyTextToClipboard(text, btnEl) {
+        if (!text || text.trim() === '-' || text.includes(': -')) return;
+        const doFeedback = () => {
+            const lang = window.currentLang || 'TH';
+            showToast(translations[lang].toast_copied || 'คัดลอกผลลัพธ์แล้ว');
+            if (btnEl) {
+                const labelSpan = btnEl.querySelector('[data-i18n="btn_copy"]');
+                const iconEl = btnEl.querySelector('i');
+                if (labelSpan) labelSpan.textContent = translations[lang].btn_copied || 'คัดลอกแล้ว!';
+                if (iconEl) iconEl.className = 'ph-bold ph-check text-emerald-700 text-sm';
+                btnEl.classList.add('bg-emerald-50', 'border-emerald-400', 'text-emerald-800');
+                setTimeout(() => {
+                    const curLang = window.currentLang || 'TH';
+                    if (labelSpan) labelSpan.textContent = translations[curLang].btn_copy || 'คัดลอกผลลัพธ์';
+                    if (iconEl) iconEl.className = 'ph-bold ph-copy text-sm';
+                    btnEl.classList.remove('bg-emerald-50', 'border-emerald-400', 'text-emerald-800');
+                }, 1600);
+            }
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(doFeedback).catch(() => {
+                fallbackCopy(text);
+                doFeedback();
+            });
+        } else {
+            fallbackCopy(text);
+            doFeedback();
+        }
+    }
+
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+    }
+
+    function initCopyAndResetFeatures() {
+        const lang = window.currentLang || 'TH';
+        const copyLabel = translations[lang].btn_copy || 'คัดลอกผลลัพธ์';
+        const resetLabel = translations[lang].btn_reset || 'ล้างค่า';
+
+        const cardConfigs = [
+            {
+                sectionId: 'section-date-diff',
+                getCopyText: () => {
+                    const res = dateDiffResult ? dateDiffResult.textContent.trim() : '-';
+                    if (res.startsWith('-')) return '';
+                    return window.currentLang === 'EN' ? `Appointment Interval: ${res}` : `ระยะห่างวันนัด: ${res}`;
+                },
+                onReset: () => {
+                    const t = getToday();
+                    syncDateToFields(t, diffStartDayInput, diffStartMonthInput, diffStartYearInput);
+                    if (diffStartDatePicker) diffStartDatePicker.value = toISODate(t);
+                    diffDayInput.value = '';
+                    diffMonthInput.value = '';
+                    diffYearInput.value = '';
+                    calculateDateDiff();
+                }
+            },
+            {
+                sectionId: 'section-medication',
+                getCopyText: () => {
+                    const res = medResult ? medResult.textContent.trim() : '-';
+                    if (res.startsWith('-')) return '';
+                    const days = medDaysInput ? medDaysInput.value : '';
+                    return window.currentLang === 'EN'
+                        ? `Daily Medication (${days} days): Dispense ${res}`
+                        : `คำนวณยารายวัน (${days} วัน): จ่ายยา ${res}`;
+                },
+                onReset: () => {
+                    const t = getToday();
+                    syncDateToFields(t, medDailyStartDay, medDailyStartMonth, medDailyStartYear);
+                    if (medDailyStartPicker) medDailyStartPicker.value = toISODate(t);
+                    medDailyEndDay.value = '';
+                    medDailyEndMonth.value = '1';
+                    medDailyEndYear.value = '';
+                    if (medDailyEndPicker) medDailyEndPicker.value = '';
+                    medDaysInput.value = '';
+                    medDoseDropdown.value = '';
+                    medDoseCustom.value = '';
+                    medDoseCustom.classList.add('hidden');
+                    calculateMedication();
+                }
+            },
+            {
+                sectionId: 'section-medication-weekly',
+                getCopyText: () => {
+                    const res = medWeeklyResult ? medWeeklyResult.innerText.replace(/\s+/g, ' ').trim() : '-';
+                    if (res.startsWith('-')) return '';
+                    const dur = medWeeklyDuration ? medWeeklyDuration.innerText.replace(/\s+/g, ' ').trim() : '';
+                    return window.currentLang === 'EN'
+                        ? `Weekly Medication (${dur}): Dispense ${res}`
+                        : `คำนวณยารายสัปดาห์ (${dur}): จ่ายยา ${res}`;
+                },
+                onReset: () => {
+                    const t = getToday();
+                    syncDateToFields(t, medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear);
+                    if (medWeeklyStartPicker) medWeeklyStartPicker.value = toISODate(t);
+                    medWeeklyEndDay.value = '';
+                    medWeeklyEndMonth.value = '1';
+                    medWeeklyEndYear.value = '';
+                    if (medWeeklyEndPicker) medWeeklyEndPicker.value = '';
+                    medWeeklyDose.value = '';
+                    medWeeklyDoseCustom.value = '';
+                    medWeeklyDoseCustom.classList.add('hidden');
+                    document.querySelectorAll('.med-weekly-day').forEach(cb => { cb.checked = false; });
+                    calculateWeeklyMedication();
+                }
+            },
+            {
+                sectionId: 'section-appt-days',
+                getCopyText: () => {
+                    const res = apptDaysResult ? apptDaysResult.textContent.trim() : '-';
+                    if (res === '-') return '';
+                    const days = apptDaysInput ? apptDaysInput.value : '';
+                    return window.currentLang === 'EN'
+                        ? `Next Appointment (${days} days): ${res}`
+                        : `วันนัดหมาย (${days} วัน): ${res}`;
+                },
+                onReset: () => {
+                    apptDaysInput.value = '';
+                    calculateApptDays();
+                }
+            },
+            {
+                sectionId: 'section-appt-weeks',
+                getCopyText: () => {
+                    const res = apptWeeksResult ? apptWeeksResult.textContent.trim() : '-';
+                    if (res === '-') return '';
+                    const wks = apptWeeksInput ? apptWeeksInput.value : '';
+                    return window.currentLang === 'EN'
+                        ? `Next Appointment (${wks} weeks): ${res}`
+                        : `วันนัดหมาย (${wks} สัปดาห์): ${res}`;
+                },
+                onReset: () => {
+                    apptWeeksInput.value = '';
+                    calculateApptWeeks();
+                }
+            },
+            {
+                sectionId: 'section-age',
+                getCopyText: () => {
+                    const res = ageResult ? ageResult.textContent.trim() : '-';
+                    if (res === '-') return '';
+                    return window.currentLang === 'EN' ? `Age: ${res}` : `อายุ: ${res}`;
+                },
+                onReset: () => {
+                    ageDayInput.value = '';
+                    ageMonthInput.value = '';
+                    ageYearInput.value = '';
+                    calculateAge();
+                }
+            },
+            {
+                sectionId: 'section-year',
+                getCopyText: () => {
+                    const be = yearBEInput ? yearBEInput.value : '';
+                    const ce = yearCEInput ? yearCEInput.value : '';
+                    if (!be && !ce) return '';
+                    return `พ.ศ. ${be} / ค.ศ. ${ce}`;
+                },
+                onReset: () => {
+                    yearBEInput.value = '';
+                    yearCEInput.value = '';
+                }
+            },
+            {
+                sectionId: 'section-vaccine',
+                getCopyText: () => {
+                    const res = vaccineResult ? vaccineResult.innerText.replace(/\n+/g, ' ').trim() : '-';
+                    if (res === '-') return '';
+                    const vName = vaccineType && vaccineType.selectedOptions[0] ? vaccineType.selectedOptions[0].textContent : '';
+                    return window.currentLang === 'EN'
+                        ? `Vaccine Schedule (${vName}): ${res}`
+                        : `นัดฉีดวัคซีน (${vName}): ${res}`;
+                },
+                onReset: () => {
+                    vaccineType.value = '';
+                    populateVaccineDoses();
+                    vaccineDay.value = '';
+                    vaccineMonth.value = '';
+                    vaccineYear.value = '';
+                    calculateVaccine();
+                }
+            },
+            {
+                sectionId: 'section-appt-table',
+                getCopyText: () => {
+                    const dt = tblCustomDateResult ? tblCustomDateResult.textContent.trim() : '-';
+                    if (dt === '-') return '';
+                    const d = tblCustomDays ? tblCustomDays.value : '';
+                    const daily = tblCustomPillResult ? tblCustomPillResult.textContent.trim() : '-';
+                    const weekly = tblCustomWeeklyPillResult ? tblCustomWeeklyPillResult.textContent.trim() : '-';
+                    return window.currentLang === 'EN'
+                        ? `Appointment (${d} days): ${dt} | Daily: ${daily} | Weekly: ${weekly}`
+                        : `นัด ${d} วัน (${dt}) | ยารายวัน: ${daily} | ยารายสัปดาห์: ${weekly}`;
+                },
+                onReset: () => {
+                    const t = getToday();
+                    syncDateToFields(t, tblBaseDay, tblBaseMonth, tblBaseYear);
+                    tblDoseDropdown.value = '1';
+                    tblDoseCustom.value = '';
+                    tblDoseCustom.classList.add('hidden');
+                    if (document.getElementById('tblWeeklyDoseDropdown')) {
+                        document.getElementById('tblWeeklyDoseDropdown').value = '';
+                    }
+                    if (tblWeeklyDoseCustom) {
+                        tblWeeklyDoseCustom.value = '';
+                        tblWeeklyDoseCustom.classList.add('hidden');
+                    }
+                    if (tblCustomDays) tblCustomDays.value = '';
+                    if (typeof generateTable === 'function') generateTable();
+                }
+            },
+            {
+                sectionId: 'section-oseltamivir',
+                getCopyText: () => {
+                    const dose = oselDoseResult ? oselDoseResult.textContent.trim() : '-';
+                    if (dose === '-') return '';
+                    const vol = oselVolumeResult ? oselVolumeResult.textContent.trim() : '-';
+                    const freq = oselFrequencyResult ? oselFrequencyResult.textContent.trim() : '-';
+                    const btl = oselBottlesResult ? oselBottlesResult.textContent.trim() : '-';
+                    return `Oseltamivir: ${dose} mg (${vol} mL) ${freq} - Total ${btl} bottle(s)`;
+                },
+                onReset: () => {
+                    if (oselAge) oselAge.value = '';
+                    if (oselWeight) oselWeight.value = '';
+                    if (oselAgeUnit) oselAgeUnit.value = 'years';
+                    if (oselIndications[0]) oselIndications[0].checked = true;
+                    calculateOseltamivir();
+                }
+            },
+            {
+                sectionId: 'section-renal-osel',
+                getCopyText: () => {
+                    const crcl = renalCrClResult ? renalCrClResult.innerText.trim() : '-';
+                    const rec = renalDoseResult ? renalDoseResult.textContent.trim() : '-';
+                    if (rec === '-') return '';
+                    return `Oseltamivir (Renal): CrCl ${crcl} | Dose: ${rec}`;
+                },
+                onReset: () => {
+                    if (renalAge) renalAge.value = '';
+                    if (renalWeight) renalWeight.value = '';
+                    if (renalSCr) renalSCr.value = '';
+                    if (renalDialysis) renalDialysis.value = 'none';
+                    if (renalGenders[0]) renalGenders[0].checked = true;
+                    if (renalIndications[0]) renalIndications[0].checked = true;
+                    calculateRenalOseltamivir();
+                }
+            },
+            {
+                sectionId: 'section-contraceptive',
+                getCopyText: () => {
+                    const res = contraResult ? contraResult.textContent.trim() : '-';
+                    if (res === '-') return '';
+                    const checkedRadio = document.querySelector('input[name="contraType"]:checked');
+                    const is1M = !checkedRadio || checkedRadio.value === '1month';
+                    const typeStr = window.currentLang === 'EN'
+                        ? (is1M ? '1-Month (28d)' : '3-Month (84d)')
+                        : (is1M ? '1 เดือน (28 วัน)' : '3 เดือน (84 วัน)');
+                    return window.currentLang === 'EN'
+                        ? `Next Contraceptive Injection (${typeStr}): ${res}`
+                        : `วันนัดฉีดยาคุม (${typeStr}): ${res}`;
+                },
+                onReset: () => {
+                    const t = getToday();
+                    syncDateToFields(t, contraDay, contraMonth, contraYear);
+                    if (contraDatePicker) contraDatePicker.value = toISODate(t);
+                    if (contraTypes[0]) contraTypes[0].checked = true;
+                    calculateContraceptive();
+                }
+            }
+        ];
+
+        cardConfigs.forEach(cfg => {
+            const sec = document.getElementById(cfg.sectionId);
+            if (!sec) return;
+
+            // 1. Add Reset button in card header
+            const headerBar = sec.querySelector('.bg-cardinner');
+            if (headerBar && !headerBar.querySelector('.btn-card-reset')) {
+                headerBar.classList.add('relative', 'pr-12');
+                const resetBtn = document.createElement('button');
+                resetBtn.type = 'button';
+                resetBtn.className = 'btn-card-reset absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-textdark/70 hover:text-textdark bg-black/5 hover:bg-black/10 transition';
+                resetBtn.title = resetLabel;
+                resetBtn.innerHTML = `<i class="ph-bold ph-arrow-counter-clockwise text-sm"></i> <span data-i18n="btn_reset" class="hidden sm:inline">${resetLabel}</span>`;
+                resetBtn.addEventListener('click', () => {
+                    cfg.onReset();
+                    const curLang = window.currentLang || 'TH';
+                    showToast(translations[curLang].toast_reset || 'ล้างข้อมูลเรียบร้อยแล้ว');
+                });
+                headerBar.appendChild(resetBtn);
+            }
+
+            // 2. Add Copy button in result box
+            const resultBoxes = sec.querySelectorAll('.bg-resultbg');
+            const targetResultBox = resultBoxes.length > 0 ? resultBoxes[resultBoxes.length - 1] : null;
+            if (targetResultBox && !targetResultBox.querySelector('.btn-card-copy')) {
+                const copyWrap = document.createElement('div');
+                copyWrap.className = 'mt-3 pt-2 border-t border-black/10 flex justify-center w-full';
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'btn-card-copy inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-textdark shadow-sm border border-black/10 transition';
+                copyBtn.innerHTML = `<i class="ph-bold ph-copy text-sm"></i> <span data-i18n="btn_copy">${copyLabel}</span>`;
+                copyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const text = cfg.getCopyText();
+                    if (text) {
+                        copyTextToClipboard(text, copyBtn);
+                    }
+                });
+                copyWrap.appendChild(copyBtn);
+                targetResultBox.appendChild(copyWrap);
+            }
+        });
+    }
+
+    // Initial render for Quick Glance, Presets & Copy/Reset Controls
     renderQuickGlanceWidget();
     updatePresetLabels();
+    initCopyAndResetFeatures();
 
 });

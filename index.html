@@ -11,12 +11,25 @@
     <title>โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี</title>
     <meta name="description" content="คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม">
     <meta name="keywords" content="คำนวณวันนัด, โปรแกรมคำนวณวันนัด, คำนวณจำนวนยา, คำนวณวันนัดคนไข้, คำนวณอายุ, นัดฉีดวัคซีน, โปรแกรมคลินิก, เครื่องมือแพทย์">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://easymedcal.com/">
 
     <!-- Open Graph (Social Media) Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="th_TH">
+    <meta property="og:site_name" content="EasyMedCal">
     <meta property="og:title" content="โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี">
     <meta property="og:description" content="คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม">
     <meta property="og:image" content="https://easymedcal.com/android-chrome-512x512.png">
+    <meta property="og:image:alt" content="EasyMedCal โปรแกรมคำนวณวันนัด คนไข้และยา">
     <meta property="og:url" content="https://easymedcal.com/">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="https://easymedcal.com/">
+    <meta name="twitter:title" content="โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี">
+    <meta name="twitter:description" content="คำนวณวันนัดหมายคนไข้ได้ทันที นับจำนวนวันและสัปดาห์ พร้อมคำนวณจำนวนยาอัตโนมัติ แม่นยำ ใช้งานง่าย ฟรีบนมือถือ ไม่ต้องติดตั้งโปรแกรม">
+    <meta name="twitter:image" content="https://easymedcal.com/android-chrome-512x512.png">
 
     <!-- Structured Data (Schema.org): FAQPage & WebApplication for Rich Snippets -->
     <script type="application/ld+json">
@@ -341,6 +354,20 @@
                     <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm relative group">
                         <p data-i18n="s1_result_label" class="text-sm font-bold text-textdark mb-1">ระยะห่างจากวันนี้</p>
                         <p id="dateDiffResult" class="text-3xl font-bold text-textdark">- วัน</p>
+                        <!-- Weekend / Holiday Warning & Adjust Container -->
+                        <div id="diffWeekendWarning" class="hidden mt-2 pt-2 border-t border-black/10">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/25 text-amber-950 border border-amber-600/30 mb-2">
+                                <i class="ph-bold ph-warning"></i> <span id="diffWeekendText">ตรงกับวันหยุด</span>
+                            </span>
+                            <div class="flex items-center justify-center gap-2 mt-1">
+                                <button type="button" id="btnDiffToFri" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <i class="ph-bold ph-arrow-left"></i> <span data-i18n="btn_shift_fri">เลื่อนเป็นวันศุกร์</span>
+                                </button>
+                                <button type="button" id="btnDiffToMon" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                    <span data-i18n="btn_shift_mon">เลื่อนเป็นวันจันทร์</span> <i class="ph-bold ph-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1188,6 +1215,20 @@
                     </div>
                     <p data-i18n="s9_next_appt" class="text-sm font-bold text-textdark mb-2">วันที่นัดหมายครั้งถัดไป</p>
                     <p id="contraResult" class="font-bold text-[#1a5b4b] text-2xl md:text-3xl">-</p>
+                    <!-- Weekend / Holiday Warning & Adjust Container -->
+                    <div id="contraWeekendWarning" class="hidden mt-2 pt-2 border-t border-black/10">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/25 text-amber-950 border border-amber-600/30 mb-2">
+                            <i class="ph-bold ph-warning"></i> <span id="contraWeekendText">ตรงกับวันหยุด</span>
+                        </span>
+                        <div class="flex items-center justify-center gap-2 mt-1">
+                            <button type="button" id="btnContraToFri" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                <i class="ph-bold ph-arrow-left"></i> <span data-i18n="btn_shift_fri">เลื่อนเป็นวันศุกร์</span>
+                            </button>
+                            <button type="button" id="btnContraToMon" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-textdark hover:bg-emerald-700 hover:text-white transition shadow-sm border border-black/10 flex items-center gap-1">
+                                <span data-i18n="btn_shift_mon">เลื่อนเป็นวันจันทร์</span> <i class="ph-bold ph-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SEO Text -->
@@ -1422,6 +1463,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js?v=1.4"></script>
+    <script src="app.js?v=1.5"></script>
 </body>
 </html>
