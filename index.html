@@ -438,7 +438,7 @@
                             <option value="2.5">2.5 เม็ด</option>
                             <option value="custom">กำหนดเอง...</option>
                         </select>
-                        <input type="number" id="medDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        <input type="number" id="medDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                     </div>
                     <div class="flex-grow"></div>
                     <div class="bg-resultbg rounded-[1.25rem] p-6 text-center shadow-sm">
@@ -865,7 +865,7 @@
                             <option value="2.5">2.5 เม็ด</option>
                             <option value="custom">กำหนดเอง...</option>
                         </select>
-                        <input type="number" id="tblDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        <input type="number" id="tblDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                     </div>
                     <div class="md:col-span-1">
                         <label for="tblWeeklyDoseDropdown" data-i18n="s8_dose_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
@@ -881,7 +881,7 @@
                             <option value="8">8 เม็ด/สัปดาห์</option>
                             <option value="custom">กำหนดเอง...</option>
                         </select>
-                        <input type="number" id="tblWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        <input type="number" id="tblWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                     </div>
                 </div>
 
@@ -927,7 +927,7 @@
                                 <option value="2.5">2.5 เม็ด</option>
                                 <option value="custom">กำหนดเอง...</option>
                             </select>
-                            <input type="number" id="tblCustomDaysDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                            <input type="number" id="tblCustomDaysDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                         </div>
                         <div>
                             <label for="tblCustomDaysWeeklyDoseDropdown" data-i18n="s8_custom_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
@@ -943,7 +943,7 @@
                                 <option value="8">8 เม็ด/สัปดาห์</option>
                                 <option value="custom">กำหนดเอง...</option>
                             </select>
-                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="0" step="0.1" placeholder="ระบุตัวเลขขนาดยา" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
                         </div>
                     </div>
 
@@ -1135,12 +1135,19 @@
 
                 <!-- Results -->
                 <div class="bg-resultbg rounded-xl p-5 flex flex-col gap-4 shadow-sm border-2 border-panelbg/20">
-                    <div class="text-center border-b border-panelbg/10 pb-4">
-                        <p class="text-sm font-bold text-textdark mb-1">Calculated CrCl (Cockcroft-Gault)</p>
-                        <p id="renalCrClResult" class="font-bold text-[#1a5b4b] text-3xl">- <span class="text-lg">mL/min</span></p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-panelbg/10 pb-4">
+                        <div class="text-center sm:border-r sm:border-panelbg/10 sm:pr-4">
+                            <p class="text-xs sm:text-sm font-bold text-textdark mb-1">Calculated CrCl (Cockcroft-Gault)</p>
+                            <p id="renalCrClResult" class="font-bold text-[#1a5b4b] text-2xl sm:text-3xl">- <span class="text-base sm:text-lg">mL/min</span></p>
+                        </div>
+                        <div class="text-center sm:pl-4">
+                            <p class="text-xs sm:text-sm font-bold text-textdark mb-1">eGFR (CKD-EPI 2021)</p>
+                            <p id="renalEgfrResult" class="font-bold text-[#1a5b4b] text-2xl sm:text-3xl">- <span class="text-base sm:text-lg">mL/min/1.73m²</span></p>
+                            <p id="renalEgfrStage" class="text-xs font-semibold text-textdark/70 mt-1"></p>
+                        </div>
                     </div>
                     <div class="text-center pt-2">
-                        <p class="text-sm font-bold text-textdark mb-2">Recommended Dose</p>
+                        <p class="text-sm font-bold text-textdark mb-2">Recommended Dose (Oseltamivir)</p>
                         <div id="renalDoseResultBox" class="bg-white rounded-xl p-4 shadow-inner border border-gray-100 min-h-[80px] flex items-center justify-center">
                             <p id="renalDoseResult" class="font-bold text-blue-700 text-lg md:text-xl">-</p>
                         </div>
@@ -1462,7 +1469,11 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="app.js?v=1.5"></script>
+    <!-- Scripts (order matters: data -> core logic -> translations -> UI) -->
+    <script src="js/data/thai-holidays.js?v=1.0"></script>
+    <script src="js/core.js?v=1.2"></script>
+    <script src="js/i18n.js?v=1.1"></script>
+    <script src="app.js?v=1.8"></script>
+    <script src="js/pwa.js?v=1.0" defer></script>
 </body>
 </html>
