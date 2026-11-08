@@ -968,6 +968,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const vaccineDateLabel = document.getElementById('vaccineDateLabel');
 
+    // Initialize with today's date
+    const todayVaccine = getToday();
+    if (vaccineDay) {
+        syncDateToFields(todayVaccine, vaccineDay, vaccineMonth, vaccineYear);
+        if (vaccineDatePicker) vaccineDatePicker.value = toISODate(todayVaccine);
+    }
+
     function updateVaccineDateLabel() {
         if (!vaccineDateLabel) return;
         const type = vaccineType.value;
@@ -1645,7 +1652,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (mobileNavLinks.length > 0) {
         mobileNavLinks.forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    closeMobileMenu();
+                    const targetEl = document.querySelector(href);
+                    if (targetEl) {
+                        setTimeout(() => {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 50);
+                    }
+                } else {
+                    closeMobileMenu();
+                }
+            });
         });
     }
 
