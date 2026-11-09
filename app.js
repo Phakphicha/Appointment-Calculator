@@ -87,6 +87,385 @@ if (!window.EMC_HOLIDAYS) {
 })(typeof self !== 'undefined' ? self : this);
 
 }
+if (!window.EMCQR) {
+// =============================================================
+// EasyMedCal - Offline SVG QR Code Generator (ISO/IEC 18004)
+// -------------------------------------------------------------
+// สร้าง QR Code แบบ SVG บนฝั่ง Client 100% (Offline & Zero External API)
+// เพื่อรักษาความเป็นส่วนตัวของข้อมูลผู้ป่วยตามมาตรฐาน PDPA
+// รองรับโหมด Byte (UTF-8) ความจุสูงสุดถึง Version 10 (ECC Level L)
+// =============================================================
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        root.EMCQR = factory();
+    }
+})(typeof self !== 'undefined' ? self : this, function () {
+    'use strict';
+
+    // Capacities for Byte mode at ECC Level L (versions 1 to 10)
+    // Total data codewords and ECC codewords per block structure (ECC Level L)
+    const VERSION_TABLE = [
+        null,
+        { totalData: 19, ecPerBlock: 7, blocks1: 1, data1: 19, blocks2: 0, data2: 0, align: [] },
+        { totalData: 34, ecPerBlock: 10, blocks1: 1, data1: 34, blocks2: 0, data2: 0, align: [6, 18] },
+        { totalData: 55, ecPerBlock: 15, blocks1: 1, data1: 55, blocks2: 0, data2: 0, align: [6, 22] },
+        { totalData: 80, ecPerBlock: 20, blocks1: 1, data1: 80, blocks2: 0, data2: 0, align: [6, 26] },
+        { totalData: 108, ecPerBlock: 26, blocks1: 1, data1: 108, blocks2: 0, data2: 0, align: [6, 30] },
+        { totalData: 136, ecPerBlock: 18, blocks1: 2, data1: 68, blocks2: 0, data2: 0, align: [6, 34] },
+        { totalData: 156, ecPerBlock: 20, blocks1: 2, data1: 78, blocks2: 0, data2: 0, align: [6, 22, 38] },
+        { totalData: 194, ecPerBlock: 24, blocks1: 2, data1: 97, blocks2: 0, data2: 0, align: [6, 24, 42] },
+        { totalData: 232, ecPerBlock: 30, blocks1: 2, data1: 116, blocks2: 0, data2: 0, align: [6, 26, 46] },
+        { totalData: 274, ecPerBlock: 18, blocks1: 2, data1: 68, blocks2: 2, data2: 69, align: [6, 28, 50] }
+    ];
+
+    // GF(256) log / exp tables (primitive polynomial 0x11D)
+    const GF_EXP = new Uint8Array(512);
+    const GF_LOG = new Uint8Array(256);
+    (function initGF() {
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+            GF_EXP[i] = x;
+            GF_LOG[x] = i;
+            x <<= 1;
+            if (x & 0x100) x ^= 0x11D;
+        }
+        for (let i = 255; i < 512; i++) {
+            GF_EXP[i] = GF_EXP[i - 255];
+        }
+    })();
+
+    function gfMul(a, b) {
+        if (a === 0 || b === 0) return 0;
+        return GF_EXP[GF_LOG[a] + GF_LOG[b]];
+    }
+
+    function rsGeneratorPoly(degree) {
+        let poly = [1];
+        for (let i = 0; i < degree; i++) {
+            const next = new Array(poly.length + 1).fill(0);
+            const root = GF_EXP[i];
+            for (let j = 0; j < poly.length; j++) {
+                next[j] ^= poly[j];
+                next[j + 1] ^= gfMul(poly[j], root);
+            }
+            poly = next;
+        }
+        return poly;
+    }
+
+    function rsEncode(data, ecLen) {
+        const gen = rsGeneratorPoly(ecLen);
+        const rem = new Array(ecLen).fill(0);
+        for (let i = 0; i < data.length; i++) {
+            const factor = data[i] ^ rem[0];
+            rem.shift();
+            rem.push(0);
+            if (factor !== 0) {
+                for (let j = 0; j < ecLen; j++) {
+                    rem[j] ^= gfMul(gen[j + 1], factor);
+                }
+            }
+        }
+        return rem;
+    }
+
+    function toUTF8Bytes(str) {
+        if (typeof TextEncoder !== 'undefined') {
+            return Array.from(new TextEncoder().encode(str));
+        }
+        const utf8 = unescape(encodeURIComponent(str));
+        const bytes = [];
+        for (let i = 0; i < utf8.length; i++) bytes.push(utf8.charCodeAt(i));
+        return bytes;
+    }
+
+    function selectVersion(byteLen) {
+        for (let v = 1; v <= 10; v++) {
+            const info = VERSION_TABLE[v];
+            // Overhead: 4 bits mode + (8 or 16 bits length)
+            const headerBits = 4 + (v <= 9 ? 8 : 16);
+            const availBytes = Math.floor((info.totalData * 8 - headerBits) / 8);
+            if (byteLen <= availBytes) return v;
+        }
+        return null;
+    }
+
+    function buildDataCodewords(bytes, version) {
+        const info = VERSION_TABLE[version];
+        const bits = [];
+        function pushBits(val, len) {
+            for (let i = len - 1; i >= 0; i--) {
+                bits.push((val >>> i) & 1);
+            }
+        }
+        // Mode indicator: Byte mode = 0100 (4)
+        pushBits(0b0100, 4);
+        // Character count indicator
+        pushBits(bytes.length, version <= 9 ? 8 : 16);
+        for (let i = 0; i < bytes.length; i++) {
+            pushBits(bytes[i], 8);
+        }
+        // Terminator up to 4 zero bits
+        const totalBits = info.totalData * 8;
+        const term = Math.min(4, totalBits - bits.length);
+        pushBits(0, term);
+        while (bits.length % 8 !== 0) bits.push(0);
+
+        const codewords = [];
+        for (let i = 0; i < bits.length; i += 8) {
+            let b = 0;
+            for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j];
+            codewords.push(b);
+        }
+        const padBytes = [0xEC, 0x11];
+        let padIdx = 0;
+        while (codewords.length < info.totalData) {
+            codewords.push(padBytes[padIdx % 2]);
+            padIdx++;
+        }
+        return codewords;
+    }
+
+    function interleaveBlocks(dataCodewords, version) {
+        const info = VERSION_TABLE[version];
+        const blocks = [];
+        let offset = 0;
+        for (let i = 0; i < info.blocks1; i++) {
+            const d = dataCodewords.slice(offset, offset + info.data1);
+            offset += info.data1;
+            blocks.push({ data: d, ec: rsEncode(d, info.ecPerBlock) });
+        }
+        for (let i = 0; i < info.blocks2; i++) {
+            const d = dataCodewords.slice(offset, offset + info.data2);
+            offset += info.data2;
+            blocks.push({ data: d, ec: rsEncode(d, info.ecPerBlock) });
+        }
+
+        const result = [];
+        const maxDataLen = Math.max(info.data1, info.data2);
+        for (let i = 0; i < maxDataLen; i++) {
+            for (let b = 0; b < blocks.length; b++) {
+                if (i < blocks[b].data.length) result.push(blocks[b].data[i]);
+            }
+        }
+        for (let i = 0; i < info.ecPerBlock; i++) {
+            for (let b = 0; b < blocks.length; b++) {
+                result.push(blocks[b].ec[i]);
+            }
+        }
+        return result;
+    }
+
+    function createMatrix(version, codewords) {
+        const size = version * 4 + 17;
+        const modules = Array.from({ length: size }, () => new Array(size).fill(false));
+        const isFunction = Array.from({ length: size }, () => new Array(size).fill(false));
+
+        function setFunc(r, c, dark) {
+            if (r < 0 || r >= size || c < 0 || c >= size) return;
+            modules[r][c] = !!dark;
+            isFunction[r][c] = true;
+        }
+
+        // Finder patterns + separators
+        function drawFinder(r0, c0) {
+            for (let dr = -1; dr <= 7; dr++) {
+                for (let dc = -1; dc <= 7; dc++) {
+                    const r = r0 + dr, c = c0 + dc;
+                    if (r < 0 || r >= size || c < 0 || c >= size) continue;
+                    const inOuter = (dr >= 0 && dr <= 6 && (dc === 0 || dc === 6)) ||
+                                    (dc >= 0 && dc <= 6 && (dr === 0 || dr === 6));
+                    const inInner = (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4);
+                    setFunc(r, c, inOuter || inInner);
+                }
+            }
+        }
+        drawFinder(0, 0);
+        drawFinder(0, size - 7);
+        drawFinder(size - 7, 0);
+
+        // Timing patterns
+        for (let i = 8; i < size - 8; i++) {
+            setFunc(6, i, i % 2 === 0);
+            setFunc(i, 6, i % 2 === 0);
+        }
+
+        // Alignment patterns
+        const align = VERSION_TABLE[version].align;
+        for (let i = 0; i < align.length; i++) {
+            for (let j = 0; j < align.length; j++) {
+                const ar = align[i], ac = align[j];
+                if ((ar === 6 && ac === 6) || (ar === 6 && ac === size - 7) || (ar === size - 7 && ac === 6)) continue;
+                for (let dr = -2; dr <= 2; dr++) {
+                    for (let dc = -2; dc <= 2; dc++) {
+                        const dark = Math.max(Math.abs(dr), Math.abs(dc)) !== 1;
+                        setFunc(ar + dr, ac + dc, dark);
+                    }
+                }
+            }
+        }
+
+        // Dark module
+        setFunc(4 * version + 9, 8, true);
+
+        // Reserve format information areas
+        for (let i = 0; i <= 8; i++) {
+            if (!isFunction[8][i]) setFunc(8, i, false);
+            if (!isFunction[i][8]) setFunc(i, 8, false);
+            if (i < 8) {
+                if (!isFunction[8][size - 1 - i]) setFunc(8, size - 1 - i, false);
+                if (!isFunction[size - 1 - i][8]) setFunc(size - 1 - i, 8, false);
+            }
+        }
+
+        // Place data bits (upward/downward 2-column zigzag)
+        const allBits = [];
+        for (let i = 0; i < codewords.length; i++) {
+            for (let b = 7; b >= 0; b--) allBits.push((codewords[i] >>> b) & 1);
+        }
+
+        let bitIdx = 0;
+        let upward = true;
+        for (let right = size - 1; right >= 1; right -= 2) {
+            if (right === 6) right = 5; // skip vertical timing column
+            for (let vert = 0; vert < size; vert++) {
+                const r = upward ? (size - 1 - vert) : vert;
+                for (let j = 0; j < 2; j++) {
+                    const c = right - j;
+                    if (!isFunction[r][c]) {
+                        const dark = bitIdx < allBits.length ? allBits[bitIdx] === 1 : false;
+                        // Apply mask 0: (r + c) % 2 === 0
+                        const mask = ((r + c) % 2) === 0;
+                        modules[r][c] = dark !== mask;
+                        bitIdx++;
+                    }
+                }
+            }
+            upward = !upward;
+        }
+
+        // Draw format bits for ECC Level L (01) and Mask 0 (000)
+        // Precomputed BCH format bits for Level L (01) + Mask 0 (000) ^ 0x5412 = 0x77C4 (30660)
+        const formatBits = 0x77C4;
+        function getBit(val, i) { return ((val >>> i) & 1) === 1; }
+
+        for (let i = 0; i <= 5; i++) setFunc(8, i, getBit(formatBits, i));
+        setFunc(8, 7, getBit(formatBits, 6));
+        setFunc(8, 8, getBit(formatBits, 7));
+        setFunc(7, 8, getBit(formatBits, 8));
+        for (let i = 9; i < 15; i++) setFunc(14 - i, 8, getBit(formatBits, i));
+
+        for (let i = 0; i < 8; i++) setFunc(8, size - 1 - i, getBit(formatBits, i));
+        for (let i = 8; i < 15; i++) setFunc(size - 15 + i, 8, getBit(formatBits, i));
+        setFunc(size - 8, 8, true);
+
+        return modules;
+    }
+
+    /**
+     * Generate a Matrix (2D boolean array) for a text string
+     */
+    function generateMatrix(text) {
+        if (!text) return null;
+        let bytes = toUTF8Bytes(String(text));
+        let version = selectVersion(bytes.length);
+        if (!version) {
+            // Truncate safely if text exceeds version 10 capacity (~270 bytes)
+            bytes = bytes.slice(0, 268);
+            version = 10;
+        }
+        const dataCw = buildDataCodewords(bytes, version);
+        const finalCw = interleaveBlocks(dataCw, version);
+        return createMatrix(version, finalCw);
+    }
+
+    /**
+     * Render QR Code as a crisp SVG string
+     * @param {string} text
+     * @param {{size?: number, margin?: number, darkColor?: string, lightColor?: string}} [opts]
+     */
+    function toSVG(text, opts) {
+        opts = opts || {};
+        const matrix = generateMatrix(text);
+        if (!matrix) return '';
+        const n = matrix.length;
+        const margin = opts.margin !== undefined ? opts.margin : 2;
+        const total = n + margin * 2;
+        const size = opts.size || 200;
+        const dark = opts.darkColor || '#102727';
+        const light = opts.lightColor || '#ffffff';
+
+        let path = '';
+        for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+                if (matrix[r][c]) {
+                    path += `M${c + margin},${r + margin}h1v1h-1z`;
+                }
+            }
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" width="${size}" height="${size}" shape-rendering="crispEdges" role="img" aria-label="QR Code"><rect width="100%" height="100%" fill="${light}"/><path d="${path}" fill="${dark}"/></svg>`;
+    }
+
+    /**
+     * Generate Code 128 (Subset B) barcode as crisp SVG
+     * @param {string} text (e.g. HN: 6601234, P012878)
+     * @param {{height?: number, width?: number, showText?: boolean}} [opts]
+     */
+    function barcodeSVG(text, opts) {
+        opts = opts || {};
+        const str = String(text || '').trim();
+        if (!str) return '';
+        const patterns = [
+            '212222', '222122', '222221', '121223', '121322', '131222', '122213', '122312', '132212', '221213',
+            '221312', '231212', '112232', '122132', '122231', '113222', '123122', '123221', '223211', '221132',
+            '221231', '213212', '223112', '312131', '311222', '321122', '321221', '312212', '322112', '322211',
+            '212123', '212321', '232121', '111323', '131123', '131321', '112313', '132113', '132311', '211313',
+            '231113', '231311', '112133', '112331', '132131', '113123', '113321', '133121', '313121', '211331',
+            '231131', '213113', '213311', '213131', '311123', '311321', '331121', '312113', '312311', '332111',
+            '314111', '221411', '431111', '111224', '111422', '121124', '121421', '141122', '141221', '112214',
+            '112412', '122114', '122411', '142112', '142211', '241211', '221114', '413111', '241112', '134111',
+            '111242', '121142', '121241', '114212', '124112', '124211', '411212', '421112', '421211', '212141',
+            '214121', '412121', '111143', '111341', '131141', '114113', '114311', '411113', '411311', '113141',
+            '114131', '311141', '411131', '211412', '211214', '211232', '2331112'
+        ];
+        const codes = [104];
+        let checkSum = 104;
+        for (let i = 0; i < str.length; i++) {
+            let code = str.charCodeAt(i) - 32;
+            if (code < 0 || code > 95) code = 0;
+            codes.push(code);
+            checkSum += code * (i + 1);
+        }
+        codes.push(checkSum % 103);
+        codes.push(106);
+        const full = codes.map(c => patterns[c]).join('');
+        const barHeight = opts.height || 36;
+        const showText = opts.showText !== false;
+        const totalHeight = showText ? barHeight + 14 : barHeight;
+        let rects = '';
+        let x = 0;
+        for (let i = 0; i < full.length; i++) {
+            const w = parseInt(full[i], 10);
+            if (i % 2 === 0) {
+                rects += `<rect x="${x}" y="0" width="${w}" height="${barHeight}" fill="#000000"/>`;
+            }
+            x += w;
+        }
+        const textSvg = showText ? `<text x="${x / 2}" y="${barHeight + 11}" font-size="10" font-family="'Courier New', monospace" font-weight="700" text-anchor="middle" fill="#000000">${str}</text>` : '';
+        const svgWidth = opts.width || Math.round(x * 1.3);
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x} ${totalHeight}" width="${svgWidth}" height="${totalHeight}" shape-rendering="crispEdges" role="img" aria-label="Barcode ${str}"><rect width="100%" height="100%" fill="#ffffff"/>${rects}${textSvg}</svg>`;
+    }
+
+    return {
+        generateMatrix,
+        toSVG,
+        barcodeSVG
+    };
+});
+
+}
 if (!window.EMCCore) {
 // =============================================================
 // EasyMedCal - Core calculation logic (pure functions, no DOM)
@@ -3144,6 +3523,17 @@ function initEasyMedCal() {
                     if (res.startsWith('-')) return '';
                     return window.currentLang === 'EN' ? `Appointment Interval: ${res}` : `ระยะห่างวันนัด: ${res}`;
                 },
+                getCalEvent: () => {
+                    const d = parseDateFields(diffDayInput, diffMonthInput, diffYearInput);
+                    if (!d || isNaN(d)) return null;
+                    const isEn = (window.currentLang || 'TH') === 'EN';
+                    const res = dateDiffResult ? dateDiffResult.textContent.trim() : '';
+                    return {
+                        title: isEn ? 'Medical Appointment' : 'นัดหมายแพทย์/โรงพยาบาล',
+                        date: d,
+                        details: isEn ? `Appointment interval: ${res}` : `ระยะห่างวันนัด: ${res}`
+                    };
+                },
                 onReset: () => {
                     const t = getToday();
                     syncDateToFields(t, diffStartDayInput, diffStartMonthInput, diffStartYearInput);
@@ -3163,6 +3553,18 @@ function initEasyMedCal() {
                     return window.currentLang === 'EN'
                         ? `Daily Medication (${days} days): Dispense ${res}`
                         : `คำนวณยารายวัน (${days} วัน): จ่ายยา ${res}`;
+                },
+                getCalEvent: () => {
+                    const d = parseDateFields(medDailyEndDay, medDailyEndMonth, medDailyEndYear);
+                    if (!d || isNaN(d)) return null;
+                    const isEn = (window.currentLang || 'TH') === 'EN';
+                    const days = medDaysInput ? medDaysInput.value : '';
+                    const res = medResult ? medResult.textContent.trim() : '';
+                    return {
+                        title: isEn ? 'Follow-up Appointment & Medication Refill' : 'นัดตรวจติดตามและรับยาต่อเนื่อง',
+                        date: d,
+                        details: isEn ? `Duration: ${days} days, Medication: ${res}` : `ระยะเวลานัด: ${days} วัน, จ่ายยา: ${res}`
+                    };
                 },
                 onReset: () => {
                     const t = getToday();
@@ -3188,6 +3590,18 @@ function initEasyMedCal() {
                     return window.currentLang === 'EN'
                         ? `Weekly Medication (${dur}): Dispense ${res}`
                         : `คำนวณยารายสัปดาห์ (${dur}): จ่ายยา ${res}`;
+                },
+                getCalEvent: () => {
+                    const d = parseDateFields(medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear);
+                    if (!d || isNaN(d)) return null;
+                    const isEn = (window.currentLang || 'TH') === 'EN';
+                    const dur = medWeeklyDuration ? medWeeklyDuration.innerText.replace(/\s+/g, ' ').trim() : '';
+                    const res = medWeeklyResult ? medWeeklyResult.innerText.replace(/\s+/g, ' ').trim() : '';
+                    return {
+                        title: isEn ? 'Weekly Medication Follow-up' : 'นัดตรวจติดตามรับยารายสัปดาห์',
+                        date: d,
+                        details: isEn ? `Duration: ${dur}, Medication: ${res}` : `ระยะเวลา: ${dur}, จ่ายยา: ${res}`
+                    };
                 },
                 onReset: () => {
                     const t = getToday();
@@ -3510,58 +3924,36 @@ function initEasyMedCal() {
                     actionWrap.appendChild(icsBtn);
                 }
 
-                // Print Slip & QR Code Buttons (for clinical/appointment cards)
+                // Link to Clinic Appointment Suite (New Dedicated Page)
                 if (cfg.sectionId !== 'section-year' && cfg.sectionId !== 'section-age') {
-                    const printLabel = translations[lang].btn_print || 'พิมพ์ใบนัด';
-                    const qrLabel = translations[lang].btn_qr || 'QR มือถือ';
-
-                    const printBtn = document.createElement('button');
-                    printBtn.type = 'button';
-                    printBtn.className = 'btn-card-print inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-[#102727] shadow-sm border border-black/10 transition';
-                    printBtn.innerHTML = `<i class="ph-bold ph-printer text-sm text-[#24917d]"></i> <span data-i18n="btn_print">${printLabel}</span>`;
-                    printBtn.addEventListener('click', (e) => {
+                    const apptBtn = document.createElement('button');
+                    apptBtn.type = 'button';
+                    apptBtn.className = 'btn-card-appointment inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#102727] hover:bg-[#163838] text-emerald-300 border border-emerald-500/40 shadow-sm transition hover:scale-105';
+                    apptBtn.innerHTML = `<i class="ph-bold ph-calendar-plus text-sm text-emerald-400"></i> <span>${window.currentLang === 'EN' ? 'Create Appointment' : 'ทำนัดหมายคนไข้'}</span>`;
+                    apptBtn.title = window.currentLang === 'EN' ? 'Transfer to EasyMedCal Appointment Suite' : 'ส่งข้อมูลเข้าสู่ระบบนัดหมายคลินิก';
+                    apptBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const text = cfg.getCopyText();
                         if (!text) {
-                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนพิมพ์ใบนัด');
+                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนทำนัดหมาย');
                             return;
                         }
                         const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
-                        openPrintSlipModal({
-                            sectionId: cfg.sectionId,
-                            summaryText: text,
-                            calEvent: calEv
-                        });
-                    });
-                    actionWrap.appendChild(printBtn);
-
-                    const qrBtn = document.createElement('button');
-                    qrBtn.type = 'button';
-                    qrBtn.className = 'btn-card-qr inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-[#102727] shadow-sm border border-black/10 transition';
-                    qrBtn.innerHTML = `<i class="ph-bold ph-qr-code text-sm text-[#24917d]"></i> <span data-i18n="btn_qr">${qrLabel}</span>`;
-                    qrBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const text = cfg.getCopyText();
-                        if (!text) {
-                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนสร้าง QR Code');
-                            return;
-                        }
-                        const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
-                        let qrPayload = text;
+                        const params = new URLSearchParams();
+                        params.set('purpose', text);
                         if (calEv && calEv.date) {
-                            const dt = formatCalDate(calEv.date);
-                            const nextD = new Date(calEv.date);
-                            nextD.setDate(nextD.getDate() + 1);
-                            const dtEnd = formatCalDate(nextD);
-                            qrPayload = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(calEv.title)}&dates=${dt}/${dtEnd}&details=${encodeURIComponent(text)}`;
+                            params.set('date', toISODate(calEv.date));
                         }
-                        openQrModal(
-                            calEv ? calEv.title : 'EasyMedCal Summary',
-                            qrPayload,
-                            text
-                        );
+                        if (activePatientMeta.name) params.set('patient', activePatientMeta.name);
+                        if (activePatientMeta.hn) params.set('hn', activePatientMeta.hn);
+                        if (activePatientMeta.age) params.set('age', activePatientMeta.age);
+                        if (cfg.sectionId === 'section-vaccine') params.set('clinic', 'คลินิกวัคซีนและสร้างเสริมภูมิคุ้มกัน');
+                        else if (cfg.sectionId === 'section-contra') params.set('clinic', 'คลินิกวางแผนครอบครัว');
+                        else if (cfg.sectionId.includes('medication')) params.set('clinic', 'คลินิกโรคเรื้อรัง (NCD)');
+
+                        window.open(`appointment.html?${params.toString()}`, '_blank');
                     });
-                    actionWrap.appendChild(qrBtn);
+                    actionWrap.appendChild(apptBtn);
                 }
 
                 targetResultBox.appendChild(actionWrap);
@@ -3573,136 +3965,7 @@ function initEasyMedCal() {
     // 17. Printable Appointment Slip / Sticker & Offline QR Modal
     // -------------------------------------------------------------
     let activeSlipData = null;
-    let activePatientMeta = { hn: '', name: '' };
-
-    function openQrModal(title, qrPayload, descText) {
-        const modal = document.getElementById('qrModal');
-        const titleEl = document.getElementById('qrModalTitle');
-        const svgBox = document.getElementById('qrSvgContainer');
-        const descEl = document.getElementById('qrModalDesc');
-        if (!modal || !svgBox) return;
-
-        if (titleEl) titleEl.textContent = title || 'QR Code';
-        if (descEl) descEl.textContent = descText || '';
-        if (window.EMCQR && typeof window.EMCQR.toSVG === 'function') {
-            svgBox.innerHTML = window.EMCQR.toSVG(qrPayload, { size: 200, margin: 2 });
-        } else {
-            svgBox.textContent = qrPayload;
-        }
-        modal.classList.remove('hidden');
-    }
-
-    const btnCloseQrModal = document.getElementById('btnCloseQrModal');
-    const qrModalEl = document.getElementById('qrModal');
-    if (btnCloseQrModal && qrModalEl) {
-        btnCloseQrModal.addEventListener('click', () => qrModalEl.classList.add('hidden'));
-        qrModalEl.addEventListener('click', (e) => {
-            if (e.target === qrModalEl) qrModalEl.classList.add('hidden');
-        });
-    }
-
-    function buildSlipHtml(data, ptStr, noteStr, format) {
-        const isThermal = format === 'thermal';
-        const todayStr = formatThaiDateShort(getToday());
-        const qrPayload = data.summaryText;
-        const qrSvg = (window.EMCQR && typeof window.EMCQR.toSVG === 'function')
-            ? window.EMCQR.toSVG(qrPayload, { size: isThermal ? 76 : 96, margin: 1 })
-            : '';
-
-        if (isThermal) {
-            return `
-                <div style="font-family:'Prompt',sans-serif; font-size:11px; line-height:1.35; color:#000; padding:4px;">
-                    <div style="border-bottom:1.5px solid #000; padding-bottom:3px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
-                        <strong style="font-size:12px;">ใบนัด / รายการยา (EasyMedCal)</strong>
-                        <span style="font-size:10px;">${todayStr}</span>
-                    </div>
-                    ${ptStr ? `<div style="font-weight:700; margin-bottom:3px;">ผู้ป่วย: ${ptStr}</div>` : ''}
-                    <div style="display:flex; gap:6px; align-items:center; justify-content:space-between;">
-                        <div style="flex:1;">
-                            <div style="font-weight:700; font-size:12px; margin-bottom:3px;">${data.summaryText}</div>
-                            ${noteStr ? `<div style="font-size:10px; border-top:1px dashed #666; padding-top:2px; margin-top:2px;">* ${noteStr}</div>` : ''}
-                        </div>
-                        ${qrSvg ? `<div style="flex-shrink:0;">${qrSvg}</div>` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        return `
-            <div style="font-family:'Prompt',sans-serif; color:#102727; padding:12px; border:2px solid #102727; border-radius:12px; max-width:540px; margin:0 auto;">
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #24917d; padding-bottom:8px; margin-bottom:10px;">
-                    <div>
-                        <div style="font-size:16px; font-weight:700; color:#102727;">ใบนัดหมายและสรุปรายการยา (Appointment Slip)</div>
-                        <div style="font-size:11px; color:#555;">วันที่ออกใบนัด: ${todayStr} | ระบบคำนวณวันนัดและยา EasyMedCal</div>
-                    </div>
-                </div>
-                ${ptStr ? `<div style="font-size:14px; font-weight:700; margin-bottom:8px; background:#f3f1eb; padding:6px 10px; border-radius:8px;">ชื่อผู้ป่วย / HN: ${ptStr}</div>` : ''}
-                <div style="display:flex; gap:14px; align-items:center; justify-content:space-between; background:#fff7ef; border:1px solid #ffd9b8; padding:12px; border-radius:10px;">
-                    <div style="flex:1;">
-                        <div style="font-size:11px; font-weight:700; color:#5b4a36; margin-bottom:4px;">รายละเอียดการนัดหมาย / จำนวนยา:</div>
-                        <div style="font-size:16px; font-weight:700; color:#102727; line-height:1.4;">${data.summaryText}</div>
-                        ${noteStr ? `<div style="font-size:12px; color:#1a5b4b; font-weight:600; margin-top:8px; padding-top:6px; border-top:1px dashed #ccc;">คำแนะนำ: ${noteStr}</div>` : ''}
-                    </div>
-                    ${qrSvg ? `<div style="text-align:center; flex-shrink:0;">${qrSvg}<div style="font-size:9px; color:#555; margin-top:2px;">สแกนดูข้อมูลนัด</div></div>` : ''}
-                </div>
-            </div>
-        `;
-    }
-
-    function updatePrintSlipPreview() {
-        if (!activeSlipData) return;
-        const ptInput = document.getElementById('printSlipPatient');
-        const noteInput = document.getElementById('printSlipNote');
-        const fmtSelect = document.getElementById('printSlipFormat');
-        const previewBox = document.getElementById('printSlipPreviewBox');
-        const printContainer = document.getElementById('emc-print-container');
-        if (!previewBox) return;
-
-        const ptStr = ptInput ? ptInput.value.trim() : '';
-        const noteStr = noteInput ? noteInput.value.trim() : '';
-        const fmt = fmtSelect ? fmtSelect.value : 'standard';
-        const html = buildSlipHtml(activeSlipData, ptStr, noteStr, fmt);
-        previewBox.innerHTML = html;
-        if (printContainer) {
-            printContainer.className = fmt === 'thermal' ? 'print-thermal-80x50' : '';
-            printContainer.innerHTML = html;
-        }
-    }
-
-    function openPrintSlipModal(slipData) {
-        activeSlipData = slipData;
-        const modal = document.getElementById('printSlipModal');
-        const ptInput = document.getElementById('printSlipPatient');
-        if (!modal) return;
-        if (ptInput && !ptInput.value && (activePatientMeta.name || activePatientMeta.hn)) {
-            ptInput.value = [activePatientMeta.name, activePatientMeta.hn ? `(HN: ${activePatientMeta.hn})` : ''].filter(Boolean).join(' ');
-        }
-        updatePrintSlipPreview();
-        modal.classList.remove('hidden');
-    }
-
-    ['printSlipPatient', 'printSlipNote', 'printSlipFormat'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', updatePrintSlipPreview);
-            el.addEventListener('change', updatePrintSlipPreview);
-        }
-    });
-
-    const printSlipModalEl = document.getElementById('printSlipModal');
-    ['btnClosePrintSlip', 'btnCancelPrintSlip'].forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn && printSlipModalEl) {
-            btn.addEventListener('click', () => printSlipModalEl.classList.add('hidden'));
-        }
-    });
-    const btnConfirmPrintSlip = document.getElementById('btnConfirmPrintSlip');
-    if (btnConfirmPrintSlip) {
-        btnConfirmPrintSlip.addEventListener('click', () => {
-            updatePrintSlipPreview();
-            window.print();
-        });
-    }
+    let activePatientMeta = { hn: '', name: '', age: '' };
 
     // -------------------------------------------------------------
     // 18. HIS Compact URL Mode (?view=compact) & Smart Paste Auto-Fill

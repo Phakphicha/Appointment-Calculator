@@ -10,7 +10,7 @@
  *  - CDN (Tailwind, Phosphor icons, Google Fonts): stale-while-revalidate
  *  - Analytics (Google Analytics / GTM): ไม่ยุ่ง ปล่อยผ่าน network เสมอ
  * ============================================================= */
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const STATIC_CACHE = `emc-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `emc-runtime-${CACHE_VERSION}`;
 const RUNTIME_MAX_ENTRIES = 60;
@@ -18,8 +18,8 @@ const RUNTIME_MAX_ENTRIES = 60;
 // Required for the app to work offline (install fails if any of these fail)
 const PRECACHE_URLS = [
     '/',
-    '/app.js?v=2.3',
-    '/styles.css?v=1.3',
+    '/app.js?v=2.4',
+    '/styles.css?v=1.4',
     '/consent.js?v=1.0',
     '/site.webmanifest',
     '/favicon.ico',
@@ -34,9 +34,11 @@ const PRECACHE_URLS = [
 const OPTIONAL_PAGES = [
     '/js/data/thai-holidays.js?v=1.0',
     '/js/core.js?v=1.3',
-    '/js/qr.js?v=1.0',
+    '/js/qr.js?v=1.1',
     '/js/i18n.js?v=1.3',
     '/js/pwa.js?v=1.0',
+    '/appointment.html',
+    '/js/appointment-app.js?v=1.0',
     '/privacy.html',
     '/articles/adult-vaccine-schedule-2026'
 ];

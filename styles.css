@@ -44,3 +44,86 @@ input[type=number] {
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
+
+/* =============================================================
+   Compact URL Mode (?view=compact / ?mode=his) for HIS Popup/Iframe
+   ============================================================= */
+body.compact-mode header,
+body.compact-mode .seo-content-box,
+body.compact-mode #faq-section,
+body.compact-mode footer .btnOpenCoffee,
+body.compact-mode footer .btnOpenManual,
+body.compact-mode #btnHamburger {
+    display: none !important;
+}
+
+body.compact-mode main {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+body.compact-single-section #quickGlanceContainer {
+    display: none !important;
+}
+
+body.compact-single-section main .grid {
+    display: block !important;
+}
+
+body.compact-single-section section[id^="section-"]:not(.compact-active-section) {
+    display: none !important;
+}
+
+body.compact-single-section section.compact-active-section {
+    max-width: 680px;
+    margin: 0 auto !important;
+}
+
+/* =============================================================
+   Printable Appointment Slip & Thermal Label (@media print)
+   ============================================================= */
+#emc-print-container {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: auto;
+        margin: 5mm;
+    }
+    html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    body > *:not(#emc-print-container) {
+        display: none !important;
+    }
+    header, main, footer, .fixed, [role="dialog"], #hospitalContactModal, #smartPasteModal, #printSlipModal, #qrModal, #pwaIosModal {
+        display: none !important;
+    }
+    #emc-print-container {
+        display: block !important;
+        position: static !important;
+        visibility: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Prompt', sans-serif;
+    }
+    #emc-print-container * {
+        visibility: visible !important;
+    }
+    #emc-print-container.print-thermal-80x50 {
+        width: 76mm !important;
+        max-width: 76mm !important;
+        margin: 0 auto !important;
+        font-size: 10pt !important;
+    }
+}

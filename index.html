@@ -134,7 +134,7 @@
     </script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="styles.css?v=1.3">
+    <link rel="stylesheet" href="styles.css?v=1.4">
     <style>
         .form-input, .form-select {
             background-color: #f3f1eb;
@@ -162,6 +162,41 @@
             background: #2b7a6b;
             border-radius: 10px;
         }
+
+        /* Strict Single-Page Printing Rules */
+        @media print {
+            @page {
+                size: auto;
+                margin: 5mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            body > *:not(#emc-print-container) {
+                display: none !important;
+            }
+            header, main, footer, .fixed, [role="dialog"], #hospitalContactModal, #smartPasteModal, #printSlipModal, #qrModal, #pwaIosModal {
+                display: none !important;
+            }
+            #emc-print-container {
+                display: block !important;
+                position: static !important;
+                visibility: visible !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            #emc-print-container * {
+                visibility: visible !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-pagebg text-textdark font-sans min-h-screen selection:bg-resultbg selection:text-textdark relative">
@@ -184,6 +219,11 @@
                         <i class="ph-bold ph-book-open-text text-xl md:text-2xl"></i>
                         <!-- Tooltip -->
                         <span data-i18n="tooltip_article" class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">คู่มือวัคซีนผู้ใหญ่ 2569</span>
+                    </a>
+                    <!-- Clinic Appointment Suite Link (Desktop Header) -->
+                    <a href="appointment.html" target="_blank" class="h-10 md:h-11 px-3.5 flex items-center justify-center gap-1.5 bg-[#102727] hover:bg-[#1a3b3b] text-emerald-300 rounded-full transition shadow-lg border border-emerald-500/30 font-bold text-xs" title="ระบบบริหารนัดหมายคลินิกและโรงพยาบาล">
+                        <i class="ph-bold ph-calendar-check text-lg text-emerald-400"></i>
+                        <span class="hidden lg:inline">ระบบนัดหมายคลินิก</span>
                     </a>
                     <!-- Install App Button (Desktop Header) -->
                     <button type="button" id="btnDesktopInstall" class="btnInstallApp hidden h-10 md:h-11 px-3.5 flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full transition shadow-lg group relative border border-white/20 font-bold text-xs" title="ติดตั้งแอปลงในเครื่อง">
@@ -257,6 +297,12 @@
                         <i class="ph-bold ph-download-simple text-base text-amber-300"></i>
                         <span data-i18n="menu_install_app">ติดตั้ง EasyMedCal ลงหน้าจอโฮม</span>
                     </button>
+
+                    <!-- Clinic Appointment Suite Link (Mobile Menu) -->
+                    <a href="appointment.html" target="_blank" class="mobile-nav-link inline-flex items-center gap-2 bg-[#102727] text-emerald-300 px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#163838] border border-emerald-500/30 mb-1">
+                        <i class="ph-bold ph-calendar-check text-lg text-emerald-400"></i>
+                        <span>ระบบนัดหมายคลินิก (Appointment Suite)</span>
+                    </a>
 
                     <!-- Vaccine Article Guide Link -->
                     <a href="articles/adult-vaccine-schedule-2026" class="mobile-nav-link inline-flex items-center gap-2 bg-[#244c41] text-[#fff2d1] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#1a3830] border border-white/20 shadow-sm">
@@ -1577,73 +1623,7 @@
         </div>
     </div>
 
-    <!-- Printable Appointment Slip / Sticker Modal -->
-    <div id="printSlipModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh]">
-            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#24917d] text-white">
-                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
-                    <i class="ph-fill ph-printer text-xl"></i>
-                    <span>พิมพ์ใบนัดพกพา / สติ๊กเกอร์ซองยา</span>
-                </h2>
-                <button type="button" id="btnClosePrintSlip" class="text-white/80 hover:text-white transition">
-                    <i class="ph-bold ph-x text-xl"></i>
-                </button>
-            </div>
-            <div class="p-5 overflow-y-auto space-y-4 text-sm text-textdark">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อ-สกุล ผู้ป่วย / HN (ไม่บังคับ)</label>
-                        <input type="text" id="printSlipPatient" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm" placeholder="เช่น นายสมชาย ใจดี (HN 6601234)">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">รูปแบบกระดาษพิมพ์</label>
-                        <select id="printSlipFormat" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-semibold">
-                            <option value="standard">ใบนัดพกพามาตรฐาน (A5 / A4)</option>
-                            <option value="thermal">สติ๊กเกอร์ความร้อนติดซองยา (80x50 มม.)</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">หมายเหตุ / คำแนะนำเพิ่มเติม</label>
-                    <input type="text" id="printSlipNote" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm" placeholder="เช่น งดน้ำงดอาหารก่อนเจาะเลือด 8 ชม. / นำซองยาเดิมมาด้วย">
-                </div>
-                <!-- Live Preview Box -->
-                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
-                    <div class="text-[11px] font-bold text-gray-400 uppercase mb-2">ตัวอย่างก่อนพิมพ์ (Print Preview)</div>
-                    <div id="printSlipPreviewBox" class="bg-white border border-gray-200 rounded-lg p-4 text-textdark shadow-sm"></div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-2">
-                <button type="button" id="btnCancelPrintSlip" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-200">ยกเลิก</button>
-                <button type="button" id="btnConfirmPrintSlip" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#102727] hover:bg-[#1a3b3b] text-white shadow-md flex items-center gap-1.5">
-                    <i class="ph-bold ph-printer text-base"></i> สั่งพิมพ์ทันที (Print)
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Mobile QR Code Modal (Offline SVG QR) -->
-    <div id="qrModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden flex flex-col text-center">
-            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#102727] text-white">
-                <h2 class="text-base font-bold flex items-center gap-2">
-                    <i class="ph-fill ph-qr-code text-xl text-emerald-400"></i>
-                    <span>สแกน QR Code บันทึกวันนัด</span>
-                </h2>
-                <button type="button" id="btnCloseQrModal" class="text-white/80 hover:text-white transition">
-                    <i class="ph-bold ph-x text-xl"></i>
-                </button>
-            </div>
-            <div class="p-6 flex flex-col items-center space-y-3">
-                <p id="qrModalTitle" class="text-sm font-bold text-[#163333]"></p>
-                <div id="qrSvgContainer" class="p-3 bg-white border-2 border-[#24917d]/30 rounded-2xl shadow-inner flex items-center justify-center"></div>
-                <p id="qrModalDesc" class="text-xs text-gray-600 font-medium leading-relaxed"></p>
-                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                    <i class="ph-fill ph-shield-check"></i> สร้าง QR แบบ Offline 100% (ปลอดภัยตาม PDPA)
-                </span>
-            </div>
-        </div>
-    </div>
 
     <!-- iOS Safari Add to Home Screen Modal -->
     <div id="pwaIosModal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
@@ -1700,9 +1680,9 @@
     <!-- Scripts (order matters: data -> core logic -> qr -> translations -> UI) -->
     <script src="js/data/thai-holidays.js?v=1.0"></script>
     <script src="js/core.js?v=1.3"></script>
-    <script src="js/qr.js?v=1.0"></script>
+    <script src="js/qr.js?v=1.1"></script>
     <script src="js/i18n.js?v=1.3"></script>
-    <script src="app.js?v=2.3"></script>
+    <script src="app.js?v=2.4"></script>
     <script src="js/pwa.js?v=1.0" defer></script>
 </body>
 </html>
