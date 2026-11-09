@@ -3300,6 +3300,16 @@ function initEasyMedCal() {
                         tblWeeklyDoseCustom.classList.add('hidden');
                     }
                     if (tblCustomDays) tblCustomDays.value = '';
+                    if (tblCustomDaysDoseDropdown) tblCustomDaysDoseDropdown.value = '1';
+                    if (tblCustomDaysDoseCustom) {
+                        tblCustomDaysDoseCustom.value = '';
+                        tblCustomDaysDoseCustom.classList.add('hidden');
+                    }
+                    if (tblCustomDaysWeeklyDoseDropdown) tblCustomDaysWeeklyDoseDropdown.value = '';
+                    if (tblCustomDaysWeeklyDoseCustom) {
+                        tblCustomDaysWeeklyDoseCustom.value = '';
+                        tblCustomDaysWeeklyDoseCustom.classList.add('hidden');
+                    }
                     if (typeof generateTable === 'function') generateTable();
                 }
             },

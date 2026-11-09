@@ -604,7 +604,7 @@
                         </div>
 
                         <!-- Clickable calendar to preview date -->
-                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                        <div class="absolute top-3 right-3 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
                             <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
                             <input type="date" id="apptDaysResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
@@ -656,7 +656,7 @@
                             </div>
                         </div>
 
-                        <div class="absolute bottom-2 right-2 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                        <div class="absolute top-3 right-3 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-8 h-8 bg-white/30 rounded-full" title="เปิดปฏิทิน">
                             <i class="ph-bold ph-calendar text-lg absolute pointer-events-none"></i>
                             <input type="date" id="apptWeeksResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
@@ -798,7 +798,7 @@
                         <div id="vaccineResult" class="text-xl md:text-2xl font-bold text-textdark mb-2 space-y-1">-</div>
                         <p id="vaccineNote" class="text-xs md:text-sm text-textdark/70 font-medium mt-2 hidden"></p>
                         
-                        <div class="absolute bottom-4 right-4 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-10 h-10 bg-white/30 rounded-full" title="เปิดปฏิทิน">
+                        <div class="absolute top-3 right-3 text-[#163333]/50 hover:text-textdark cursor-pointer transition flex items-center justify-center w-9 h-9 bg-white/30 rounded-full" title="เปิดปฏิทิน">
                             <i class="ph-bold ph-calendar text-xl absolute pointer-events-none"></i>
                             <input type="date" id="vaccineResultPicker" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
@@ -843,7 +843,7 @@
             
             <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-sm">
                 <!-- Inputs -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 items-start">
                     <div class="md:col-span-2">
                         <label data-i18n="s8_base_label" class="block text-sm font-bold text-textdark mb-2">วันที่เริ่มต้น (Base Date)</label>
                         <div class="grid grid-cols-[5fr_6fr_5fr] gap-2">
@@ -860,7 +860,7 @@
                     </div>
                     <div class="md:col-span-1">
                         <label for="tblDoseDropdown" data-i18n="s8_dose_daily_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
-                        <select id="tblDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                        <select id="tblDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 text-center">
                             <option value="">--เลือกขนาดยา--</option>
                             <option value="0.25">1/4 เม็ด</option>
                             <option value="0.5">1/2 เม็ด</option>
@@ -870,11 +870,11 @@
                             <option value="2.5">2.5 เม็ด</option>
                             <option value="custom">กำหนดเอง...</option>
                         </select>
-                        <input type="number" id="tblDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        <input type="number" id="tblDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
                     </div>
                     <div class="md:col-span-1">
                         <label for="tblWeeklyDoseDropdown" data-i18n="s8_dose_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
-                        <select id="tblWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                        <select id="tblWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 text-center">
                             <option value="">--เลือกขนาดยา--</option>
                             <option value="1">1 เม็ด/สัปดาห์</option>
                             <option value="2">2 เม็ด/สัปดาห์</option>
@@ -886,7 +886,7 @@
                             <option value="8">8 เม็ด/สัปดาห์</option>
                             <option value="custom">กำหนดเอง...</option>
                         </select>
-                        <input type="number" id="tblWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                        <input type="number" id="tblWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
                     </div>
                 </div>
 
@@ -914,15 +914,17 @@
                 <div class="mt-6 pt-6 border-t border-gray-300">
                     <h3 data-i18n="s8_custom_title" class="text-textdark font-bold mb-4">คำนวณเฉพาะจำนวนวันที่ต้องการ (Custom Days)</h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div class="relative w-full">
-                            <label data-i18n="s8_custom_days_label" class="block text-sm font-bold text-textdark mb-2">ระบุจำนวนวัน</label>
-                            <input type="number" id="tblCustomDays" min="1" placeholder="ระบุจำนวนวัน..." data-i18n-ph="ph_specify_days" class="form-input w-full rounded-xl px-4 py-3 pr-12">
-                            <span data-i18n="unit_day" class="absolute right-4 top-[38px] font-bold text-textdark">วัน</span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-start">
+                        <div class="w-full">
+                            <label for="tblCustomDays" data-i18n="s8_custom_days_label" class="block text-sm font-bold text-textdark mb-2">ระบุจำนวนวัน</label>
+                            <div class="relative w-full">
+                                <input type="number" id="tblCustomDays" min="1" placeholder="ระบุจำนวนวัน..." data-i18n-ph="ph_specify_days" class="form-input w-full rounded-xl px-4 py-3 pr-12 text-center">
+                                <span data-i18n="unit_day" class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-textdark pointer-events-none">วัน</span>
+                            </div>
                         </div>
-                        <div>
+                        <div class="w-full">
                             <label for="tblCustomDaysDoseDropdown" data-i18n="s8_custom_daily_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อวัน</label>
-                            <select id="tblCustomDaysDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <select id="tblCustomDaysDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 text-center">
                                 <option value="">--เลือกขนาดยา--</option>
                                 <option value="0.25">1/4 เม็ด</option>
                                 <option value="0.5">1/2 เม็ด</option>
@@ -932,11 +934,11 @@
                                 <option value="2.5">2.5 เม็ด</option>
                                 <option value="custom">กำหนดเอง...</option>
                             </select>
-                            <input type="number" id="tblCustomDaysDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                            <input type="number" id="tblCustomDaysDoseCustom" min="0.25" step="0.25" placeholder="ระบุขนาดยา (เช่น 0.25, 0.5)" data-i18n-ph="ph_specify_dose" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
                         </div>
-                        <div>
+                        <div class="w-full">
                             <label for="tblCustomDaysWeeklyDoseDropdown" data-i18n="s8_custom_weekly_label" class="block text-sm font-bold text-textdark mb-2">ขนาดยาที่แพทย์สั่งต่อสัปดาห์</label>
-                            <select id="tblCustomDaysWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 mb-2 text-center">
+                            <select id="tblCustomDaysWeeklyDoseDropdown" class="form-select w-full rounded-xl px-4 py-3 text-center">
                                 <option value="">--เลือกขนาดยา--</option>
                                 <option value="1">1 เม็ด/สัปดาห์</option>
                                 <option value="2">2 เม็ด/สัปดาห์</option>
@@ -948,24 +950,24 @@
                                 <option value="8">8 เม็ด/สัปดาห์</option>
                                 <option value="custom">กำหนดเอง...</option>
                             </select>
-                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 text-center">
+                            <input type="number" id="tblCustomDaysWeeklyDoseCustom" min="1" step="1" placeholder="ระบุจำนวนเม็ด/สัปดาห์" data-i18n-ph="ph_specify_pills" class="hidden form-input w-full rounded-xl px-4 py-3 mt-2 text-center">
                         </div>
                     </div>
 
-                    <div class="w-full bg-resultbg rounded-xl p-4 flex flex-col sm:flex-row justify-around items-center text-center shadow-sm gap-2">
-                        <div>
-                            <p data-i18n="s8_custom_date_match" class="text-xs font-bold text-textdark">ตรงกับวันที่</p>
-                            <p id="tblCustomDateResult" class="font-bold text-textdark text-lg">-</p>
-                        </div>
-                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
-                        <div>
-                            <p data-i18n="s8_custom_daily_pay" class="text-xs font-bold text-textdark">จ่ายยารายวัน</p>
-                            <p id="tblCustomPillResult" class="font-bold text-textdark text-lg">- เม็ด</p>
-                        </div>
-                        <div class="h-8 w-px bg-panelbg/20 hidden sm:block"></div>
-                        <div>
-                            <p data-i18n="s8_custom_weekly_pay" class="text-xs font-bold text-textdark">จ่ายยารายสัปดาห์</p>
-                            <p id="tblCustomWeeklyPillResult" class="font-bold text-blue-700 text-lg">- เม็ด</p>
+                    <div class="w-full bg-resultbg rounded-2xl p-5 flex flex-col gap-3 shadow-sm border-2 border-panelbg/10">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-panelbg/20 text-center items-center w-full">
+                            <div class="py-2 sm:py-1 sm:px-3 flex flex-col items-center justify-center">
+                                <p data-i18n="s8_custom_date_match" class="text-xs sm:text-sm font-bold text-textdark mb-1">ตรงกับวันที่</p>
+                                <p id="tblCustomDateResult" class="font-bold text-textdark text-xl sm:text-2xl">-</p>
+                            </div>
+                            <div class="py-2 sm:py-1 sm:px-3 flex flex-col items-center justify-center">
+                                <p data-i18n="s8_custom_daily_pay" class="text-xs sm:text-sm font-bold text-textdark mb-1">จ่ายยารายวัน</p>
+                                <p id="tblCustomPillResult" class="font-bold text-[#1a5b4b] text-xl sm:text-2xl">- เม็ด</p>
+                            </div>
+                            <div class="py-2 sm:py-1 sm:px-3 flex flex-col items-center justify-center">
+                                <p data-i18n="s8_custom_weekly_pay" class="text-xs sm:text-sm font-bold text-textdark mb-1">จ่ายยารายสัปดาห์</p>
+                                <p id="tblCustomWeeklyPillResult" class="font-bold text-blue-700 text-xl sm:text-2xl">- เม็ด</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1478,7 +1480,7 @@
     <script src="js/data/thai-holidays.js?v=1.0"></script>
     <script src="js/core.js?v=1.2"></script>
     <script src="js/i18n.js?v=1.2"></script>
-    <script src="app.js?v=2.1"></script>
+    <script src="app.js?v=2.2"></script>
     <script src="js/pwa.js?v=1.0" defer></script>
 </body>
 </html>
