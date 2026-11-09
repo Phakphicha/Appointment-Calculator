@@ -111,28 +111,30 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Prompt', 'sans-serif'],
-                    },
-                    colors: {
-                        pagebg: '#163333',
-                        panelbg: '#102727',
-                        cardouter: '#2b7a6b',
-                        cardinner: '#fdf8ee',
-                        textdark: '#1a3b3b',
-                        inputbg: '#f3f1eb',
-                        resultbg: '#ffc395'
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Prompt', 'sans-serif'],
+                        },
+                        colors: {
+                            pagebg: '#163333',
+                            panelbg: '#102727',
+                            cardouter: '#2b7a6b',
+                            cardinner: '#fdf8ee',
+                            textdark: '#1a3b3b',
+                            inputbg: '#f3f1eb',
+                            resultbg: '#ffc395'
+                        }
                     }
                 }
-            }
+            };
         }
     </script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="styles.css?v=1.1">
+    <link rel="stylesheet" href="styles.css?v=1.2">
     <style>
         .form-input, .form-select {
             background-color: #f3f1eb;
@@ -252,7 +254,10 @@
                         <i class="ph-bold ph-calendar-blank text-lg"></i> <span data-i18n="nav_datediff">คำนวณวันนัด</span>
                     </a>
                     <a href="#section-medication" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
-                        <i class="ph-bold ph-pill text-lg"></i> <span data-i18n="nav_med">คำนวณจำนวนยา</span>
+                        <i class="ph-bold ph-pill text-lg"></i> <span data-i18n="nav_med">คำนวณจำนวนยารายวัน</span>
+                    </a>
+                    <a href="#section-medication-weekly" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
+                        <i class="ph-bold ph-calendar-dots text-lg"></i> <span data-i18n="nav_weeklymed">คำนวณจำนวนยารายสัปดาห์</span>
                     </a>
                     <a href="#section-appt-days" class="mobile-nav-link inline-flex items-center gap-2 bg-cardouter text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90">
                         <i class="ph-bold ph-calendar-plus text-lg"></i> <span data-i18n="nav_apptdays">คำนวณวันนัดจากจำนวนวัน</span>
@@ -1472,8 +1477,8 @@
     <!-- Scripts (order matters: data -> core logic -> translations -> UI) -->
     <script src="js/data/thai-holidays.js?v=1.0"></script>
     <script src="js/core.js?v=1.2"></script>
-    <script src="js/i18n.js?v=1.1"></script>
-    <script src="app.js?v=1.9"></script>
+    <script src="js/i18n.js?v=1.2"></script>
+    <script src="app.js?v=2.0"></script>
     <script src="js/pwa.js?v=1.0" defer></script>
 </body>
 </html>

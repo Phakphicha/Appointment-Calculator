@@ -10,7 +10,7 @@
  *  - CDN (Tailwind, Phosphor icons, Google Fonts): stale-while-revalidate
  *  - Analytics (Google Analytics / GTM): ไม่ยุ่ง ปล่อยผ่าน network เสมอ
  * ============================================================= */
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const STATIC_CACHE = `emc-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `emc-runtime-${CACHE_VERSION}`;
 const RUNTIME_MAX_ENTRIES = 60;
@@ -18,12 +18,12 @@ const RUNTIME_MAX_ENTRIES = 60;
 // Required for the app to work offline (install fails if any of these fail)
 const PRECACHE_URLS = [
     '/',
-    '/app.js?v=1.9',
+    '/app.js?v=2.0',
     '/js/data/thai-holidays.js?v=1.0',
     '/js/core.js?v=1.2',
-    '/js/i18n.js?v=1.1',
+    '/js/i18n.js?v=1.2',
     '/js/pwa.js?v=1.0',
-    '/styles.css?v=1.1',
+    '/styles.css?v=1.2',
     '/consent.js?v=1.0',
     '/site.webmanifest',
     '/favicon.ico',

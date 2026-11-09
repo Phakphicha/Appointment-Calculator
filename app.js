@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initEasyMedCal() {
     // -------------------------------------------------------------
     // Initialization & Theme Handling
     // -------------------------------------------------------------
@@ -6,9 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     
     // Check local storage for theme, otherwise default to light
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        htmlElement.classList.add('dark');
-    } else {
+    try {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+    } catch (e) {
         htmlElement.classList.remove('dark');
     }
 
@@ -16,25 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.addEventListener('click', () => {
             if (htmlElement.classList.contains('dark')) {
                 htmlElement.classList.remove('dark');
-                localStorage.theme = 'light';
+                try { localStorage.theme = 'light'; } catch (e) {}
             } else {
                 htmlElement.classList.add('dark');
-                localStorage.theme = 'dark';
+                try { localStorage.theme = 'dark'; } catch (e) {}
             }
         });
     }
 
     // -------------------------------------------------------------
-    // Translations & i18n Engine
+    //Translations & i18n Engine
     // -------------------------------------------------------------
     // Translations are defined in js/i18n.js (loaded before app.js)
-    const translations = window.EMC_TRANSLATIONS;
+    const translations = window.EMC_TRANSLATIONS || { TH: {}, EN: {} };
 
-    window.currentLang = localStorage.getItem('lang') || 'TH';
+    try {
+        window.currentLang = localStorage.getItem('lang') || 'TH';
+    } catch (e) {
+        window.currentLang = 'TH';
+    }
 
     function setLanguage(lang) {
         window.currentLang = lang;
-        localStorage.setItem('lang', lang);
+        try { localStorage.setItem('lang', lang); } catch (e) {}
 
         document.querySelectorAll('.btnLangTH').forEach(btn => {
             btn.className = lang === 'TH'
@@ -364,7 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
     diffYearInput.addEventListener('input', calculateDateDiff);
     
     if (diffStartDayInput) {
-        [diffStartDayInput, diffStartMonthInput, diffStartYearInput].forEach(el => el.addEventListener('input', calculateDateDiff));
+        [diffStartDayInput, diffStartMonthInput, diffStartYearInput].forEach(el => {
+            el.addEventListener('input', calculateDateDiff);
+            el.addEventListener('change', calculateDateDiff);
+        });
         if (diffStartDatePicker) {
             diffStartDatePicker.addEventListener('change', (e) => {
                 const d = parseDateStr(e.target.value);
@@ -426,8 +437,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (medDailyStartDay) {
-        [medDailyStartDay, medDailyStartMonth, medDailyStartYear].forEach(el => el.addEventListener('input', calculateMedDaysFromDates));
-        [medDailyEndDay, medDailyEndMonth, medDailyEndYear].forEach(el => el.addEventListener('input', calculateMedDaysFromDates));
+        [medDailyStartDay, medDailyStartMonth, medDailyStartYear].forEach(el => {
+            el.addEventListener('input', calculateMedDaysFromDates);
+            el.addEventListener('change', calculateMedDaysFromDates);
+        });
+        [medDailyEndDay, medDailyEndMonth, medDailyEndYear].forEach(el => {
+            el.addEventListener('input', calculateMedDaysFromDates);
+            el.addEventListener('change', calculateMedDaysFromDates);
+        });
 
         if (medDailyStartPicker) {
             medDailyStartPicker.addEventListener('change', (e) => {
@@ -870,8 +887,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    [medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear].forEach(el => el.addEventListener('input', calculateWeeklyMedication));
-    [medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear].forEach(el => el.addEventListener('input', calculateWeeklyMedication));
+    [medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear].forEach(el => {
+        el.addEventListener('input', calculateWeeklyMedication);
+        el.addEventListener('change', calculateWeeklyMedication);
+    });
+    [medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear].forEach(el => {
+        el.addEventListener('input', calculateWeeklyMedication);
+        el.addEventListener('change', calculateWeeklyMedication);
+    });
     medWeeklyDose.addEventListener('change', calculateWeeklyMedication);
     medWeeklyDoseCustom.addEventListener('input', calculateWeeklyMedication);
     document.querySelectorAll('.med-weekly-day').forEach(cb => cb.addEventListener('change', calculateWeeklyMedication));
@@ -1373,10 +1396,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize with today's date
     if (tblBaseDay) {
-        const tblToday = new Date();
-        tblBaseDay.value = tblToday.getDate();
-        tblBaseMonth.value = tblToday.getMonth() + 1;
-        tblBaseYear.value = tblToday.getFullYear() + 543;
+        const tblToday = getToday();
+        syncDateToFields(tblToday, tblBaseDay, tblBaseMonth, tblBaseYear);
 
         function getTblBaseDate() {
             const d = parseInt(tblBaseDay.value);
@@ -1930,22 +1951,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (contraDay) contraDay.addEventListener('input', calculateContraceptive);
-    if (contraMonth) contraMonth.addEventListener('change', calculateContraceptive);
-    if (contraYear) contraYear.addEventListener('input', calculateContraceptive);
+    if (contraDay) contraDay.addEventListener('input', () => calculateContraceptive(false));
+    if (contraMonth) contraMonth.addEventListener('change', () => calculateContraceptive(false));
+    if (contraYear) contraYear.addEventListener('input', () => calculateContraceptive(false));
 
     if (contraDatePicker) {
         contraDatePicker.addEventListener('change', (e) => {
             const d = parseDateStr(e.target.value);
             if (d) {
                 syncDateToFields(d, contraDay, contraMonth, contraYear);
-                calculateContraceptive();
+                calculateContraceptive(false);
             }
         });
     }
 
     if (contraTypes.length > 0) {
-        contraTypes.forEach(radio => radio.addEventListener('change', calculateContraceptive));
+        contraTypes.forEach(radio => radio.addEventListener('change', () => calculateContraceptive(false)));
     }
 
     // Initial calculation on load
@@ -2458,8 +2479,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial render for Quick Glance, Presets & Copy/Reset Controls
-    renderQuickGlanceWidget();
-    updatePresetLabels();
+    if (window.currentLang === 'EN') {
+        setLanguage('EN');
+    } else {
+        renderQuickGlanceWidget();
+        updatePresetLabels();
+    }
     initCopyAndResetFeatures();
 
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEasyMedCal);
+} else {
+    initEasyMedCal();
+}

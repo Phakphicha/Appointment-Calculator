@@ -41,5 +41,6 @@ input[type=number] {
 
 /* Base input styling for Tailwind typography consistency */
 .form-input, .form-select {
-    @apply border-gray-300 focus:border-primary-500 focus:ring-primary-500 rounded-md shadow-sm;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
