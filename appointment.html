@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบนัดหมายคลินิกและโรงพยาบาลครบวงจร | EasyMedCal Clinic Suite</title>
+    <meta name="description" content="ระบบบริหารจัดการนัดหมายคลินิกและโรงพยาบาล ตรวจสอบตารางเวรแพทย์ โควตาคนไข้ต่อวัน และออกใบนัดหมายทางการพร้อม Barcode และ QR Code ปฏิทิน">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons & Tailwind -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        brandDark: '#102727',
+                        brandPrimary: '#24917d',
+                        brandAccent: '#1f7a69',
+                        bgSlate: '#f8fafc'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #emc-print-container, #emc-print-container * { visibility: visible !important; }
+            #emc-print-container {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-[#102727] text-white border-b border-emerald-900/60 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 group" title="กลับหน้าแรก EasyMedCal">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#24917d] to-emerald-600 flex items-center justify-center text-white shadow-md">
+                        <i class="ph-bold ph-calendar-check text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm sm:text-base leading-tight tracking-wide flex items-center gap-2">
+                            <span>EasyMedCal</span>
+                            <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30">Clinic Suite</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-300/80">ระบบบริหารจัดการนัดหมายคลินิก</div>
+                    </div>
+                </a>
+                <span class="hidden md:inline-flex items-center gap-1 text-[11px] bg-emerald-900/40 text-emerald-200 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> โหมดทดลองใช้งาน (Demo)
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="index.html" class="text-xs font-semibold text-white/80 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition flex items-center gap-1.5">
+                    <i class="ph-bold ph-calculator text-sm"></i>
+                    <span class="hidden sm:inline">เครื่องคิดเลขวันนัด</span>
+                </a>
+                <button type="button" id="btnOpenTrialModal" class="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm shadow-md transition transform hover:scale-[1.02]">
+                    <i class="ph-fill ph-star text-base"></i>
+                    <span>ลงทะเบียนทดลองใช้จริง 30 วัน</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Top Banner / Clinic Context -->
+        <div class="bg-gradient-to-r from-[#102727] via-[#163838] to-[#1a4a40] text-white rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1.5">
+                    <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-300 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">
+                        <i class="ph-bold ph-buildings"></i> คลินิกเวชกรรมตัวอย่าง (Interactive Sandbox)
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">ระบบบริหารนัดหมายแพทย์ & จัดสรรโควตาคนไข้</h1>
+                    <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
+                        จัดตารางเวรแพทย์ ตรวจสอบยอดคนไข้นัดหมายแบบเรียลไทม์ ป้องกันนัดชน-นัดล้นโควตา พร้อมออกใบนัดมาตรฐานที่มี <strong>Barcode HN</strong> และ <strong>QR Code ปฏิทินมือถือ</strong> สำหรับคนไข้
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="btnResetDemoData" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-white/20">
+                        <i class="ph-bold ph-arrows-clockwise"></i> รีเซ็ตข้อมูลตัวอย่าง
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Quick KPI Counters -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl font-bold">
+                    <i class="ph-bold ph-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold text-slate-500">นัดหมายทั้งหมดวันนี้</div>
+                    <div id="statTotalToday" class="text-xl sm:text-2xl font-bold text-slate-800">18 คน</div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-2xl font-bold">
+                    <i class="ph-bold ph-user-circle-gear"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold text-slate-500">แพทย์ออกตรวจวันนี้</div>
+                    <div class="text-xl sm:text-2xl font-bold text-slate-800">3 ท่าน</div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-2xl font-bold">
+                    <i class="ph-bold ph-drop"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold text-slate-500">ตรวจเลือด (งดน้ำ-อาหาร)</div>
+                    <div id="statFastingToday" class="text-xl sm:text-2xl font-bold text-amber-800">6 คน</div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl font-bold">
+                    <i class="ph-bold ph-users-three"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold text-slate-500">โควตาคิวคงเหลือรวม</div>
+                    <div id="statRemainingQuota" class="text-xl sm:text-2xl font-bold text-purple-800">25 คิว</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Duty Roster & Patient Volume Quota -->
+        <section class="space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-fill ph-stethoscope text-xl text-[#24917d]"></i>
+                        <span>ตารางแพทย์ออกตรวจ & โควตายอดคนไข้</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">ตรวจสอบความจุคนไข้ของแพทย์แต่ละท่านในวันนัดหมาย เพื่อกระจายคิวตรวจอย่างมีประสิทธิภาพ</p>
+                </div>
+            </div>
+
+            <div id="doctorCardsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- Appointment Form & Live Slip Preview Section -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 sm:p-6 space-y-5">
+            <div class="border-b border-slate-200 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-fill ph-calendar-plus text-xl text-[#24917d]"></i>
+                        <span>บันทึกทำนัดหมายคนไข้ (Appointment Form)</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">ข้อมูลจะถูกส่งต่อมาจากเครื่องคำนวณวันนัดอัตโนมัติ หรือสามารถพิมพ์ระบุข้อมูลใหม่ได้ทันที</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-500">รูปแบบใบนัด:</span>
+                    <select id="slipFormatSelect" class="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-1.5 bg-slate-50">
+                        <option value="standard">ใบนัดมาตรฐาน (A5/A4 พร้อม Barcode & QR)</option>
+                        <option value="thermal">สติ๊กเกอร์ความร้อน (80x50 มม.)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Form Inputs (7 cols) -->
+                <form id="appointmentForm" class="lg:col-span-7 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อ-สกุล ผู้ป่วย *</label>
+                            <input type="text" id="inputPtName" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#24917d] font-semibold" placeholder="เช่น นายสมชาย ใจดี">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">HN (เลขประจำตัว)</label>
+                            <input type="text" id="inputPtHn" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-[#24917d]" placeholder="เช่น 6601287">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">อายุ</label>
+                            <input type="text" id="inputPtAge" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="เช่น 45 ปี">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">แพทย์ผู้ตรวจ *</label>
+                            <select id="inputDoctor" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-[#24917d] bg-white">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-emerald-950 mb-1">วันที่นัดหมาย *</label>
+                            <input type="date" id="inputApptDate" required class="w-full rounded-xl border border-emerald-300 bg-emerald-50/40 px-3 py-2 text-sm font-bold text-emerald-900 focus:ring-2 focus:ring-[#24917d]">
+                            <span id="dateDisplayLabel" class="text-[11px] text-emerald-700 font-medium mt-1 block"></span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">เวลานัด</label>
+                            <input type="text" id="inputApptTime" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold" value="09:30 น.">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">คลินิก / แผนก</label>
+                            <input type="text" id="inputClinic" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" value="คลินิกอายุรกรรม (OPD Med)">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">จุดติดต่อ / โทรศัพท์</label>
+                            <input type="text" id="inputContact" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" value="จุดบริการ OPD ชั้น 1 โทร. 02-000-0000 ต่อ 101">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">นัดเพื่อ (เหตุผลการนัดหมาย / รายการยา) *</label>
+                        <textarea id="inputPurpose" rows="2" class="w-full rounded-xl border border-slate-300 p-2.5 text-sm font-medium focus:ring-2 focus:ring-[#24917d]" placeholder="เช่น นัดฉีดวัคซีนงูสวัดเข็มที่ 1 / ตรวจติดตามเบาหวาน-ความดัน และรับยาต่อเนื่อง 30 วัน"></textarea>
+                    </div>
+
+                    <!-- Instructions Checkboxes -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+                        <label class="block text-xs font-bold text-slate-700">คำแนะนำสำหรับคนไข้</label>
+                        <div class="space-y-1.5 text-xs text-slate-600">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="chk15Min" checked class="rounded text-[#24917d] focus:ring-0">
+                                <span>กรุณามาถึงโรงพยาบาล 15 นาที ก่อนเวลานัด หรือต้องการเลื่อนนัดกรุณาติดต่อ Call Center</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="chkOriginalMeds" checked class="rounded text-[#24917d] focus:ring-0">
+                                <span>นำบัตรประจำตัวประชาชน ใบนัดหมายฉบับนี้ และซองยาเดิมมาด้วยทุกครั้ง</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="chkFasting" class="rounded text-[#24917d] focus:ring-0">
+                                <span class="font-bold text-amber-800">งดน้ำและอาหารก่อนเจาะเลือดอย่างน้อย 8 ชั่วโมง (จิบน้ำเปล่าได้)</span>
+                            </label>
+                        </div>
+                        <input type="text" id="inputCustomNote" class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs mt-1" placeholder="คำแนะนำเพิ่มเติม (ถ้ามี)">
+                    </div>
+
+                    <!-- Form Action Buttons -->
+                    <div class="pt-2 flex flex-wrap gap-2.5">
+                        <button type="submit" class="flex-1 bg-[#24917d] hover:bg-[#1f7a69] text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-floppy-disk text-base"></i> บันทึกเข้านัดหมายคลินิก
+                        </button>
+                        <button type="button" id="btnPrintSlipNow" class="bg-[#102727] hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-printer text-base"></i> สั่งพิมพ์ใบนัด (1 หน้า)
+                        </button>
+                        <button type="button" id="btnShowCalQr" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-2.5 px-3.5 rounded-xl text-sm border border-emerald-300 transition flex items-center justify-center gap-1.5" title="แสดง QR Code บันทึกปฏิทิน">
+                            <i class="ph-bold ph-qr-code text-base text-emerald-600"></i> QR ปฏิทิน
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Right: Live Slip Preview (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center justify-between">
+                        <span>ตัวอย่างใบนัดจริง (Real-Time Slip Preview)</span>
+                        <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">ถอดแบบโรงพยาบาลจริง</span>
+                    </div>
+                    <div class="border-2 border-dashed border-slate-300 rounded-2xl p-2.5 bg-slate-50 flex-1 overflow-x-auto flex items-center justify-center">
+                        <div id="liveSlipPreviewBox" class="w-full">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clinic Appointment Schedule Table -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-fill ph-calendar-blank text-xl text-[#24917d]"></i>
+                        <span>รายชื่อคนไข้ที่มีนัดหมาย (Clinic Schedule)</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">จัดการรายชื่อคนไข้ ค้นหาตามชื่อ/HN หรือกรองตามแพทย์ผู้ตรวจ</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                        <input type="text" id="searchApptInput" class="pl-9 pr-3 py-1.5 rounded-xl border border-slate-300 text-xs w-48 sm:w-60 focus:ring-1 focus:ring-[#24917d]" placeholder="ค้นหาชื่อ, HN, หรือแพทย์...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Filter Tabs -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs border-b border-slate-200 pb-2">
+                <button type="button" class="btnFilterSchedule active px-3 py-1.5 rounded-lg font-bold bg-[#102727] text-white" data-filter="all">ทั้งหมด</button>
+                <button type="button" class="btnFilterSchedule px-3 py-1.5 rounded-lg font-bold text-slate-600 hover:bg-slate-100" data-filter="today">นัดวันนี้</button>
+                <button type="button" class="btnFilterSchedule px-3 py-1.5 rounded-lg font-bold text-slate-600 hover:bg-slate-100" data-filter="tomorrow">นัดพรุ่งนี้</button>
+                <button type="button" class="btnFilterSchedule px-3 py-1.5 rounded-lg font-bold text-slate-600 hover:bg-slate-100" data-filter="fasting">เฉพาะตรวจเลือด (งดน้ำ-อาหาร)</button>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-700">
+                    <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                        <tr>
+                            <th class="py-2.5 px-3">วัน-เวลานัด</th>
+                            <th class="py-2.5 px-3">HN</th>
+                            <th class="py-2.5 px-3">ชื่อ-สกุล ผู้ป่วย</th>
+                            <th class="py-2.5 px-3">แพทย์ผู้ตรวจ</th>
+                            <th class="py-2.5 px-3">นัดเพื่อ (เหตุผล)</th>
+                            <th class="py-2.5 px-3">คำแนะนำ</th>
+                            <th class="py-2.5 px-3 text-right">การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTableBody" class="divide-y divide-slate-100">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#102727] text-white/70 py-6 border-t border-emerald-950 mt-8 text-center text-xs">
+        <p>© 2026 EasyMedCal Appointment Suite • ระบบจัดการนัดหมายคลินิกและโรงพยาบาล</p>
+        <p class="text-[11px] text-white/50 mt-1">พัฒนาเพื่อยกระดับการให้บริการทางการแพทย์ ลดเวลารอคอย และป้องกัน Medication Error</p>
+    </footer>
+
+    <!-- Lead Generation / Free Trial Modal -->
+    <div id="trialRegisterModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="p-4 bg-[#102727] text-white flex justify-between items-center border-b border-emerald-900/60">
+                <div class="flex items-center gap-2">
+                    <i class="ph-fill ph-star text-amber-400 text-xl"></i>
+                    <h3 class="font-bold text-base">ลงทะเบียนทดลองใช้งานฟรี 30 วัน</h3>
+                </div>
+                <button type="button" id="btnCloseTrialModal" class="text-white/70 hover:text-white">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <form id="trialRegisterForm" class="p-5 overflow-y-auto space-y-3.5 text-xs sm:text-sm text-slate-800">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-900 text-xs leading-relaxed">
+                    🌟 <strong>เปิดใช้งานระบบ EasyMedCal Appointment Suite ให้คลินิกของคุณ:</strong><br>
+                    ทดลองใช้งานฟรี 30 วัน ไม่มีข้อผูกมัด ทีมงานจะช่วยเซ็ตอัพตารางเวรแพทย์และเทมเพลตใบนัดให้พร้อมใช้ทันที
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อคลินิก / โรงพยาบาล *</label>
+                    <input type="text" id="regClinicName" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#24917d]" placeholder="เช่น คลินิกเวชกรรมหมอวิชัย">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อแพทย์ / ผู้ติดต่อ *</label>
+                        <input type="text" id="regContactName" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="เช่น นพ.วิชัย หรือ พว.สมใจ">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ *</label>
+                        <input type="tel" id="regPhone" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="เช่น 081-234-5678">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">อีเมลติดต่อ *</label>
+                    <input type="email" id="regEmail" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="เช่น doctor@clinic.com">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">จำนวนแพทย์ในคลินิก</label>
+                        <select id="regDocCount" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white font-medium">
+                            <option value="1">1 ท่าน (คลินิกเดี่ยว)</option>
+                            <option value="2-5">2 - 5 ท่าน</option>
+                            <option value="6+">มากกว่า 5 ท่าน / แผนก รพ.</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">วิธีนัดหมายปัจจุบัน</label>
+                        <select id="regCurrentMethod" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm bg-white font-medium">
+                            <option value="book">สมุดจดนัดด้วยมือ</option>
+                            <option value="excel">Google Sheets / Excel</option>
+                            <option value="his">ระบบ HIS เดิม</option>
+                            <option value="other">อื่นๆ</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ความต้องการเพิ่มเติม (ถ้ามี)</label>
+                    <textarea id="regNotes" rows="2" class="w-full rounded-xl border border-slate-300 p-2 text-sm" placeholder="เช่น ต้องการพิมพ์สติ๊กเกอร์ความร้อนติดซองยา หรือต้องการส่ง SMS/LINE เตือนคนไข้"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
+                    <button type="button" id="btnCancelTrialModal" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+                    <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition hover:brightness-105 flex items-center gap-1.5">
+                        <i class="ph-bold ph-paper-plane-tilt"></i> ส่งคำขอทดลองใช้งาน
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calendar QR Modal -->
+    <div id="calQrModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden text-center p-6 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <span class="font-bold text-sm text-[#102727] flex items-center gap-1.5">
+                    <i class="ph-bold ph-qr-code text-emerald-600 text-lg"></i> สแกนบันทึกวันนัดลงปฏิทิน
+                </span>
+                <button type="button" id="btnCloseCalQrModal" class="text-slate-400 hover:text-slate-600">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            <div id="modalQrSvgBox" class="p-3 bg-white border border-emerald-300 rounded-xl shadow-inner flex items-center justify-center"></div>
+            <p id="modalQrDesc" class="text-xs text-slate-600 leading-relaxed font-medium"></p>
+            <div class="text-[11px] text-emerald-800 bg-emerald-50 py-1 px-3 rounded-full border border-emerald-200 font-bold">
+                📲 ใช้กล้องมือถือสแกนเพื่อบันทึกวันนัดลง Google Calendar ทันที
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Dedicated Print Container -->
+    <div id="emc-print-container" style="display:none;"></div>
+
+    <!-- Scripts -->
+    <script src="js/qr.js?v=1.1"></script>
+    <script src="js/appointment-app.js?v=1.0"></script>
+</body>
+</html>
