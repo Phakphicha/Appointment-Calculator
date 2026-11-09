@@ -3871,10 +3871,10 @@ function initEasyMedCal() {
                 const actionWrap = document.createElement('div');
                 actionWrap.className = 'mt-3 pt-2 border-t border-black/10 flex flex-wrap justify-center items-center gap-2 w-full';
                 
-                // Copy Button
+                // Copy Button (Only button displayed in card results)
                 const copyBtn = document.createElement('button');
                 copyBtn.type = 'button';
-                copyBtn.className = 'btn-card-copy inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-textdark shadow-sm border border-black/10 transition';
+                copyBtn.className = 'btn-card-copy inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/90 hover:bg-white text-textdark shadow-sm border border-black/10 transition hover:shadow';
                 copyBtn.innerHTML = `<i class="ph-bold ph-copy text-sm"></i> <span data-i18n="btn_copy">${copyLabel}</span>`;
                 copyBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -3885,75 +3885,80 @@ function initEasyMedCal() {
                 });
                 actionWrap.appendChild(copyBtn);
 
-                // Calendar & ICS Buttons (if this card produces an appointment date)
-                if (typeof cfg.getCalEvent === 'function') {
-                    const addCalLabel = translations[lang].btn_add_cal || 'ลงปฏิทิน';
-                    const icsLabel = translations[lang].btn_ics || 'ไฟล์ .ics';
+                // หมายเหตุ: ปิดแสดงปุ่มลงปฏิทิน, .ics และ ทำนัดหมายคนไข้ ชั่วคราวตามคำขอ (เหลือเฉพาะปุ่มคัดลอก)
+                // เมื่อพัฒนาระบบนัดหมายเรียบร้อยสมบูรณ์แล้ว ให้ปรับ ENABLE_APPOINTMENT_TRANSFER เป็น true เพื่อนำกลับมาแสดงใหม่
+                const ENABLE_APPOINTMENT_TRANSFER = false;
+                if (ENABLE_APPOINTMENT_TRANSFER) {
+                    // Calendar & ICS Buttons (if this card produces an appointment date)
+                    if (typeof cfg.getCalEvent === 'function') {
+                        const addCalLabel = translations[lang].btn_add_cal || 'ลงปฏิทิน';
+                        const icsLabel = translations[lang].btn_ics || 'ไฟล์ .ics';
 
-                    // Google Calendar Button
-                    const calBtn = document.createElement('button');
-                    calBtn.type = 'button';
-                    calBtn.className = 'btn-card-cal inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#1a5b4b]/10 hover:bg-[#1a5b4b]/20 text-[#1a5b4b] shadow-sm border border-[#1a5b4b]/20 transition';
-                    calBtn.innerHTML = `<i class="ph-bold ph-calendar-plus text-sm"></i> <span data-i18n="btn_add_cal">${addCalLabel}</span>`;
-                    calBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const ev = cfg.getCalEvent();
-                        if (ev && ev.date) {
-                            openGoogleCalendar(ev.title, ev.date, ev.details);
-                        } else {
-                            showToast(window.currentLang === 'EN' ? 'No appointment date set' : 'ยังไม่ได้ระบุวันนัดหมาย');
-                        }
-                    });
-                    actionWrap.appendChild(calBtn);
+                        // Google Calendar Button
+                        const calBtn = document.createElement('button');
+                        calBtn.type = 'button';
+                        calBtn.className = 'btn-card-cal inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#1a5b4b]/10 hover:bg-[#1a5b4b]/20 text-[#1a5b4b] shadow-sm border border-[#1a5b4b]/20 transition';
+                        calBtn.innerHTML = `<i class="ph-bold ph-calendar-plus text-sm"></i> <span data-i18n="btn_add_cal">${addCalLabel}</span>`;
+                        calBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const ev = cfg.getCalEvent();
+                            if (ev && ev.date) {
+                                openGoogleCalendar(ev.title, ev.date, ev.details);
+                            } else {
+                                showToast(window.currentLang === 'EN' ? 'No appointment date set' : 'ยังไม่ได้ระบุวันนัดหมาย');
+                            }
+                        });
+                        actionWrap.appendChild(calBtn);
 
-                    // .ICS Download Button
-                    const icsBtn = document.createElement('button');
-                    icsBtn.type = 'button';
-                    icsBtn.className = 'btn-card-ics inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#1a5b4b]/10 hover:bg-[#1a5b4b]/20 text-[#1a5b4b] shadow-sm border border-[#1a5b4b]/20 transition';
-                    icsBtn.innerHTML = `<i class="ph-bold ph-download-simple text-sm"></i> <span data-i18n="btn_ics">${icsLabel}</span>`;
-                    icsBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const ev = cfg.getCalEvent();
-                        if (ev && ev.date) {
-                            downloadICS(ev.title, ev.date, ev.details);
-                            showToast(window.currentLang === 'EN' ? 'Downloaded .ics file' : 'ดาวน์โหลดไฟล์ปฏิทิน (.ics) แล้ว');
-                        } else {
-                            showToast(window.currentLang === 'EN' ? 'No appointment date set' : 'ยังไม่ได้ระบุวันนัดหมาย');
-                        }
-                    });
-                    actionWrap.appendChild(icsBtn);
-                }
+                        // .ICS Download Button
+                        const icsBtn = document.createElement('button');
+                        icsBtn.type = 'button';
+                        icsBtn.className = 'btn-card-ics inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#1a5b4b]/10 hover:bg-[#1a5b4b]/20 text-[#1a5b4b] shadow-sm border border-[#1a5b4b]/20 transition';
+                        icsBtn.innerHTML = `<i class="ph-bold ph-download-simple text-sm"></i> <span data-i18n="btn_ics">${icsLabel}</span>`;
+                        icsBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const ev = cfg.getCalEvent();
+                            if (ev && ev.date) {
+                                downloadICS(ev.title, ev.date, ev.details);
+                                showToast(window.currentLang === 'EN' ? 'Downloaded .ics file' : 'ดาวน์โหลดไฟล์ปฏิทิน (.ics) แล้ว');
+                            } else {
+                                showToast(window.currentLang === 'EN' ? 'No appointment date set' : 'ยังไม่ได้ระบุวันนัดหมาย');
+                            }
+                        });
+                        actionWrap.appendChild(icsBtn);
+                    }
 
-                // Link to Clinic Appointment Suite (New Dedicated Page)
-                if (cfg.sectionId !== 'section-year' && cfg.sectionId !== 'section-age') {
-                    const apptBtn = document.createElement('button');
-                    apptBtn.type = 'button';
-                    apptBtn.className = 'btn-card-appointment inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#102727] hover:bg-[#163838] text-emerald-300 border border-emerald-500/40 shadow-sm transition hover:scale-105';
-                    apptBtn.innerHTML = `<i class="ph-bold ph-calendar-plus text-sm text-emerald-400"></i> <span>${window.currentLang === 'EN' ? 'Create Appointment' : 'ทำนัดหมายคนไข้'}</span>`;
-                    apptBtn.title = window.currentLang === 'EN' ? 'Transfer to EasyMedCal Appointment Suite' : 'ส่งข้อมูลเข้าสู่ระบบนัดหมายคลินิก';
-                    apptBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const text = cfg.getCopyText();
-                        if (!text) {
-                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนทำนัดหมาย');
-                            return;
-                        }
-                        const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
-                        const params = new URLSearchParams();
-                        params.set('purpose', text);
-                        if (calEv && calEv.date) {
-                            params.set('date', toISODate(calEv.date));
-                        }
-                        if (activePatientMeta.name) params.set('patient', activePatientMeta.name);
-                        if (activePatientMeta.hn) params.set('hn', activePatientMeta.hn);
-                        if (activePatientMeta.age) params.set('age', activePatientMeta.age);
-                        if (cfg.sectionId === 'section-vaccine') params.set('clinic', 'คลินิกวัคซีนและสร้างเสริมภูมิคุ้มกัน');
-                        else if (cfg.sectionId === 'section-contra') params.set('clinic', 'คลินิกวางแผนครอบครัว');
-                        else if (cfg.sectionId.includes('medication')) params.set('clinic', 'คลินิกโรคเรื้อรัง (NCD)');
+                    // Link to Clinic Appointment Suite (New Dedicated Page)
+                    if (cfg.sectionId !== 'section-year' && cfg.sectionId !== 'section-age') {
+                        const apptBtn = document.createElement('button');
+                        apptBtn.type = 'button';
+                        apptBtn.className = 'btn-card-appointment inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#102727] hover:bg-[#163838] text-emerald-300 border border-emerald-500/40 shadow-sm transition hover:scale-105';
+                        apptBtn.innerHTML = `<i class="ph-bold ph-calendar-plus text-sm text-emerald-400"></i> <span>${window.currentLang === 'EN' ? 'Create Appointment' : 'ทำนัดหมายคนไข้'}</span>`;
+                        apptBtn.title = window.currentLang === 'EN' ? 'Transfer to EasyMedCal Appointment Suite' : 'ส่งข้อมูลเข้าสู่ระบบนัดหมายคลินิก';
+                        apptBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const text = cfg.getCopyText();
+                            if (!text) {
+                                showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนทำนัดหมาย');
+                                return;
+                            }
+                            const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
+                            const params = new URLSearchParams();
+                            params.set('purpose', text);
+                            if (calEv && calEv.date) {
+                                params.set('date', toISODate(calEv.date));
+                            }
+                            if (activePatientMeta.name) params.set('patient', activePatientMeta.name);
+                            if (activePatientMeta.hn) params.set('hn', activePatientMeta.hn);
+                            if (activePatientMeta.age) params.set('age', activePatientMeta.age);
+                            if (cfg.sectionId === 'section-vaccine') params.set('clinic', 'คลินิกวัคซีนและสร้างเสริมภูมิคุ้มกัน');
+                            else if (cfg.sectionId === 'section-contra') params.set('clinic', 'คลินิกวางแผนครอบครัว');
+                            else if (cfg.sectionId.includes('medication')) params.set('clinic', 'คลินิกโรคเรื้อรัง (NCD)');
 
-                        window.open(`appointment.html?${params.toString()}`, '_blank');
-                    });
-                    actionWrap.appendChild(apptBtn);
+                            window.open(`appointment.html?${params.toString()}`, '_blank');
+                        });
+                        actionWrap.appendChild(apptBtn);
+                    }
                 }
 
                 targetResultBox.appendChild(actionWrap);
