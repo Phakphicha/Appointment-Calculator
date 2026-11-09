@@ -134,7 +134,7 @@
     </script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="styles.css?v=1.2">
+    <link rel="stylesheet" href="styles.css?v=1.3">
     <style>
         .form-input, .form-select {
             background-color: #f3f1eb;
@@ -185,6 +185,13 @@
                         <!-- Tooltip -->
                         <span data-i18n="tooltip_article" class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">คู่มือวัคซีนผู้ใหญ่ 2569</span>
                     </a>
+                    <!-- Install App Button (Desktop Header) -->
+                    <button type="button" id="btnDesktopInstall" class="btnInstallApp hidden h-10 md:h-11 px-3.5 flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full transition shadow-lg group relative border border-white/20 font-bold text-xs" title="ติดตั้งแอปลงในเครื่อง">
+                        <i class="ph-bold ph-download-simple text-lg"></i>
+                        <span class="hidden xl:inline" data-i18n="btn_install_app">ติดตั้งแอป</span>
+                        <!-- Tooltip -->
+                        <span class="absolute top-full mt-2 right-0 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">ติดตั้งแอปลงในเครื่อง (PWA)</span>
+                    </button>
                     <!-- Coffee Button -->
                     <button class="btnOpenCoffee w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#ffc395] hover:bg-[#e0ab82] text-[#24917d] rounded-full transition shadow-lg group relative border border-white/20">
                         <i class="ph-bold ph-coffee text-xl md:text-2xl"></i>
@@ -245,6 +252,18 @@
                         </div>
                     </div>
 
+                    <!-- Install App Button (Mobile Menu) -->
+                    <button type="button" class="btnInstallApp w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md hover:brightness-110 transition border border-white/20 mb-1">
+                        <i class="ph-bold ph-download-simple text-base text-amber-300"></i>
+                        <span data-i18n="menu_install_app">ติดตั้ง EasyMedCal ลงหน้าจอโฮม</span>
+                    </button>
+
+                    <!-- Printable Standee Link -->
+                    <a href="standee.html" target="_blank" class="mobile-nav-link inline-flex items-center gap-2 bg-[#1a4a40] text-[#fff2d1] px-4 py-2.5 rounded-xl text-xs font-semibold hover:bg-opacity-90 border border-white/10 mb-1">
+                        <i class="ph-bold ph-printer text-base text-emerald-300"></i>
+                        <span>พิมพ์ป้าย QR Code ตั้งโต๊ะตรวจ</span>
+                    </a>
+
                     <!-- Vaccine Article Guide Link -->
                     <a href="articles/adult-vaccine-schedule-2026" class="mobile-nav-link inline-flex items-center gap-2 bg-[#244c41] text-[#fff2d1] px-4 py-3 rounded-xl text-sm font-bold hover:bg-[#1a3830] border border-white/20 shadow-sm">
                         <i class="ph-bold ph-book-open-text text-lg text-amber-300"></i> <span data-i18n="nav_article">คู่มือวัคซีนผู้ใหญ่ 2569 (ฉบับสมบูรณ์)</span>
@@ -289,6 +308,9 @@
                     
                     <!-- Action Buttons at the Bottom -->
                     <div class="mt-4 pt-4 border-t border-white/20 flex flex-col gap-3">
+                        <button type="button" class="btnOpenHospitalContact mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-emerald-950 hover:bg-emerald-900 text-emerald-200 px-4 py-3 rounded-xl text-sm font-bold shadow-md transition border border-emerald-500/30">
+                            <i class="ph-bold ph-hospital text-lg"></i> <span data-i18n="btn_his_contact">สำหรับโรงพยาบาล/คลินิก (HIS)</span>
+                        </button>
                         <button class="btnOpenCoffee mobile-nav-link w-full inline-flex items-center justify-center gap-2 bg-[#ffc395] hover:bg-[#e0ab82] text-[#1a5b4b] px-4 py-3 rounded-xl text-sm font-bold shadow-md transition">
                             <i class="ph-bold ph-coffee text-lg"></i> <span data-i18n="btn_coffee">สนับสนุนค่ากาแฟ</span>
                         </button>
@@ -666,7 +688,7 @@
             </div>
 
             <!-- Quick Glance Appointment Summary Widget -->
-            <div class="bg-cardinner rounded-[1.5rem] p-5 shadow-md border border-white/20">
+            <div id="quickGlanceContainer" class="bg-cardinner rounded-[1.5rem] p-5 shadow-md border border-white/20">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                     <h3 class="text-base sm:text-lg font-bold text-[#1a5b4b] flex items-center gap-2">
                         <i class="ph-fill ph-lightning text-xl text-amber-500"></i>
@@ -1275,7 +1297,7 @@
         </div>
 
         <!-- FAQ Section (Visible for Users & SEO / Rich Snippets Validation) -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm my-8 border border-gray-100">
+        <section id="faq-section" class="bg-white rounded-2xl p-6 shadow-sm my-8 border border-gray-100">
             <h2 class="text-xl font-bold text-[#1a5b4b] mb-4 flex items-center gap-2">
                 <i class="ph-fill ph-question text-2xl text-[#24917d]"></i> คำถามที่พบบ่อยเกี่ยวกับการคำนวณวันนัด (FAQ)
             </h2>
@@ -1332,6 +1354,9 @@
         </div>
         <p><span data-i18n="footer_copyright">© 2026 easymedcal.com สงวนลิขสิทธิ์</span></p>
         <div class="flex items-center justify-center gap-2 mt-2">
+            <button class="btnOpenHospitalContact inline-flex items-center gap-1.5 bg-[#102727] text-emerald-300 border border-emerald-500/30 px-3.5 py-1 rounded-full text-xs font-bold hover:bg-[#163838] transition">
+                <i class="ph-fill ph-hospital text-sm"></i> <span data-i18n="footer_his_contact">สำหรับโรงพยาบาล (ติดต่อเชื่อมต่อ HIS)</span>
+            </button>
             <button class="btnOpenManual inline-flex items-center gap-1 bg-[#163333] text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-[#24917d] transition">
                 <i class="ph-fill ph-question text-sm"></i> <span data-i18n="user_manual_btn">คู่มือการใช้งาน</span>
             </button>
@@ -1476,11 +1501,214 @@
         </div>
     </div>
 
-    <!-- Scripts (order matters: data -> core logic -> translations -> UI) -->
+    <!-- Hospital HIS Integration Inquiry Modal -->
+    <div id="hospitalContactModal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#102727] text-white">
+                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                    <i class="ph-fill ph-hospital text-xl text-emerald-400"></i>
+                    <span>สำหรับโรงพยาบาลและคลินิก (HIS Solution)</span>
+                </h2>
+                <button type="button" id="btnCloseHospitalContact" class="text-white/70 hover:text-white transition">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-textdark">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-emerald-950">
+                    <h3 class="font-bold text-sm mb-1 text-emerald-900 flex items-center gap-1.5">
+                        <i class="ph-bold ph-check-circle text-emerald-600"></i> ยกระดับห้องยาและแผนก OPD ด้วย EasyMedCal
+                    </h3>
+                    <p class="text-xs text-emerald-800 leading-relaxed">
+                        เรามีชุดโซลูชัน <strong>EasyMedCal for Hospital (Enterprise Edition)</strong> พร้อมติดตั้งทำงานร่วมกับระบบ HIS ภายในโรงพยาบาลของคุณ (เช่น HOSxP, JHCIS, HomC หรือระบบประจำโรงพยาบาล) โดยทำงานในเครือข่ายภายใน (Intranet / On-Premise) ปลอดภัยตามมาตรฐาน PDPA 100%
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="font-bold text-gray-800">จุดเด่นที่โรงพยาบาลจะได้รับ:</div>
+                    <ul class="space-y-1.5 text-gray-600 list-disc list-inside">
+                        <li><strong>ยิงบาร์โค้ดใบสั่งยา / ค้นหา HN:</strong> ดึงค่าน้ำหนักและผลแล็บไตคำนวณอัตโนมัติใน 0.5 วินาที</li>
+                        <li><strong>ระบบช่วยตัดสินใจทางคลินิก (CDS):</strong> ประเมินไต CKD-EPI 2021 eGFR / CrCl พร้อมแจ้งเตือนความปลอดภัยของยา (Metformin, NSAIDs, Oseltamivir, Gabapentin)</li>
+                        <li><strong>พิมพ์สติ๊กเกอร์ความร้อน 80×50 มม.:</strong> ออกฉลากยาและใบนัดพร้อม QR Code ติดซองยาได้ทันที</li>
+                        <li><strong>ระบบบันทึก Audit Log:</strong> ตรวจสอบย้อนหลังตามเกณฑ์มาตรฐานความปลอดภัย IT โรงพยาบาล</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-2">
+                    <span class="text-xs font-bold text-gray-500 block">สนใจรับรายละเอียดเงื่อนไขและนัดหมายสาธิตระบบ (Demo)</span>
+                    <p class="text-xs text-gray-600">กรุณาติดต่อแจ้งชื่อโรงพยาบาล/คลินิก และระบบ HIS ที่ใช้งานมาที่:</p>
+                    <a href="mailto:easymedcal.contact@gmail.com?subject=สอบถามรายละเอียดการเชื่อมต่อระบบ%20HIS%20(EasyMedCal)&body=เรียน%20ทีมงาน%20EasyMedCal%0A%0Aชื่อผู้ติดต่อ:%20%0Aโรงพยาบาล/คลินิก:%20%0Aระบบ%20HIS%20ที่ใช้งาน:%20(เช่น%20HOSxP,%20JHCIS,%20อื่น%E0%B9%86)%0Aเบอร์โทรศัพท์ติดต่อ:%20%0Aรายละเอียดที่ต้องการสอบถาม:%20" class="inline-flex items-center gap-2 bg-[#24917d] hover:bg-[#1f7a69] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition">
+                        <i class="ph-bold ph-envelope-simple text-lg"></i>
+                        <span>easymedcal.contact@gmail.com</span>
+                    </a>
+                </div>
+            </div>
+            <div class="p-3.5 border-t border-gray-200 bg-gray-50 flex justify-end">
+                <button type="button" id="btnCancelHospitalContact" class="px-5 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-200 transition">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Paste (HIS Text / Barcode) Modal -->
+    <div id="smartPasteModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#102727] text-white">
+                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                    <i class="ph-fill ph-clipboard-text text-xl text-emerald-400"></i>
+                    <span>วางข้อมูลจากระบบ HIS (Smart Paste & Barcode)</span>
+                </h2>
+                <button type="button" id="btnCloseSmartPaste" class="text-white/70 hover:text-white transition">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-4 text-sm text-textdark">
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    คัดลอกข้อความหน้าจอคนไข้จาก <strong>HOSxP / JHCIS / HIS</strong> หรือยิงบาร์โค้ดลงในช่องด้านล่าง ระบบจะสกัดค่า <strong>อายุ, เพศ, น้ำหนัก, ค่าไต (SCr), จำนวนวันนัด และขนาดยา</strong> ลงในเครื่องมือคำนวณให้อัตโนมัติ (ประมวลผลในเครื่อง 100% ไม่ส่งข้อมูลออกภายนอก)
+                </p>
+                <textarea id="smartPasteInput" rows="4" class="w-full rounded-xl border border-gray-300 p-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#24917d]" placeholder="ตัวอย่าง: HN: 6601234 ชื่อ: นางสมหญิง ใจดี อายุ 68 ปี น้ำหนัก 54.5 กก. SCr 1.42 mg/dL นัด 84 วัน วันละ 1.5 เม็ด&#10;หรือรูปแบบบาร์โค้ด: 6601234|นางสมหญิง ใจดี|68|F|54.5|1.42|84|1.5"></textarea>
+                <div class="flex flex-wrap gap-1.5 items-center">
+                    <span class="text-xs font-bold text-gray-500">ทดสอบข้อมูลตัวอย่าง:</span>
+                    <button type="button" class="btnSamplePaste text-xs px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 text-textdark font-semibold border border-gray-200" data-sample="HN: 6601234 ชื่อ: นางสมหญิง ใจดี อายุ 68 ปี น้ำหนัก 54.5 กก. SCr 1.42 mg/dL นัด 84 วัน วันละ 1.5 เม็ด">ผู้สูงอายุ โรคไต (CKD)</button>
+                    <button type="button" class="btnSamplePaste text-xs px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 text-textdark font-semibold border border-gray-200" data-sample="HN: 6700812 ด.ช.ต้นกล้า แข็งแรง อายุ 4 ปี น้ำหนัก 16.5 กก.">เด็ก 4 ปี (Oseltamivir)</button>
+                    <button type="button" class="btnSamplePaste text-xs px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 text-textdark font-semibold border border-gray-200" data-sample="6700999|นายสมชาย รักดี|72|M|62.0|1.85|56|2">2D Barcode (Pipe)</button>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                    <button type="button" id="btnClearSmartPaste" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100">ล้างข้อความ</button>
+                    <button type="button" id="btnApplySmartPaste" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#24917d] hover:bg-[#1f7a69] text-white shadow-md flex items-center gap-1.5">
+                        <i class="ph-bold ph-magic-wand"></i> ดึงค่าเข้าสู่เครื่องคำนวณ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable Appointment Slip / Sticker Modal -->
+    <div id="printSlipModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#24917d] text-white">
+                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                    <i class="ph-fill ph-printer text-xl"></i>
+                    <span>พิมพ์ใบนัดพกพา / สติ๊กเกอร์ซองยา</span>
+                </h2>
+                <button type="button" id="btnClosePrintSlip" class="text-white/80 hover:text-white transition">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4 text-sm text-textdark">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อ-สกุล ผู้ป่วย / HN (ไม่บังคับ)</label>
+                        <input type="text" id="printSlipPatient" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm" placeholder="เช่น นายสมชาย ใจดี (HN 6601234)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">รูปแบบกระดาษพิมพ์</label>
+                        <select id="printSlipFormat" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-semibold">
+                            <option value="standard">ใบนัดพกพามาตรฐาน (A5 / A4)</option>
+                            <option value="thermal">สติ๊กเกอร์ความร้อนติดซองยา (80x50 มม.)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">หมายเหตุ / คำแนะนำเพิ่มเติม</label>
+                    <input type="text" id="printSlipNote" class="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm" placeholder="เช่น งดน้ำงดอาหารก่อนเจาะเลือด 8 ชม. / นำซองยาเดิมมาด้วย">
+                </div>
+                <!-- Live Preview Box -->
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
+                    <div class="text-[11px] font-bold text-gray-400 uppercase mb-2">ตัวอย่างก่อนพิมพ์ (Print Preview)</div>
+                    <div id="printSlipPreviewBox" class="bg-white border border-gray-200 rounded-lg p-4 text-textdark shadow-sm"></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-2">
+                <button type="button" id="btnCancelPrintSlip" class="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-200">ยกเลิก</button>
+                <button type="button" id="btnConfirmPrintSlip" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#102727] hover:bg-[#1a3b3b] text-white shadow-md flex items-center gap-1.5">
+                    <i class="ph-bold ph-printer text-base"></i> สั่งพิมพ์ทันที (Print)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile QR Code Modal (Offline SVG QR) -->
+    <div id="qrModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden flex flex-col text-center">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[#102727] text-white">
+                <h2 class="text-base font-bold flex items-center gap-2">
+                    <i class="ph-fill ph-qr-code text-xl text-emerald-400"></i>
+                    <span>สแกน QR Code บันทึกวันนัด</span>
+                </h2>
+                <button type="button" id="btnCloseQrModal" class="text-white/80 hover:text-white transition">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 flex flex-col items-center space-y-3">
+                <p id="qrModalTitle" class="text-sm font-bold text-[#163333]"></p>
+                <div id="qrSvgContainer" class="p-3 bg-white border-2 border-[#24917d]/30 rounded-2xl shadow-inner flex items-center justify-center"></div>
+                <p id="qrModalDesc" class="text-xs text-gray-600 font-medium leading-relaxed"></p>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    <i class="ph-fill ph-shield-check"></i> สร้าง QR แบบ Offline 100% (ปลอดภัยตาม PDPA)
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- iOS Safari Add to Home Screen Modal -->
+    <div id="pwaIosModal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 hidden backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden text-center border border-slate-200">
+            <div class="flex justify-between items-center p-4 bg-[#102727] text-white">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-device-mobile text-xl text-emerald-400"></i>
+                    <span class="font-bold text-sm">เพิ่ม EasyMedCal ลงหน้าจอโฮม</span>
+                </div>
+                <button type="button" id="btnClosePwaIosModal" class="text-white/80 hover:text-white transition">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-3.5 text-left text-sm text-slate-700">
+                <p class="text-xs text-slate-500 text-center font-medium">สำหรับใช้งานบน iPhone หรือ iPad ใน Safari:</p>
+                
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
+                        1
+                    </div>
+                    <div class="text-xs">
+                        แตะปุ่ม <strong>แชร์ (Share)</strong> <i class="ph-bold ph-export text-sm text-blue-600 inline"></i> ที่แถบเมนูด้านล่างของ Safari
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
+                        2
+                    </div>
+                    <div class="text-xs">
+                        เลื่อนลงมาแล้วเลือกเมนู <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong> <i class="ph-bold ph-plus-square text-sm inline"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
+                        3
+                    </div>
+                    <div class="text-xs">
+                        แตะ <strong>"เพิ่ม" (Add)</strong> ที่มุมขวาบน จะมีไอคอนแอป EasyMedCal บนหน้าจอมือถือทันที!
+                    </div>
+                </div>
+
+                <button type="button" onclick="document.getElementById('pwaIosModal').classList.add('hidden')" class="w-full py-2.5 rounded-xl bg-[#1a5b4b] text-white font-bold text-xs shadow-md hover:bg-[#124236] transition text-center mt-2">
+                    เข้าใจแล้ว
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Print Output Container (Only visible during @media print) -->
+    <div id="emc-print-container"></div>
+
+    <!-- Scripts (order matters: data -> core logic -> qr -> translations -> UI) -->
     <script src="js/data/thai-holidays.js?v=1.0"></script>
-    <script src="js/core.js?v=1.2"></script>
-    <script src="js/i18n.js?v=1.2"></script>
-    <script src="app.js?v=2.2"></script>
+    <script src="js/core.js?v=1.3"></script>
+    <script src="js/qr.js?v=1.0"></script>
+    <script src="js/i18n.js?v=1.3"></script>
+    <script src="app.js?v=2.3"></script>
     <script src="js/pwa.js?v=1.0" defer></script>
 </body>
 </html>

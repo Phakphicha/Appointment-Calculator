@@ -2621,6 +2621,9 @@ function initEasyMedCal() {
             if (typeof closeCoffee === 'function' && document.getElementById('coffeeModal') && !document.getElementById('coffeeModal').classList.contains('hidden')) {
                 closeCoffee();
             }
+            if (typeof closeHospitalContact === 'function' && document.getElementById('hospitalContactModal') && !document.getElementById('hospitalContactModal').classList.contains('hidden')) {
+                closeHospitalContact();
+            }
         }
     });
 
@@ -2714,6 +2717,43 @@ function initEasyMedCal() {
     if (coffeeModal) {
         coffeeModal.addEventListener('click', (e) => {
             if (e.target === coffeeModal) closeCoffee();
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 11.1 Hospital HIS Integration Inquiry Modal
+    // -------------------------------------------------------------
+    const hospitalContactModal = document.getElementById('hospitalContactModal');
+    const btnOpenHospitalContacts = document.querySelectorAll('.btnOpenHospitalContact');
+    const btnCloseHospitalContact = document.getElementById('btnCloseHospitalContact');
+    const btnCancelHospitalContact = document.getElementById('btnCancelHospitalContact');
+
+    function openHospitalContact() {
+        if (hospitalContactModal) {
+            hospitalContactModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                closeMobileMenu();
+            }
+        }
+    }
+
+    window.closeHospitalContact = function() {
+        if (hospitalContactModal) {
+            hospitalContactModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    };
+
+    if (btnOpenHospitalContacts.length > 0) {
+        btnOpenHospitalContacts.forEach(btn => btn.addEventListener('click', openHospitalContact));
+    }
+    if (btnCloseHospitalContact) btnCloseHospitalContact.addEventListener('click', window.closeHospitalContact);
+    if (btnCancelHospitalContact) btnCancelHospitalContact.addEventListener('click', window.closeHospitalContact);
+
+    if (hospitalContactModal) {
+        hospitalContactModal.addEventListener('click', (e) => {
+            if (e.target === hospitalContactModal) window.closeHospitalContact();
         });
     }
 
@@ -3470,7 +3510,419 @@ function initEasyMedCal() {
                     actionWrap.appendChild(icsBtn);
                 }
 
+                // Print Slip & QR Code Buttons (for clinical/appointment cards)
+                if (cfg.sectionId !== 'section-year' && cfg.sectionId !== 'section-age') {
+                    const printLabel = translations[lang].btn_print || 'พิมพ์ใบนัด';
+                    const qrLabel = translations[lang].btn_qr || 'QR มือถือ';
+
+                    const printBtn = document.createElement('button');
+                    printBtn.type = 'button';
+                    printBtn.className = 'btn-card-print inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-[#102727] shadow-sm border border-black/10 transition';
+                    printBtn.innerHTML = `<i class="ph-bold ph-printer text-sm text-[#24917d]"></i> <span data-i18n="btn_print">${printLabel}</span>`;
+                    printBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const text = cfg.getCopyText();
+                        if (!text) {
+                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนพิมพ์ใบนัด');
+                            return;
+                        }
+                        const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
+                        openPrintSlipModal({
+                            sectionId: cfg.sectionId,
+                            summaryText: text,
+                            calEvent: calEv
+                        });
+                    });
+                    actionWrap.appendChild(printBtn);
+
+                    const qrBtn = document.createElement('button');
+                    qrBtn.type = 'button';
+                    qrBtn.className = 'btn-card-qr inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/85 hover:bg-white text-[#102727] shadow-sm border border-black/10 transition';
+                    qrBtn.innerHTML = `<i class="ph-bold ph-qr-code text-sm text-[#24917d]"></i> <span data-i18n="btn_qr">${qrLabel}</span>`;
+                    qrBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const text = cfg.getCopyText();
+                        if (!text) {
+                            showToast(window.currentLang === 'EN' ? 'Please calculate a result first' : 'กรุณาคำนวณผลลัพธ์ก่อนสร้าง QR Code');
+                            return;
+                        }
+                        const calEv = typeof cfg.getCalEvent === 'function' ? cfg.getCalEvent() : null;
+                        let qrPayload = text;
+                        if (calEv && calEv.date) {
+                            const dt = formatCalDate(calEv.date);
+                            const nextD = new Date(calEv.date);
+                            nextD.setDate(nextD.getDate() + 1);
+                            const dtEnd = formatCalDate(nextD);
+                            qrPayload = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(calEv.title)}&dates=${dt}/${dtEnd}&details=${encodeURIComponent(text)}`;
+                        }
+                        openQrModal(
+                            calEv ? calEv.title : 'EasyMedCal Summary',
+                            qrPayload,
+                            text
+                        );
+                    });
+                    actionWrap.appendChild(qrBtn);
+                }
+
                 targetResultBox.appendChild(actionWrap);
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 17. Printable Appointment Slip / Sticker & Offline QR Modal
+    // -------------------------------------------------------------
+    let activeSlipData = null;
+    let activePatientMeta = { hn: '', name: '' };
+
+    function openQrModal(title, qrPayload, descText) {
+        const modal = document.getElementById('qrModal');
+        const titleEl = document.getElementById('qrModalTitle');
+        const svgBox = document.getElementById('qrSvgContainer');
+        const descEl = document.getElementById('qrModalDesc');
+        if (!modal || !svgBox) return;
+
+        if (titleEl) titleEl.textContent = title || 'QR Code';
+        if (descEl) descEl.textContent = descText || '';
+        if (window.EMCQR && typeof window.EMCQR.toSVG === 'function') {
+            svgBox.innerHTML = window.EMCQR.toSVG(qrPayload, { size: 200, margin: 2 });
+        } else {
+            svgBox.textContent = qrPayload;
+        }
+        modal.classList.remove('hidden');
+    }
+
+    const btnCloseQrModal = document.getElementById('btnCloseQrModal');
+    const qrModalEl = document.getElementById('qrModal');
+    if (btnCloseQrModal && qrModalEl) {
+        btnCloseQrModal.addEventListener('click', () => qrModalEl.classList.add('hidden'));
+        qrModalEl.addEventListener('click', (e) => {
+            if (e.target === qrModalEl) qrModalEl.classList.add('hidden');
+        });
+    }
+
+    function buildSlipHtml(data, ptStr, noteStr, format) {
+        const isThermal = format === 'thermal';
+        const todayStr = formatThaiDateShort(getToday());
+        const qrPayload = data.summaryText;
+        const qrSvg = (window.EMCQR && typeof window.EMCQR.toSVG === 'function')
+            ? window.EMCQR.toSVG(qrPayload, { size: isThermal ? 76 : 96, margin: 1 })
+            : '';
+
+        if (isThermal) {
+            return `
+                <div style="font-family:'Prompt',sans-serif; font-size:11px; line-height:1.35; color:#000; padding:4px;">
+                    <div style="border-bottom:1.5px solid #000; padding-bottom:3px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:12px;">ใบนัด / รายการยา (EasyMedCal)</strong>
+                        <span style="font-size:10px;">${todayStr}</span>
+                    </div>
+                    ${ptStr ? `<div style="font-weight:700; margin-bottom:3px;">ผู้ป่วย: ${ptStr}</div>` : ''}
+                    <div style="display:flex; gap:6px; align-items:center; justify-content:space-between;">
+                        <div style="flex:1;">
+                            <div style="font-weight:700; font-size:12px; margin-bottom:3px;">${data.summaryText}</div>
+                            ${noteStr ? `<div style="font-size:10px; border-top:1px dashed #666; padding-top:2px; margin-top:2px;">* ${noteStr}</div>` : ''}
+                        </div>
+                        ${qrSvg ? `<div style="flex-shrink:0;">${qrSvg}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div style="font-family:'Prompt',sans-serif; color:#102727; padding:12px; border:2px solid #102727; border-radius:12px; max-width:540px; margin:0 auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #24917d; padding-bottom:8px; margin-bottom:10px;">
+                    <div>
+                        <div style="font-size:16px; font-weight:700; color:#102727;">ใบนัดหมายและสรุปรายการยา (Appointment Slip)</div>
+                        <div style="font-size:11px; color:#555;">วันที่ออกใบนัด: ${todayStr} | ระบบคำนวณวันนัดและยา EasyMedCal</div>
+                    </div>
+                </div>
+                ${ptStr ? `<div style="font-size:14px; font-weight:700; margin-bottom:8px; background:#f3f1eb; padding:6px 10px; border-radius:8px;">ชื่อผู้ป่วย / HN: ${ptStr}</div>` : ''}
+                <div style="display:flex; gap:14px; align-items:center; justify-content:space-between; background:#fff7ef; border:1px solid #ffd9b8; padding:12px; border-radius:10px;">
+                    <div style="flex:1;">
+                        <div style="font-size:11px; font-weight:700; color:#5b4a36; margin-bottom:4px;">รายละเอียดการนัดหมาย / จำนวนยา:</div>
+                        <div style="font-size:16px; font-weight:700; color:#102727; line-height:1.4;">${data.summaryText}</div>
+                        ${noteStr ? `<div style="font-size:12px; color:#1a5b4b; font-weight:600; margin-top:8px; padding-top:6px; border-top:1px dashed #ccc;">คำแนะนำ: ${noteStr}</div>` : ''}
+                    </div>
+                    ${qrSvg ? `<div style="text-align:center; flex-shrink:0;">${qrSvg}<div style="font-size:9px; color:#555; margin-top:2px;">สแกนดูข้อมูลนัด</div></div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function updatePrintSlipPreview() {
+        if (!activeSlipData) return;
+        const ptInput = document.getElementById('printSlipPatient');
+        const noteInput = document.getElementById('printSlipNote');
+        const fmtSelect = document.getElementById('printSlipFormat');
+        const previewBox = document.getElementById('printSlipPreviewBox');
+        const printContainer = document.getElementById('emc-print-container');
+        if (!previewBox) return;
+
+        const ptStr = ptInput ? ptInput.value.trim() : '';
+        const noteStr = noteInput ? noteInput.value.trim() : '';
+        const fmt = fmtSelect ? fmtSelect.value : 'standard';
+        const html = buildSlipHtml(activeSlipData, ptStr, noteStr, fmt);
+        previewBox.innerHTML = html;
+        if (printContainer) {
+            printContainer.className = fmt === 'thermal' ? 'print-thermal-80x50' : '';
+            printContainer.innerHTML = html;
+        }
+    }
+
+    function openPrintSlipModal(slipData) {
+        activeSlipData = slipData;
+        const modal = document.getElementById('printSlipModal');
+        const ptInput = document.getElementById('printSlipPatient');
+        if (!modal) return;
+        if (ptInput && !ptInput.value && (activePatientMeta.name || activePatientMeta.hn)) {
+            ptInput.value = [activePatientMeta.name, activePatientMeta.hn ? `(HN: ${activePatientMeta.hn})` : ''].filter(Boolean).join(' ');
+        }
+        updatePrintSlipPreview();
+        modal.classList.remove('hidden');
+    }
+
+    ['printSlipPatient', 'printSlipNote', 'printSlipFormat'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updatePrintSlipPreview);
+            el.addEventListener('change', updatePrintSlipPreview);
+        }
+    });
+
+    const printSlipModalEl = document.getElementById('printSlipModal');
+    ['btnClosePrintSlip', 'btnCancelPrintSlip'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn && printSlipModalEl) {
+            btn.addEventListener('click', () => printSlipModalEl.classList.add('hidden'));
+        }
+    });
+    const btnConfirmPrintSlip = document.getElementById('btnConfirmPrintSlip');
+    if (btnConfirmPrintSlip) {
+        btnConfirmPrintSlip.addEventListener('click', () => {
+            updatePrintSlipPreview();
+            window.print();
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 18. HIS Compact URL Mode (?view=compact) & Smart Paste Auto-Fill
+    // -------------------------------------------------------------
+    function setDoseDropdownValue(selectEl, customEl, doseVal) {
+        if (!selectEl || doseVal === null || isNaN(doseVal) || doseVal <= 0) return;
+        const strVal = String(doseVal);
+        const hasOption = Array.from(selectEl.options).some(opt => opt.value === strVal);
+        if (hasOption) {
+            selectEl.value = strVal;
+            if (customEl) customEl.classList.add('hidden');
+        } else {
+            selectEl.value = 'custom';
+            if (customEl) {
+                customEl.classList.remove('hidden');
+                customEl.value = doseVal;
+            }
+        }
+    }
+
+    function applyClinicalParams(p) {
+        if (!p) return;
+
+        if (p.lang && (p.lang === 'TH' || p.lang === 'EN')) {
+            setLanguage(p.lang);
+        }
+
+        // Patient badge (in-memory only, never stored)
+        if (p.hn || p.patientName) {
+            if (p.hn) activePatientMeta.hn = p.hn;
+            if (p.patientName) activePatientMeta.name = p.patientName;
+            const badge = document.getElementById('activePatientBadge');
+            const badgeText = document.getElementById('activePatientText');
+            if (badge && badgeText) {
+                badgeText.textContent = [activePatientMeta.name, activePatientMeta.hn ? `HN: ${activePatientMeta.hn}` : ''].filter(Boolean).join(' • ');
+                badge.classList.remove('hidden');
+            }
+        }
+
+        // Start / Base date
+        if (p.startDate && !isNaN(p.startDate)) {
+            if (diffStartDayInput) syncDateToFields(p.startDate, diffStartDayInput, diffStartMonthInput, diffStartYearInput);
+            if (medDailyStartDay) syncDateToFields(p.startDate, medDailyStartDay, medDailyStartMonth, medDailyStartYear);
+            if (medWeeklyStartDay) syncDateToFields(p.startDate, medWeeklyStartDay, medWeeklyStartMonth, medWeeklyStartYear);
+            if (vaccineDay) syncDateToFields(p.startDate, vaccineDay, vaccineMonth, vaccineYear);
+            if (tblBaseDay) syncDateToFields(p.startDate, tblBaseDay, tblBaseMonth, tblBaseYear);
+            if (contraDay) syncDateToFields(p.startDate, contraDay, contraMonth, contraYear);
+        }
+
+        // Target / End date
+        if (p.targetDate && !isNaN(p.targetDate)) {
+            if (diffDayInput) syncDateToFields(p.targetDate, diffDayInput, diffMonthInput, diffYearInput);
+            if (medDailyEndDay) syncDateToFields(p.targetDate, medDailyEndDay, medDailyEndMonth, medDailyEndYear);
+            if (medWeeklyEndDay) syncDateToFields(p.targetDate, medWeeklyEndDay, medWeeklyEndMonth, medWeeklyEndYear);
+            calculateDateDiff();
+        }
+
+        // Date of birth -> Age Calculator
+        if (p.dob && !isNaN(p.dob) && ageDayInput) {
+            syncDateToFields(p.dob, ageDayInput, ageMonthInput, ageYearInput);
+            calculateAge();
+        }
+
+        // Age & Weight & SCr & Gender -> Oseltamivir & Renal Calculators
+        if (p.age !== null && !isNaN(p.age)) {
+            if (oselAge) oselAge.value = p.age;
+            if (oselAgeUnit && p.ageUnit) oselAgeUnit.value = p.ageUnit;
+            if (renalAge) {
+                renalAge.value = p.ageUnit === 'months' ? Math.round((p.age / 12) * 10) / 10 : p.age;
+            }
+        }
+        if (p.weight !== null && !isNaN(p.weight)) {
+            if (oselWeight) oselWeight.value = p.weight;
+            if (renalWeight) renalWeight.value = p.weight;
+        }
+        if (p.scr !== null && !isNaN(p.scr) && renalSCr) {
+            renalSCr.value = p.scr;
+        }
+        if (p.gender && renalGenders.length > 0) {
+            renalGenders.forEach(r => { r.checked = (r.value === p.gender); });
+        }
+        if (p.dialysis && renalDialysis) {
+            renalDialysis.value = p.dialysis;
+        }
+        if (p.indication) {
+            if (oselIndications && oselIndications.length > 0) {
+                oselIndications.forEach(r => { r.checked = (r.value === p.indication); });
+            }
+            if (renalIndications && renalIndications.length > 0) {
+                renalIndications.forEach(r => { r.checked = (r.value === p.indication); });
+            }
+        }
+
+        // Days / Weeks / Dose
+        if (p.days !== null && !isNaN(p.days) && p.days > 0) {
+            if (apptDaysInput) apptDaysInput.value = p.days;
+            if (medDaysInput) medDaysInput.value = p.days;
+            if (tblCustomDays) tblCustomDays.value = p.days;
+            calculateApptDays();
+        }
+        if (p.weeks !== null && !isNaN(p.weeks) && p.weeks > 0 && apptWeeksInput) {
+            apptWeeksInput.value = p.weeks;
+            calculateApptWeeks();
+        }
+        if (p.dose !== null && !isNaN(p.dose) && p.dose > 0) {
+            setDoseDropdownValue(medDoseDropdown, medDoseCustom, p.dose);
+            setDoseDropdownValue(tblDoseDropdown, tblDoseCustom, p.dose);
+            setDoseDropdownValue(tblCustomDaysDoseDropdown, tblCustomDaysDoseCustom, p.dose);
+        }
+        if (p.weeklyDose !== null && !isNaN(p.weeklyDose) && p.weeklyDose > 0) {
+            setDoseDropdownValue(medWeeklyDose, medWeeklyDoseCustom, p.weeklyDose);
+        }
+
+        // Vaccine
+        if (p.vaccine && vaccineType) {
+            vaccineType.value = p.vaccine;
+            populateVaccineDoses();
+            if (p.vaccineDose && vaccineDose) {
+                vaccineDose.value = p.vaccineDose;
+            }
+            calculateVaccine();
+        }
+
+        // Contraceptive
+        if (p.contraType && contraTypes.length > 0) {
+            contraTypes.forEach(r => { r.checked = (r.value === p.contraType); });
+            calculateContraceptive();
+        }
+
+        // Re-run calculations
+        calculateMedication();
+        calculateWeeklyMedication();
+        if (typeof generateTable === 'function') generateTable();
+        if (typeof calculateOseltamivir === 'function') calculateOseltamivir();
+        calculateRenalOseltamivir();
+
+        // Compact Mode & Section Focusing
+        if (p.compact) {
+            document.body.classList.add('compact-mode');
+            const badge = document.getElementById('compactModeBadge');
+            if (badge) badge.classList.remove('hidden');
+        }
+        if (p.targetSection) {
+            const targetEl = document.getElementById(p.targetSection);
+            if (targetEl) {
+                if (p.compact) {
+                    document.body.classList.add('compact-single-section');
+                    document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.remove('compact-active-section'));
+                    targetEl.classList.add('compact-active-section');
+                    const showAllBtn = document.getElementById('btnShowAllSections');
+                    if (showAllBtn) showAllBtn.classList.remove('hidden');
+                } else {
+                    setTimeout(() => targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+                }
+            }
+        }
+    }
+
+    const btnShowAllSections = document.getElementById('btnShowAllSections');
+    if (btnShowAllSections) {
+        btnShowAllSections.addEventListener('click', () => {
+            document.body.classList.remove('compact-single-section');
+            btnShowAllSections.classList.add('hidden');
+        });
+    }
+
+    // Smart Paste Modal Wiring
+    const smartPasteModal = document.getElementById('smartPasteModal');
+    const smartPasteInput = document.getElementById('smartPasteInput');
+    document.querySelectorAll('.btnOpenSmartPaste').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (smartPasteModal) {
+                smartPasteModal.classList.remove('hidden');
+                if (smartPasteInput) setTimeout(() => smartPasteInput.focus(), 50);
+            }
+        });
+    });
+    const btnCloseSmartPaste = document.getElementById('btnCloseSmartPaste');
+    if (btnCloseSmartPaste && smartPasteModal) {
+        btnCloseSmartPaste.addEventListener('click', () => smartPasteModal.classList.add('hidden'));
+        smartPasteModal.addEventListener('click', (e) => {
+            if (e.target === smartPasteModal) smartPasteModal.classList.add('hidden');
+        });
+    }
+    document.querySelectorAll('.btnSamplePaste').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (smartPasteInput) smartPasteInput.value = btn.getAttribute('data-sample') || '';
+        });
+    });
+    const btnClearSmartPaste = document.getElementById('btnClearSmartPaste');
+    if (btnClearSmartPaste && smartPasteInput) {
+        btnClearSmartPaste.addEventListener('click', () => {
+            smartPasteInput.value = '';
+            smartPasteInput.focus();
+        });
+    }
+    const btnApplySmartPaste = document.getElementById('btnApplySmartPaste');
+    if (btnApplySmartPaste && smartPasteInput) {
+        btnApplySmartPaste.addEventListener('click', () => {
+            const raw = smartPasteInput.value;
+            if (!raw || !raw.trim()) return;
+            if (window.EMCCore && typeof window.EMCCore.parseSmartClinicalText === 'function') {
+                const parsed = window.EMCCore.parseSmartClinicalText(raw);
+                if (parsed) {
+                    applyClinicalParams(parsed);
+                    if (smartPasteModal) smartPasteModal.classList.add('hidden');
+                    const curLang = window.currentLang || 'TH';
+                    showToast(translations[curLang].toast_smart_paste || 'ดึงค่าจากข้อความ HIS สำเร็จ');
+                    // Scroll to most relevant calculator based on extracted fields
+                    if (parsed.scr !== null) {
+                        const el = document.getElementById('section-renal-osel');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else if (parsed.weight !== null && parsed.age !== null && parsed.age < 13) {
+                        const el = document.getElementById('section-oseltamivir');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else if (parsed.days !== null) {
+                        const el = document.getElementById('section-medication');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
             }
         });
     }
@@ -3483,6 +3935,12 @@ function initEasyMedCal() {
         updatePresetLabels();
     }
     initCopyAndResetFeatures();
+
+    // Parse URL parameters (?view=compact&...) on startup
+    if (window.location.search && window.EMCCore && typeof window.EMCCore.parseUrlParams === 'function') {
+        const urlParams = window.EMCCore.parseUrlParams(window.location.search);
+        applyClinicalParams(urlParams);
+    }
 
 }
 
