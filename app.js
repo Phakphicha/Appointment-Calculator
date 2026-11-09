@@ -1,3 +1,990 @@
+// =============================================================
+// Embedded Fallbacks (so app.js works standalone even if /js/* is not uploaded)
+// =============================================================
+if (!window.EMC_HOLIDAYS) {
+// =============================================================
+// EasyMedCal - ข้อมูลวันหยุดราชการไทย (Thai Public Holidays)
+// -------------------------------------------------------------
+// ไฟล์นี้เป็น "ข้อมูลล้วน" แก้ไข/เพิ่มวันหยุดได้โดยไม่ต้องแตะโค้ดคำนวณ
+//
+// วิธีอัปเดตทุกปี:
+//   1. เพิ่มวันหยุดทางจันทรคติ (มาฆะ, วิสาขะ, อาสาฬหะ, เข้าพรรษา), วันพืชมงคล,
+//      วันชดเชย และวันหยุดพิเศษตามมติ ครม. ลงใน `yearSpecific`
+//      รูปแบบ key: 'YYYY-MM-DD' (ปี ค.ศ.)
+//   2. วันหยุดที่ตรงกันทุกปี ให้ใส่ใน `fixed` รูปแบบ key: 'MM-DD'
+//   3. หลังแก้ไข ให้เปลี่ยน CACHE_VERSION ใน sw.js เพื่อให้ผู้ใช้ได้ข้อมูลใหม่
+//   4. รัน `npm test` เพื่อตรวจสอบรูปแบบข้อมูล
+//
+// หมายเหตุ: หากวันหยุดใน `fixed` ตรงกับเสาร์/อาทิตย์ และไม่ได้ระบุวันชดเชยไว้
+// ระบบจะถือวันจันทร์ถัดไปเป็นวันชดเชยให้อัตโนมัติ
+// =============================================================
+(function (root) {
+    const EMC_HOLIDAYS = {
+        fixed: {
+            '01-01': { th: 'วันขึ้นปีใหม่', en: "New Year's Day" },
+            '04-06': { th: 'วันจักรี', en: 'Chakri Memorial Day' },
+            '04-13': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+            '04-14': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+            '04-15': { th: 'วันสงกรานต์', en: 'Songkran Festival' },
+            '05-04': { th: 'วันฉัตรมงคล', en: 'Coronation Day' },
+            '06-03': { th: 'วันเฉลิมฯ พระบรมราชินี', en: "H.M. The Queen's Birthday" },
+            '07-28': { th: 'วันเฉลิมฯ ร.10', en: "H.M. The King's Birthday" },
+            '08-12': { th: 'วันแม่แห่งชาติ', en: "Mother's Day" },
+            '10-13': { th: 'วันนวมินทรมหาราช', en: 'King Bhumibol Memorial Day' },
+            '10-23': { th: 'วันปิยมหาราช', en: 'Chulalongkorn Day' },
+            '12-05': { th: 'วันพ่อแห่งชาติ', en: "Father's Day" },
+            '12-10': { th: 'วันรัฐธรรมนูญ', en: 'Constitution Day' },
+            '12-31': { th: 'วันสิ้นปี', en: "New Year's Eve" }
+        },
+        yearSpecific: {
+            // 2025 (พ.ศ. 2568)
+            '2025-02-12': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+            '2025-04-07': { th: 'ชดเชยวันจักรี', en: 'Sub. Chakri Day' },
+            '2025-04-16': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+            '2025-05-05': { th: 'ชดเชยวันฉัตรมงคล', en: 'Sub. Coronation Day' },
+            '2025-05-09': { th: 'วันพืชมงคล', en: 'Royal Ploughing Day' },
+            '2025-05-11': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+            '2025-05-12': { th: 'ชดเชยวันวิสาขบูชา', en: 'Sub. Visakha Bucha Day' },
+            '2025-07-10': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+            '2025-07-11': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+            // 2026 (พ.ศ. 2569)
+            '2026-01-02': { th: 'วันหยุดพิเศษปีใหม่', en: 'Special New Year Holiday' },
+            '2026-03-03': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+            '2026-04-16': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+            '2026-05-11': { th: 'วันพืชมงคล', en: 'Royal Ploughing Day' },
+            '2026-05-31': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+            '2026-06-01': { th: 'ชดเชยวันวิสาขบูชา', en: 'Sub. Visakha Bucha Day' },
+            '2026-07-29': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+            '2026-07-30': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+            '2026-12-07': { th: 'ชดเชยวันพ่อแห่งชาติ', en: "Sub. Father's Day" },
+            // 2027 (พ.ศ. 2570)
+            '2027-02-20': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+            '2027-02-22': { th: 'ชดเชยวันมาฆบูชา', en: 'Sub. Makha Bucha Day' },
+            '2027-05-20': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+            '2027-07-18': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+            '2027-07-19': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+            '2027-07-20': { th: 'ชดเชยวันอาสาฬหบูชา', en: 'Sub. Asanha Bucha Day' },
+            '2027-10-25': { th: 'ชดเชยวันปิยมหาราช', en: 'Sub. Chulalongkorn Day' },
+            '2027-12-06': { th: 'ชดเชยวันพ่อแห่งชาติ', en: "Sub. Father's Day" },
+            // 2028 (พ.ศ. 2571)
+            '2028-01-03': { th: 'ชดเชยวันขึ้นปีใหม่', en: "Sub. New Year's Day" },
+            '2028-03-09': { th: 'วันมาฆบูชา', en: 'Makha Bucha Day' },
+            '2028-04-17': { th: 'ชดเชยวันสงกรานต์', en: 'Sub. Songkran' },
+            '2028-05-08': { th: 'วันวิสาขบูชา', en: 'Visakha Bucha Day' },
+            '2028-06-05': { th: 'ชดเชยวันเฉลิมฯ พระบรมราชินี', en: "Sub. Queen's Birthday" },
+            '2028-07-06': { th: 'วันอาสาฬหบูชา', en: 'Asanha Bucha Day' },
+            '2028-07-07': { th: 'วันเข้าพรรษา', en: 'Buddhist Lent Day' },
+            '2028-08-14': { th: 'ชดเชยวันแม่แห่งชาติ', en: "Sub. Mother's Day" },
+            '2028-12-11': { th: 'ชดเชยวันรัฐธรรมนูญ', en: 'Sub. Constitution Day' }
+        }
+    };
+
+    if (typeof module === 'object' && module.exports) {
+        module.exports = EMC_HOLIDAYS;
+    } else {
+        root.EMC_HOLIDAYS = EMC_HOLIDAYS;
+    }
+})(typeof self !== 'undefined' ? self : this);
+
+}
+if (!window.EMCCore) {
+// =============================================================
+// EasyMedCal - Core calculation logic (pure functions, no DOM)
+// -------------------------------------------------------------
+// ทุกสูตรคำนวณที่สำคัญทางคลินิกถูกรวมไว้ที่นี่ เพื่อให้:
+//   - เขียน Unit test ได้ (ดู tests/core.test.js, รันด้วย `npm test`)
+//   - app.js เหลือหน้าที่แค่อ่านค่าจากฟอร์มและแสดงผล
+// ใช้ได้ทั้งในเบราว์เซอร์ (window.EMCCore) และ Node.js (require)
+// =============================================================
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('./data/thai-holidays.js'));
+    } else {
+        root.EMCCore = factory(root.EMC_HOLIDAYS);
+    }
+})(typeof self !== 'undefined' ? self : this, function (HOLIDAYS) {
+    'use strict';
+
+    const FIXED_HOLIDAYS = (HOLIDAYS && HOLIDAYS.fixed) || {};
+    const YEAR_SPECIFIC_HOLIDAYS = (HOLIDAYS && HOLIDAYS.yearSpecific) || {};
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    // ---------------------------------------------------------
+    // Date helpers
+    // ---------------------------------------------------------
+
+    // Convert a year typed as B.E. (> 2400) or C.E. into C.E.
+    function toCEYear(yVal) {
+        if (isNaN(yVal)) return NaN;
+        return yVal > 2400 ? (yVal - 543) : yVal;
+    }
+
+    // Today's date at local midnight
+    function getToday() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today;
+    }
+
+    // Parse 'YYYY-MM-DD' (from <input type="date">) as a LOCAL date.
+    // (new Date('YYYY-MM-DD') is parsed as UTC, which shifts the day in negative-offset timezones.)
+    function parseDateStr(dateStr) {
+        if (!dateStr) return null;
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
+        const d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(dateStr);
+        if (isNaN(d)) return null;
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    // Format Date to YYYY-MM-DD (local) for native input[type=date]
+    function toISODate(date) {
+        if (!date || isNaN(date)) return '';
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    // Build a local date from day / month (1-12) / year (B.E. or C.E.). Returns null if invalid.
+    function makeDate(day, month, year) {
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+        const d = new Date(toCEYear(year), month - 1, day);
+        return isNaN(d) ? null : d;
+    }
+
+    // Return a new Date shifted by n calendar days
+    function addDays(date, n) {
+        const d = new Date(date);
+        d.setDate(d.getDate() + n);
+        return d;
+    }
+
+    // Signed number of calendar days from `start` to `end` (DST-safe)
+    function daysBetween(start, end) {
+        const a = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+        const b = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+        return Math.round((b - a) / MS_PER_DAY);
+    }
+
+    // Age in years / months / days. Returns null if birthDate is in the future.
+    function calcAge(birthDate, today) {
+        today = today || getToday();
+        if (birthDate > today) return null;
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+        if (days < 0) {
+            months--;
+            // days in the month before `today`
+            days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+        return { years, months, days };
+    }
+
+    // ---------------------------------------------------------
+    // Pill counting
+    // ---------------------------------------------------------
+
+    // Round UP to whole pills, ignoring floating-point noise.
+    // e.g. 90 days x 1.1 pill = 99.00000000000001 -> must be 99 (not 100)
+    function ceilPills(x) {
+        return Math.ceil(Math.round(x * 1e6) / 1e6);
+    }
+
+    // Smallest fraction a tablet can realistically be split into (1/4 tablet)
+    const SPLITTABLE_FRACTION = 0.25;
+
+    // Can this per-day dose be given by splitting tablets (multiple of 1/4)?
+    function isSplittableDose(dosePerDay) {
+        const units = dosePerDay / SPLITTABLE_FRACTION;
+        return Math.abs(units - Math.round(units)) < 1e-6;
+    }
+
+    // Pills that must actually be dispensed per day.
+    // - Splittable doses (0.25, 0.5, 1.5 ...) stay as-is: the leftover piece is taken the next day.
+    // - Non-splittable doses (1.1, 0.3 ...) are rounded UP to whole tablets per day,
+    //   because the remaining fraction of a tablet cannot be taken.
+    function dispensedPillsPerDay(dosePerDay) {
+        if (isNaN(dosePerDay) || dosePerDay <= 0) return null;
+        return isSplittableDose(dosePerDay) ? dosePerDay : ceilPills(dosePerDay);
+    }
+
+    // Total pills for `days` days at `dosePerDay` pills/day (rounded up to whole tablets)
+    function calcTotalPills(days, dosePerDay) {
+        if (isNaN(days) || isNaN(dosePerDay) || days <= 0 || dosePerDay <= 0) return null;
+        return ceilPills(days * dispensedPillsPerDay(dosePerDay));
+    }
+
+    // Count how many dates in [start, end] (inclusive) fall on the given weekdays (0 = Sun ... 6 = Sat)
+    function countWeekdayOccurrences(startDate, endDate, weekdays) {
+        const total = daysBetween(startDate, endDate);
+        let count = 0;
+        for (let i = 0; i <= total; i++) {
+            if (weekdays.includes(addDays(startDate, i).getDay())) count++;
+        }
+        return count;
+    }
+
+    // ---------------------------------------------------------
+    // Thai public holidays
+    // ---------------------------------------------------------
+    function getThaiHolidayInfo(dateObj) {
+        if (!dateObj || isNaN(dateObj)) {
+            return { isHoliday: false, isWeekend: false, isNonWorking: false, nameTH: '', nameEN: '' };
+        }
+        const iso = toISODate(dateObj);
+        const mmdd = iso.slice(5);
+        const dayOfWeek = dateObj.getDay();
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+        let holiday = YEAR_SPECIFIC_HOLIDAYS[iso] || FIXED_HOLIDAYS[mmdd] || null;
+
+        // Automatic substitute check for fixed holidays falling on Sat/Sun if not already in specific map
+        if (!holiday && dayOfWeek === 1) {
+            const sunFixed = FIXED_HOLIDAYS[toISODate(addDays(dateObj, -1)).slice(5)];
+            const satFixed = FIXED_HOLIDAYS[toISODate(addDays(dateObj, -2)).slice(5)];
+            if (sunFixed) {
+                holiday = { th: `ชดเชย${sunFixed.th}`, en: `Sub. ${sunFixed.en}` };
+            } else if (satFixed) {
+                holiday = { th: `ชดเชย${satFixed.th}`, en: `Sub. ${satFixed.en}` };
+            }
+        }
+
+        const isHoliday = !!holiday;
+        return {
+            isHoliday,
+            isWeekend,
+            isNonWorking: isHoliday || isWeekend,
+            nameTH: holiday ? holiday.th : '',
+            nameEN: holiday ? holiday.en : ''
+        };
+    }
+
+    // Nearest working day before (direction < 0) or after (direction > 0) dateObj
+    function findNearestWorkingDay(dateObj, direction) {
+        const step = direction < 0 ? -1 : 1;
+        const candidate = new Date(dateObj);
+        let diffDays = 0;
+        for (let i = 0; i < 14; i++) {
+            candidate.setDate(candidate.getDate() + step);
+            diffDays += step;
+            if (!getThaiHolidayInfo(candidate).isNonWorking) {
+                return { date: candidate, diffDays };
+            }
+        }
+        return { date: candidate, diffDays };
+    }
+
+    // ---------------------------------------------------------
+    // Oseltamivir (Tamiflu) dosing by age / weight
+    // Suspension 6 mg/mL, bottle 60 mL
+    // ---------------------------------------------------------
+    const OSEL_CONCENTRATION_MG_PER_ML = 6;
+    const OSEL_BOTTLE_ML = 60;
+
+    /**
+     * @param {{indication: 'treatment'|'prophylaxis', ageInMonths: number, weight?: number}} p
+     * @returns {null | {notRecommended: true} | {notRecommended: false, dose: number, volumeMl: number, frequency: number, days: number, bottles: number}}
+     *          null = insufficient / invalid input
+     */
+    function calcOseltamivirDose(p) {
+        const { indication, ageInMonths, weight } = p;
+        if (isNaN(ageInMonths) || ageInMonths < 0) return null;
+        const isAdult = ageInMonths >= 13 * 12;
+        // Weight is not required for adults (>= 13 years)
+        if (!isAdult && (isNaN(weight) || weight <= 0)) return null;
+
+        if (indication === 'prophylaxis' && ageInMonths < 3) {
+            return { notRecommended: true };
+        }
+
+        let dose;
+        if (isAdult) {
+            dose = 75;
+        } else if (ageInMonths < 12) {
+            dose = weight * 3; // < 1 year: 3 mg/kg
+        } else if (weight <= 15) {
+            dose = 30;
+        } else if (weight <= 23) {
+            dose = 45;
+        } else if (weight <= 40) {
+            dose = 60;
+        } else {
+            dose = 75;
+        }
+
+        const volumeMl = dose / OSEL_CONCENTRATION_MG_PER_ML;
+        const frequency = indication === 'treatment' ? 2 : 1;
+        const days = indication === 'treatment' ? 5 : 10;
+        const bottles = ceilPills((volumeMl * frequency * days) / OSEL_BOTTLE_ML);
+        return { notRecommended: false, dose, volumeMl, frequency, days, bottles };
+    }
+
+    // ---------------------------------------------------------
+    // Renal function & Oseltamivir renal dose adjustment
+    // ---------------------------------------------------------
+
+    // Cockcroft-Gault creatinine clearance (mL/min). Returns null for invalid input.
+    function cockcroftGault({ age, weight, scr, gender }) {
+        if (isNaN(age) || isNaN(weight) || isNaN(scr) || age <= 0 || weight <= 0 || scr <= 0) return null;
+        let crcl = ((140 - age) * weight) / (72 * scr);
+        if (gender === 'female') crcl *= 0.85;
+        return crcl;
+    }
+
+    // CKD-EPI (2021) eGFR without race (mL/min/1.73m²)
+    function ckdEpi2021({ age, scr, gender }) {
+        if (isNaN(age) || isNaN(scr) || age <= 0 || scr <= 0) return null;
+        const isFemale = gender === 'female';
+        const kappa = isFemale ? 0.7 : 0.9;
+        const alpha = isFemale ? -0.241 : -0.302;
+        const scrOverK = scr / kappa;
+        const minVal = Math.min(scrOverK, 1);
+        const maxVal = Math.max(scrOverK, 1);
+        let egfr = 142 * Math.pow(minVal, alpha) * Math.pow(maxVal, -1.200) * Math.pow(0.9938, age);
+        if (isFemale) egfr *= 1.012;
+        return egfr;
+    }
+
+    // Stage description for CKD
+    function getCkdStage(val) {
+        if (val >= 90) return { stage: 'G1', descTH: 'การทำงานของไตปกติหรือสูง (Normal/High)', descEN: 'Normal or high GFR' };
+        if (val >= 60) return { stage: 'G2', descTH: 'ไตลดลงเล็กน้อย (Mildly decreased)', descEN: 'Mildly decreased' };
+        if (val >= 45) return { stage: 'G3a', descTH: 'ไตลดลงเล็กน้อยถึงปานกลาง (Mild to moderate)', descEN: 'Mild to moderately decreased' };
+        if (val >= 30) return { stage: 'G3b', descTH: 'ไตลดลงปานกลางถึงรุนแรง (Moderate to severe)', descEN: 'Moderately to severely decreased' };
+        if (val >= 15) return { stage: 'G4', descTH: 'ไตลดลงรุนแรง (Severely decreased)', descEN: 'Severely decreased' };
+        return { stage: 'G5', descTH: 'ไตวายระยะสุดท้าย (Kidney failure)', descEN: 'Kidney failure (ESRD)' };
+    }
+
+    /**
+     * @param {{crcl: number, indication: 'treatment'|'prophylaxis', dialysis: 'none'|'hd'|'capd'|'esrd'}} p
+     * @returns {{text: string, notRecommended: boolean}}
+     */
+    function renalOseltamivirRecommendation({ crcl, indication, dialysis }) {
+        const isTx = indication === 'treatment';
+        const NOT_REC = { text: 'TAMIFLU is not recommended', notRecommended: true };
+        switch (dialysis) {
+            case 'hd':
+                return {
+                    text: isTx
+                        ? '30 mg immediately, then 30 mg after every hemodialysis cycle (max 5 days)'
+                        : '30 mg immediately, then 30 mg after alternate hemodialysis cycles',
+                    notRecommended: false
+                };
+            case 'capd':
+                return {
+                    text: isTx ? 'A single 30 mg dose' : '30 mg immediately, then 30 mg once weekly',
+                    notRecommended: false
+                };
+            case 'esrd':
+                return NOT_REC;
+            case 'none':
+            default:
+                if (crcl > 60) {
+                    return { text: isTx ? '75 mg twice daily for 5 days' : '75 mg once daily', notRecommended: false };
+                } else if (crcl > 30) {
+                    return { text: isTx ? '30 mg twice daily for 5 days' : '30 mg once daily', notRecommended: false };
+                } else if (crcl > 10) {
+                    return { text: isTx ? '30 mg once daily for 5 days' : '30 mg every other day', notRecommended: false };
+                }
+                return NOT_REC;
+        }
+    }
+
+    // ---------------------------------------------------------
+    // Contraceptive injection
+    // ---------------------------------------------------------
+    // Keys match the <input name="contraType"> values in index.html
+    const CONTRA_INTERVAL_DAYS = { '1month': 28, '3months': 84 };
+
+    function calcContraceptiveNextDate(baseDate, type, shiftDays) {
+        const interval = CONTRA_INTERVAL_DAYS[type] || CONTRA_INTERVAL_DAYS['3months'];
+        return addDays(baseDate, interval + (shiftDays || 0));
+    }
+
+    return {
+        toCEYear,
+        getToday,
+        parseDateStr,
+        toISODate,
+        makeDate,
+        addDays,
+        daysBetween,
+        calcAge,
+        ceilPills,
+        isSplittableDose,
+        dispensedPillsPerDay,
+        calcTotalPills,
+        countWeekdayOccurrences,
+        getThaiHolidayInfo,
+        findNearestWorkingDay,
+        calcOseltamivirDose,
+        cockcroftGault,
+        ckdEpi2021,
+        getCkdStage,
+        renalOseltamivirRecommendation,
+        calcContraceptiveNextDate,
+        CONTRA_INTERVAL_DAYS
+    };
+});
+
+}
+if (!window.EMC_TRANSLATIONS) {
+// =============================================================
+// EasyMedCal - Translations (TH / EN)
+// แก้ไขข้อความที่แสดงบนหน้าเว็บได้ที่ไฟล์นี้ โดยไม่ต้องแตะ logic ใน app.js
+// =============================================================
+window.EMC_TRANSLATIONS = {
+    TH: {
+        title_main: "โปรแกรมคำนวณวันนัด คนไข้และยา คำนวณวัน/สัปดาห์ แม่นยำ ใช้งานฟรี",
+        tooltip_article: "คู่มือวัคซีนผู้ใหญ่ 2569",
+        tooltip_coffee: "สนับสนุนค่ากาแฟ",
+        tooltip_help: "คู่มือการใช้งาน",
+        nav_article: "คู่มือวัคซีนผู้ใหญ่ 2569 (ฉบับสมบูรณ์)",
+        nav_datediff: "คำนวณระยะห่างของวัน",
+        nav_med: "คำนวณจำนวนยารายวัน",
+        nav_apptdays: "คำนวณวันนัด (วัน)",
+        nav_apptweeks: "คำนวณวันนัด (สัปดาห์)",
+        nav_weeklymed: "คำนวณจำนวนยารายสัปดาห์",
+        nav_age: "คำนวณอายุ",
+        nav_year: "แปลงปี พ.ศ./ค.ศ.",
+        nav_vaccine: "คำนวณวันนัดวัคซีน",
+        nav_table: "ตารางคำนวณสำเร็จรูป",
+        nav_osel: "คำนวณยา Oseltamivir",
+        nav_renal: "Oseltamivir (Renal Dose)",
+        nav_contra: "คำนวณวันนัดฉีดยาคุม",
+        btn_coffee: "สนับสนุนค่ากาแฟ",
+        btn_manual: "คู่มือการใช้งาน",
+        // Section 1
+        s1_title: "คำนวณระยะห่างของวัน",
+        s1_start_label: "วันที่เริ่มต้น (Base Date)",
+        s1_target_label: "วันที่เป้าหมาย (Target Date)",
+        s1_result_label: "ระยะห่างทั้งหมด",
+        // Section 2
+        s2_title_1: "คำนวณจำนวนยารายวัน",
+        s2_title_tag: "(สำหรับจ่ายยาวันต่อวัน)",
+        s2_start_label: "วันที่เริ่มต้น",
+        s2_end_label: "วันนัดหมาย",
+        s2_days_label: "จำนวนวัน",
+        s2_dose_label: "ขนาดยาที่แพทย์สั่งต่อวัน",
+        s2_result_label: "จำนวนยาที่ต้องจ่ายรวม",
+        // Section Weekly Med
+        s_wm_title_1: "คำนวณจำนวนยารายสัปดาห์",
+        s_wm_title_tag: "(สำหรับจ่ายยารายสัปดาห์)",
+        s_wm_start_label: "วันที่เริ่มต้น",
+        s_wm_end_label: "วันนัดหมาย",
+        s_wm_dose_label: "จำนวนเม็ดยาต่อสัปดาห์",
+        s_wm_days_check_label: "ระบุวันที่ทานยาในสัปดาห์ (เพื่อความแม่นยำ)",
+        s_wm_total_time: "ระยะเวลาทั้งหมด: ",
+        s_wm_total_pills: "จำนวนยาที่ต้องจ่ายรวม",
+        // Section 3 & 4
+        s3_title_1: "คำนวณวันนัด",
+        s3_title_2: "จากจำนวนวัน",
+        s3_days_label: "จำนวนวันนัด",
+        s3_result_label: "วันที่นัดหมาย",
+        s4_title_1: "คำนวณวันนัด",
+        s4_title_2: "จากจำนวนสัปดาห์",
+        s4_weeks_label: "จำนวนสัปดาห์",
+        // Quick Presets & Weekend Warning
+        btn_shift_fri: "เลื่อนเป็นวันศุกร์",
+        btn_shift_mon: "เลื่อนเป็นวันจันทร์",
+        weekend_sat_warn: "ตรงกับวันเสาร์ (วันหยุดตรวจ)",
+        weekend_sun_warn: "ตรงกับวันอาทิตย์ (วันหยุดตรวจ)",
+        quick_glance_title: "สรุปวันนัดหมายด่วนยอดนิยม (คำนวณจากวันนี้)",
+        quick_glance_today: "อิงจากวันที่ปัจจุบัน: ",
+        qg_1w: "1 สัปดาห์ (7 วัน)",
+        qg_2w: "2 สัปดาห์ (14 วัน)",
+        qg_4w: "4 สัปดาห์ (28 วัน)",
+        qg_1m: "1 เดือน (30 วัน)",
+        qg_2m: "2 เดือน (60 วัน)",
+        qg_3m: "3 เดือน (90 วัน)",
+        // Section 5 & 6
+        s5_title: "คำนวณอายุ",
+        s5_dob_label: "วัน/เดือน/ปีเกิด",
+        s5_result_label: "อายุ",
+        s6_title: "แปลงปี พ.ศ. / ค.ศ.",
+        s6_be_label: "ปี พ.ศ.",
+        s6_ce_label: "ปี ค.ศ.",
+        // Section 7 Vaccine
+        s7_title: "คำนวณวันนัดฉีดวัคซีนผู้ใหญ่",
+        s7_type_label: "ชนิดวัคซีน",
+        s7_dose_label: "เข็มที่ฉีดไปล่าสุด",
+        s7_date_label: "วันที่ฉีดเข็มล่าสุด",
+        s7_result_label: "วันนัดฉีดเข็มถัดไป",
+        s7_ref_1: "การรับวัคซีนเลยกำหนดนัด สามารถให้วัคซีนต่อได้เลย โดยไม่ต้องเริ่มต้นนับใหม่",
+        s7_ref_2: "การรับวัคซีนเร็วกว่ากำหนดนัด ในกรณีของวัคซีนชนิดเชื้อตาย พิจารณาให้ก่อนนัดได้ไม่เกิน 4 วัน สำหรับวัคซีนชนิดเชื้อมีชีวิตอ่อนฤทธิ์ ไม่แนะนำให้รับวัคซีนเร็วกว่ากำหนดนัด",
+        s7_ref_source: "Reference: คำแนะนำการให้วัคซีนป้องกันโรคสำหรับผู้ใหญ่และผู้สูงอายุ พ.ศ. 2569 สมาคมโรคติดเชื้อแห่งประเทศไทย (Recommended Adult and Elderly Immunization 2026)",
+        s7_read_guide: "อ่านคู่มือวัคซีนผู้ใหญ่และผู้สูงอายุ ปี 2569 (ฉบับสมบูรณ์)",
+        // Section 8 Table
+        s8_title: "ตารางคำนวณวันนัดหมายและจำนวนยา",
+        s8_base_label: "วันที่เริ่มต้น (Base Date)",
+        s8_dose_daily_label: "ขนาดยาที่แพทย์สั่งต่อวัน",
+        s8_dose_weekly_label: "ขนาดยาที่แพทย์สั่งต่อสัปดาห์",
+        s8_th_time: "ระยะเวลา<br><span class=\"hidden md:inline\">(สัปดาห์ / วัน)</span><span class=\"md:hidden\">(วีค/วัน)</span>",
+        s8_th_date: "วันที่นัดหมาย<br><span class=\"hidden md:inline\">(วัน/เดือน/ปี)</span>",
+        s8_th_daily: "จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class=\"text-[8px] md:text-[10px] text-gray-400 font-normal\">*คำนวณจากขนาดยาที่แพทย์สั่งต่อวัน*</span>",
+        s8_th_weekly: "จำนวนยาที่ต้องจ่าย<br>(เม็ด)<br><span class=\"text-[8px] md:text-[10px] text-gray-400 font-normal\">*คำนวณจากขนาดยาที่แพทย์สั่งต่อสัปดาห์*</span>",
+        s8_custom_title: "คำนวณเฉพาะจำนวนวันที่ต้องการ (Custom Days)",
+        s8_custom_days_label: "ระบุจำนวนวัน",
+        s8_custom_date_label: "ตรงกับวันที่",
+        s8_custom_daily_label: "จ่ายยารายวัน",
+        s8_custom_weekly_label: "จ่ายยารายสัปดาห์",
+        // Oseltamivir
+        s_osel_title: "คำนวณยา Oseltamivir",
+        s_osel_ind_label: "ข้อบ่งชี้ (Indication)",
+        s_osel_ind_treat: "Treatment<br><span class=\"text-xs font-bold text-[#24917d]\">(5 days, Twice daily)</span>",
+        s_osel_ind_proph: "Prophylaxis<br><span class=\"text-xs font-bold text-[#24917d]\">(10 days, Once daily)</span>",
+        s_osel_age_label: "อายุ (Age)",
+        s_osel_weight_label: "น้ำหนัก (Weight)",
+        s_osel_weight_note: "*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)",
+        s_osel_alert: "Not recommended สำหรับอายุต่ำกว่า 3 เดือน",
+        s_osel_dose: "Dose (mg)",
+        s_osel_vol: "Volume (ml)",
+        s_osel_vol_note: "*Concentration: 6 mg/ml.",
+        s_osel_freq: "Frequency",
+        s_osel_bottles: "Total Bottles",
+        s_osel_bottles_note: "Bottle size: 60 ml.",
+        s_osel_ref: "Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications",
+        // Renal Oseltamivir
+        s_ro_title: "คำนวณยา Oseltamivir",
+        s_ro_sub: "(Renal Dose Adjustment)",
+        s_ro_pt_data: "ข้อมูลผู้ป่วย (Patient Data)",
+        s_ro_age: "อายุ (Age)",
+        s_ro_weight: "น้ำหนัก (Weight)",
+        s_ro_gender: "เพศ (Gender)",
+        s_ro_male: "ชาย (Male)",
+        s_ro_female: "หญิง (Female)",
+        s_ro_scr: "Serum Creatinine (SCr)",
+        s_ro_clin_data: "ข้อมูลทางคลินิก (Clinical Data)",
+        s_ro_ind: "ข้อบ่งชี้ (Indication)",
+        s_ro_dialysis: "สถานะการฟอกไต (Dialysis Status)",
+        s_ro_crcl: "Calculated CrCl (Cockcroft-Gault)",
+        s_ro_rec_dose: "Recommended Dose",
+        s_ro_source: "Source: Recommended Dosage Modifications for Treatment and Prophylaxis of Influenza in Adults with Renal Impairment",
+        // Contraceptive
+        s_con_title: "คำนวณวันนัดฉีดยาคุม",
+        s_con_base_label: "วันที่ฉีดเข็มล่าสุด",
+        s_con_type_label: "ชนิดยาคุมกำเนิด",
+        s_con_1m_title: "ชนิด 1 เดือน (28 วัน)",
+        s_con_3m_title: "ชนิด 3 เดือน (84 วัน)",
+        s_con_result_label: "วันที่นัดหมายครั้งถัดไป",
+        // SEO & Footer
+        seo_title: "ทำไมต้องให้ Easymedcal เป็นผู้ช่วยคู่ใจของคุณ?",
+        seo_p1: "เราคือ โปรแกรมคำนวณวันนัดผู้ป่วย ที่สร้างขึ้นมาเพื่อช่วยแบ่งเบาภาระการทำงานของแพทย์ พยาบาล และเภสัชกร ให้คุณทำงานได้รวดเร็วและแม่นยำยิ่งขึ้น:",
+        seo_li1: "<strong>คำนวณเป๊ะ ไม่มีพลาด:</strong> ด้วย <strong>วิธีคำนวณยาตามวัน</strong> ที่ช่วยให้คุณเช็ค <strong>ระยะห่างวัน</strong> ได้ทันทีโดยไม่ต้องเปิดปฏิทินนับเอง",
+        seo_li2: "<strong>ฟีเจอร์ครบ จบในเว็บเดียว:</strong> มาพร้อม <strong>ตารางนัดฉีดวัคซีนผู้ใหญ่</strong> ที่อิงตามมาตรฐานการแพทย์ล่าสุด",
+        seo_li3: "<strong>ใช้งานฟรี ไม่ต้องโหลดแอป:</strong> เปิดผ่านเบราว์เซอร์ในมือถือหรือคอมพิวเตอร์ แล้วเริ่มใช้งานได้เลย!",
+        coffee_modal_title: "สนับสนุนค่ากาแฟ",
+        coffee_modal_sub: "สนับสนุนค่ากาแฟเพื่อเป็นกำลังใจ ☕",
+        coffee_modal_note: "สแกนผ่านแอปพลิเคชันธนาคารได้ทุกธนาคาร<br>ขอบคุณสำหรับทุกการสนับสนุนค่ะ 🙏",
+        manual_modal_title: "คู่มือการใช้งานระบบ",
+        btn_close_manual: "ปิดหน้าต่าง",
+        day_mon: "จ.", day_tue: "อ.", day_wed: "พ.", day_thu: "พฤ.", day_fri: "ศ.", day_sat: "ส.", day_sun: "อา.",
+        unit_day: "วัน", unit_week: "สัปดาห์",
+        manual_1: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณระยะห่างของวัน:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน</span>",
+        manual_2: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที</span>",
+        manual_3: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง</span>",
+        manual_4: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณจำนวนยารายสัปดาห์:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">เลือกวันที่เริ่มต้นและวันนัดหมาย พร้อมระบุจำนวนยาที่ต้องทานต่อสัปดาห์ ระบบจะคำนวณจำนวนสัปดาห์และสรุปเม็ดยารวมที่ต้องจ่ายให้อัตโนมัติ</span>",
+        manual_5: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณอายุคนไข้:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)</span>",
+        manual_6: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ</span>",
+        manual_7: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ</span>",
+        manual_8: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์ตัวช่วยคำนวณยา Oseltamivir:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">ระบุน้ำหนักตัวหรืออายุของผู้ป่วย พร้อมเลือกรูปแบบการใช้ยา (รักษา หรือ ป้องกัน) ระบบจะประมวลผลขนาดยาที่ต้องรับประทานต่อมื้อ พร้อมสรุปปริมาณยารวมที่ต้องจ่ายให้อัตโนมัติอย่างแม่นยำ</span>",
+        manual_9: "<span class=\"font-bold text-[#163333] block mb-1\">ฟีเจอร์คำนวณวันนัดฉีดยาคุม:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">เลือกวันที่ฉีดเข็มล่าสุด และชนิดยาคุม (1 เดือน หรือ 3 เดือน) ระบบจะคำนวณวันนัดเข็มถัดไป (บวก 28 วัน หรือ 84 วัน)</span>",
+        osel_title: "คำนวณยา Oseltamivir",
+        renal_subtitle: "(Renal Dose Adjustment)",
+        renal_patient_data: "ข้อมูลผู้ป่วย (Patient Data)",
+        osel_age_label: "อายุ (Age)",
+        osel_weight_label: "น้ำหนัก (Weight)",
+        renal_gender: "เพศ (Gender)",
+        renal_male: "ชาย (Male)",
+        renal_female: "หญิง (Female)",
+        osel_indication_label: "ข้อบ่งชี้ (Indication)",
+        osel_ind_treatment: "Treatment",
+        renal_ind_treatment_desc: "(5 days)",
+        osel_ind_proph: "Prophylaxis",
+        osel_ind_proph_desc: "(10 days)",
+        renal_dialysis_status: "สถานะการฟอกไต (Dialysis Status)",
+        s9_title: "คำนวณวันนัดฉีดยาคุม",
+        s9_type_label: "ชนิดยาคุมกำเนิด",
+        s9_type_1m: "ชนิด 1 เดือน (28 วัน)",
+        s9_type_3m: "ชนิด 3 เดือน (84 วัน)",
+        s9_next_appt: "วันที่นัดหมายครั้งถัดไป",
+        user_manual_btn: "คู่มือการใช้งาน",
+        support_coffee_btn: "สนับสนุนค่ากาแฟ",
+        privacy_link: "นโยบายความเป็นส่วนตัว",
+        cookie_settings_link: "ตั้งค่าคุกกี้",
+        disclaimer_title: "ข้อจำกัดความรับผิดชอบ:",
+        disclaimer_text: "ผลการคำนวณจาก EasyMedCal เป็นเครื่องมือช่วยอำนวยความสะดวกสำหรับบุคลากรทางการแพทย์เท่านั้น ไม่สามารถใช้แทนการวินิจฉัย คำแนะนำ หรือดุลยพินิจทางวิชาชีพของแพทย์และเภสัชกรได้ ผู้ใช้งานควรตรวจสอบผลลัพธ์กับแนวทางเวชปฏิบัติ เอกสารกำกับยา และบริบทของผู้ป่วยแต่ละรายทุกครั้งก่อนนำไปใช้ ผู้พัฒนาไม่รับผิดชอบต่อความเสียหายใด ๆ ที่เกิดจากการนำผลการคำนวณไปใช้",
+        footer_copyright: "© 2026 easymedcal.com สงวนลิขสิทธิ์",
+        coffee_title: "สนับสนุนค่ากาแฟเพื่อเป็นกำลังใจ ☕",
+        coffee_scan_text: "สแกนผ่านแอปพลิเคชันธนาคารได้ทุกธนาคาร<br>ขอบคุณสำหรับทุกการสนับสนุนค่ะ 🙏",
+        manual_title: "คู่มือการใช้งานระบบ",
+        close_window: "ปิดหน้าต่าง",
+        manual_1_title: "ฟีเจอร์คำนวณระยะห่างของวัน:",
+        manual_1_desc: "เลือกวันที่ต้องการจากปฏิทิน ระบบจะแสดงระยะห่างระหว่างวันนี้กับวันที่เลือกเป็นจำนวนวัน",
+        manual_2_title: "ฟีเจอร์คำนวณวันนัดจากจำนวนวัน/สัปดาห์:",
+        manual_2_desc: "กรอกจำนวนวันหรือสัปดาห์ที่ต้องการนัด ระบบจะคำนวณวันที่นัดหมายให้ทันที",
+        manual_3_title: "ฟีเจอร์ตารางคำนวณวันนัดหมายและจำนวนยาแบบสำเร็จรูป:",
+        manual_3_desc: "เลือกวันที่เริ่มต้นและขนาดยาต่อวัน ระบบจะสร้างตารางวันนัดล่วงหน้า 1-24 สัปดาห์ พร้อมคำนวณเม็ดยารวม (ปัดเศษขึ้นเป็นเม็ดเต็มเสมอ) มีช่องกรอกจำนวนวันแบบระบุเองด้านล่างตาราง",
+        manual_4_title: "ฟีเจอร์คำนวณจำนวนยารายสัปดาห์:",
+        manual_4_desc: "เลือกวันที่เริ่มต้นและวันนัดหมาย พร้อมระบุจำนวนยาที่ต้องทานต่อสัปดาห์ ระบบจะคำนวณจำนวนสัปดาห์และสรุปเม็ดยารวมที่ต้องจ่ายให้อัตโนมัติ",
+        manual_5_title: "ฟีเจอร์คำนวณอายุคนไข้:",
+        manual_5_desc: "กรอก วัน/เดือน/ปีเกิด (พ.ศ.) ระบบจะคำนวณอายุแบบละเอียด (ปี เดือน วัน)",
+        manual_6_title: "ฟีเจอร์แปลงปี พ.ศ. และ ค.ศ.:",
+        manual_6_desc: "กรอกตัวเลขปีเพื่อแปลงสลับระบบปีอัตโนมัติ",
+        manual_7_title: "ฟีเจอร์คำนวณวันนัดฉีดวัคซีน:",
+        manual_7_desc: "เลือกชนิดวัคซีนและประวัติการฉีด ระบบจะประมวลผลวันนัดหมายตามมาตรฐาน สำหรับวัคซีนทั่วไปจะระบุระยะห่างกำกับ สำหรับวัคซีนแบบซีรีส์ (เช่น พิษสุนัขบ้า) ระบบจะสร้างตารางนัดหมายให้ครบทุกเข็มพร้อมระบุ (Day X) อัตโนมัติ",
+        manual_8_title: "ฟีเจอร์ตัวช่วยคำนวณยา Oseltamivir:",
+        manual_8_desc: "ระบุน้ำหนักตัวหรืออายุของผู้ป่วย พร้อมเลือกรูปแบบการใช้ยา (รักษา หรือ ป้องกัน) ระบบจะประมวลผลขนาดยาที่ต้องรับประทานต่อมื้อ พร้อมสรุปปริมาณยารวมที่ต้องจ่ายให้อัตโนมัติอย่างแม่นยำ",
+        manual_9_title: "ฟีเจอร์คำนวณวันนัดฉีดยาคุม:",
+        manual_9_desc: "เลือกวันที่ฉีดเข็มล่าสุด และชนิดยาคุม (1 เดือน หรือ 3 เดือน) ระบบจะคำนวณวันนัดเข็มถัดไป (บวก 28 วัน หรือ 84 วัน)",
+        ph_specify_age: "ระบุอายุ...",
+        ph_specify_weight: "ระบุน้ำหนัก...",
+        ph_specify_scr: "ระบุค่า SCr...",
+        ph_specify_dose: "ระบุตัวเลขขนาดยา",
+        ph_specify_pills: "ระบุจำนวนเม็ด",
+        ph_specify_days: "ระบุจำนวนวัน...",
+        ph_day: "วัน",
+        ph_year: "พ.ศ.",
+        ph_eg_30: "เช่น 30",
+        ph_eg_4: "เช่น 4",
+        ph_eg_2567: "เช่น 2567",
+        ph_eg_2024: "เช่น 2024",
+        unit_year: "ปี",
+        s8_empty_table: "กรุณาเลือกวันที่และขนาดยาเพื่อคำนวณตาราง",
+        s8_custom_date_match: "ตรงกับวันที่",
+        s8_custom_daily_pay: "จ่ายยารายวัน",
+        s8_custom_weekly_pay: "จ่ายยารายสัปดาห์",
+        osel_ind_treatment_desc: "(5 days, Twice daily)",
+        osel_weight_note: "*(ไม่ต้องระบุน้ำหนักสำหรับอายุ 13 ปีขึ้นไป)",
+        osel_alert_not_rec: "Not recommended สำหรับอายุต่ำกว่า 3 เดือน",
+        renal_clinical_data: "ข้อมูลทางคลินิก (Clinical Data)",
+        btn_copy: "คัดลอกผลลัพธ์",
+        btn_copied: "คัดลอกแล้ว!",
+        btn_add_cal: "ลงปฏิทิน",
+        btn_ics: "ไฟล์ .ics",
+        cal_title_appt: "นัดหมายแพทย์/โรงพยาบาล",
+        cal_title_contra: "นัดฉีดยาคุมกำเนิด",
+        cal_title_vaccine: "นัดฉีดวัคซีน",
+        btn_reset: "ล้างค่า",
+        toast_copied: "คัดลอกผลลัพธ์ลงคลิปบอร์ดแล้ว",
+        toast_reset: "ล้างข้อมูลเรียบร้อยแล้ว",
+        holiday_prefix: "ตรงกับวันหยุดราชการ: "
+    },
+    EN: {
+        title_main: "Medical Appointment & Medication Calculator | EasyMedCal",
+        tooltip_article: "Adult Vaccine Guide 2026",
+        tooltip_coffee: "Buy me a coffee",
+        tooltip_help: "User Manual",
+        nav_article: "Adult Vaccine Guide 2026 (Complete Edition)",
+        nav_datediff: "Date Difference Calculator",
+        nav_med: "Daily Medication Calculator",
+        nav_apptdays: "Next Appt (by Days)",
+        nav_apptweeks: "Next Appt (by Weeks)",
+        nav_weeklymed: "Weekly Medication Calculator",
+        nav_age: "Age Calculator",
+        nav_year: "Year Converter (B.E./C.E.)",
+        nav_vaccine: "Adult Vaccine Calculator",
+        nav_table: "Appointment & Pill Table",
+        nav_osel: "Oseltamivir Calculator",
+        nav_renal: "Oseltamivir (Renal Dose)",
+        nav_contra: "Contraceptive Injection",
+        btn_coffee: "Buy me a coffee",
+        btn_manual: "User Manual",
+        // Section 1
+        s1_title: "Date Difference Calculator",
+        s1_start_label: "Start Date (Base Date)",
+        s1_target_label: "Target Date",
+        s1_result_label: "Total Days Difference",
+        // Section 2
+        s2_title_1: "Daily Medication Calculator",
+        s2_title_tag: "(For Daily Prescriptions)",
+        s2_start_label: "Start Date",
+        s2_end_label: "Appointment Date",
+        s2_days_label: "Total Days",
+        s2_dose_label: "Daily Dosage Prescribed",
+        s2_result_label: "Total Pills Required",
+        // Section Weekly Med
+        s_wm_title_1: "Weekly Medication Calculator",
+        s_wm_title_tag: "(For Weekly Prescriptions)",
+        s_wm_start_label: "Start Date",
+        s_wm_end_label: "Appointment Date",
+        s_wm_dose_label: "Pills per Week",
+        s_wm_days_check_label: "Select administration days in week (for exact calculation)",
+        s_wm_total_time: "Total Duration: ",
+        s_wm_total_pills: "Total Pills Required",
+        // Section 3 & 4
+        s3_title_1: "Next Appointment",
+        s3_title_2: "by Days",
+        s3_days_label: "Number of Days",
+        s3_result_label: "Appointment Date",
+        s4_title_1: "Next Appointment",
+        s4_title_2: "by Weeks",
+        s4_weeks_label: "Number of Weeks",
+        // Quick Presets & Weekend Warning
+        btn_shift_fri: "Shift to Friday",
+        btn_shift_mon: "Shift to Monday",
+        weekend_sat_warn: "Falls on Saturday (Closed)",
+        weekend_sun_warn: "Falls on Sunday (Closed)",
+        quick_glance_title: "Quick Appointment Summary (From Today)",
+        quick_glance_today: "Based on today: ",
+        qg_1w: "1 Week (7 days)",
+        qg_2w: "2 Weeks (14 days)",
+        qg_4w: "4 Weeks (28 days)",
+        qg_1m: "1 Month (30 days)",
+        qg_2m: "2 Months (60 days)",
+        qg_3m: "3 Months (90 days)",
+        // Section 5 & 6
+        s5_title: "Age Calculator",
+        s5_dob_label: "Date of Birth",
+        s5_result_label: "Age",
+        s6_title: "Year Converter (B.E. / C.E.)",
+        s6_be_label: "Buddhist Era (B.E.)",
+        s6_ce_label: "Christian Era (C.E.)",
+        // Section 7 Vaccine
+        s7_title: "Adult Vaccine Appointment Calculator",
+        s7_type_label: "Vaccine Type",
+        s7_dose_label: "Latest Dose Administered",
+        s7_date_label: "Date of Latest Dose",
+        s7_result_label: "Next Scheduled Dose",
+        s7_ref_1: "If an appointment is delayed, vaccination can continue immediately without restarting the series.",
+        s7_ref_2: "For early administration: inactivated vaccines may be given up to 4 days before the recommended interval. For live attenuated vaccines, early administration is not recommended.",
+        s7_ref_source: "Reference: Recommended Adult and Elderly Immunization 2026, Infectious Diseases Association of Thailand (IDAT)",
+        s7_read_guide: "Read Adult & Elderly Vaccine Schedule 2026 Guide",
+        // Section 8 Table
+        s8_title: "Appointment & Medication Table",
+        s8_base_label: "Start Date (Base Date)",
+        s8_dose_daily_label: "Daily Dosage Prescribed",
+        s8_dose_weekly_label: "Weekly Dosage Prescribed",
+        s8_th_time: "Duration<br><span class=\"hidden md:inline\">(Weeks / Days)</span><span class=\"md:hidden\">(Wks/Days)</span>",
+        s8_th_date: "Appointment Date<br><span class=\"hidden md:inline\">(Date/Month/Year)</span>",
+        s8_th_daily: "Total Pills Required<br>(Pills)<br><span class=\"text-[8px] md:text-[10px] text-gray-400 font-normal\">*Based on daily dosage*</span>",
+        s8_th_weekly: "Total Pills Required<br>(Pills)<br><span class=\"text-[8px] md:text-[10px] text-gray-400 font-normal\">*Based on weekly dosage*</span>",
+        s8_custom_title: "Calculate Specific Days (Custom Days)",
+        s8_custom_days_label: "Enter number of days",
+        s8_custom_date_label: "Corresponding Date",
+        s8_custom_daily_label: "Daily Total Pills",
+        s8_custom_weekly_label: "Weekly Total Pills",
+        // Oseltamivir
+        s_osel_title: "Oseltamivir Calculator",
+        s_osel_ind_label: "Indication",
+        s_osel_ind_treat: "Treatment<br><span class=\"text-xs font-bold text-[#24917d]\">(5 days, Twice daily)</span>",
+        s_osel_ind_proph: "Prophylaxis<br><span class=\"text-xs font-bold text-[#24917d]\">(10 days, Once daily)</span>",
+        s_osel_age_label: "Age",
+        s_osel_weight_label: "Weight",
+        s_osel_weight_note: "*(Weight not required for patients aged 13 years or older)",
+        s_osel_alert: "Not recommended for infants under 3 months of age",
+        s_osel_dose: "Dose (mg)",
+        s_osel_vol: "Volume (ml)",
+        s_osel_vol_note: "*Concentration: 6 mg/ml.",
+        s_osel_freq: "Frequency",
+        s_osel_bottles: "Total Bottles",
+        s_osel_bottles_note: "Bottle size: 60 ml.",
+        s_osel_ref: "Reference: CDC Antiviral Medications - Table 2. Recommended Dosage and Duration of Influenza Antiviral Medications",
+        // Renal Oseltamivir
+        s_ro_title: "Oseltamivir Calculator",
+        s_ro_sub: "(Renal Dose Adjustment)",
+        s_ro_pt_data: "Patient Data",
+        s_ro_age: "Age",
+        s_ro_weight: "Weight",
+        s_ro_gender: "Gender",
+        s_ro_male: "Male",
+        s_ro_female: "Female",
+        s_ro_scr: "Serum Creatinine (SCr)",
+        s_ro_clin_data: "Clinical Data",
+        s_ro_ind: "Indication",
+        s_ro_dialysis: "Dialysis Status",
+        s_ro_crcl: "Calculated CrCl (Cockcroft-Gault)",
+        s_ro_rec_dose: "Recommended Dose",
+        s_ro_source: "Source: Recommended Dosage Modifications for Treatment and Prophylaxis of Influenza in Adults with Renal Impairment",
+        // Contraceptive
+        s_con_title: "Contraceptive Injection Calculator",
+        s_con_base_label: "Date of Latest Injection",
+        s_con_type_label: "Contraceptive Type",
+        s_con_1m_title: "1-Month Formulation (28 Days)",
+        s_con_3m_title: "3-Month Formulation (84 Days)",
+        s_con_result_label: "Next Scheduled Injection",
+        // SEO & Footer
+        seo_title: "Why choose Easymedcal as your daily clinical assistant?",
+        seo_p1: "We are an all-in-one clinical appointment and medication calculator designed to streamline the workflows of doctors, nurses, and pharmacists, ensuring rapid and precise results:",
+        seo_li1: "<strong>Accurate & Reliable:</strong> Instantly check exact date intervals and medication quantities without manually counting calendar days.",
+        seo_li2: "<strong>Comprehensive Toolset:</strong> Includes standard adult vaccination schedules grounded in the latest clinical guidelines.",
+        seo_li3: "<strong>Free & Browser-Based:</strong> Accessible on mobile devices and desktops right away with zero app downloads required!",
+        coffee_modal_title: "Buy me a coffee",
+        coffee_modal_sub: "Support and encourage our development team ☕",
+        coffee_modal_note: "Scan with any mobile banking application.<br>Thank you so much for your support! 🙏",
+        manual_modal_title: "System User Manual",
+        btn_close_manual: "Close Window",
+        day_mon: "Mon", day_tue: "Tue", day_wed: "Wed", day_thu: "Thu", day_fri: "Fri", day_sat: "Sat", day_sun: "Sun",
+        unit_day: "Days", unit_week: "Weeks",
+        manual_1: "<span class=\"font-bold text-[#163333] block mb-1\">Date Difference Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Select start and target dates from the calendar to calculate the exact number of days between them.</span>",
+        manual_2: "<span class=\"font-bold text-[#163333] block mb-1\">Next Appointment by Days / Weeks:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Enter the required number of days or weeks to instantly calculate the corresponding future appointment date.</span>",
+        manual_3: "<span class=\"font-bold text-[#163333] block mb-1\">Appointment & Medication Table:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Select a base date and prescribed dosage to generate a pre-calculated schedule for weeks 1 through 24, including total pills required (always rounded up). Includes a custom days calculator at the bottom.</span>",
+        manual_4: "<span class=\"font-bold text-[#163333] block mb-1\">Weekly Medication Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Select start and appointment dates along with weekly dosage. The system computes total duration and required pills automatically.</span>",
+        manual_5: "<span class=\"font-bold text-[#163333] block mb-1\">Age Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Enter date of birth to calculate exact patient age in years, months, and days.</span>",
+        manual_6: "<span class=\"font-bold text-[#163333] block mb-1\">Year Converter (B.E. / C.E.):</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Enter a year in either Buddhist Era or Christian Era to automatically convert to the opposite system.</span>",
+        manual_7: "<span class=\"font-bold text-[#163333] block mb-1\">Adult Vaccine Appointment Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Select vaccine type and dose history to calculate next due date based on official guidelines. For multi-dose regimens like Rabies, generates the full schedule with day markers.</span>",
+        manual_8: "<span class=\"font-bold text-[#163333] block mb-1\">Oseltamivir Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Input patient weight or age and select indication (Treatment vs. Prophylaxis) to compute precise dosage, liquid volume, frequency, and total bottles needed.</span>",
+        manual_9: "<span class=\"font-bold text-[#163333] block mb-1\">Contraceptive Injection Calculator:</span> <span class=\"text-gray-600 text-sm sm:text-[15px]\">Select latest injection date and formulation type (1-month or 3-month) to determine the next scheduled appointment date (+28 or +84 days).</span>",
+        osel_title: "Oseltamivir Calculator",
+        renal_subtitle: "(Renal Dose Adjustment)",
+        renal_patient_data: "Patient Data",
+        osel_age_label: "Age",
+        osel_weight_label: "Weight",
+        renal_gender: "Gender",
+        renal_male: "Male",
+        renal_female: "Female",
+        osel_indication_label: "Indication",
+        osel_ind_treatment: "Treatment",
+        renal_ind_treatment_desc: "(5 days)",
+        osel_ind_proph: "Prophylaxis",
+        osel_ind_proph_desc: "(10 days)",
+        renal_dialysis_status: "Dialysis Status",
+        s9_title: "Contraceptive Injection Calculator",
+        s9_type_label: "Contraceptive Type",
+        s9_type_1m: "1-Month Formulation (28 Days)",
+        s9_type_3m: "3-Month Formulation (84 Days)",
+        s9_next_appt: "Next Scheduled Injection",
+        user_manual_btn: "User Manual",
+        support_coffee_btn: "Buy me a coffee",
+        privacy_link: "Privacy Policy",
+        cookie_settings_link: "Cookie Settings",
+        disclaimer_title: "Disclaimer:",
+        disclaimer_text: "EasyMedCal calculations are a convenience tool for healthcare professionals only and do not replace clinical diagnosis, advice, or the professional judgment of physicians and pharmacists. Always verify results against current clinical guidelines, product labeling, and each patient's clinical context before use. The developer accepts no liability for any loss or harm arising from the use of these calculations.",
+        footer_copyright: "© 2026 easymedcal.com All rights reserved.",
+        coffee_title: "Support our development team ☕",
+        coffee_scan_text: "Scan with any mobile banking application.<br>Thank you so much for your support! 🙏",
+        manual_title: "System User Manual",
+        close_window: "Close Window",
+        manual_1_title: "Date Difference Calculator:",
+        manual_1_desc: "Select start and target dates from the calendar to calculate exact days between them.",
+        manual_2_title: "Next Appointment by Days/Weeks:",
+        manual_2_desc: "Enter required days or weeks to instantly calculate the corresponding future appointment date.",
+        manual_3_title: "Appointment & Medication Table:",
+        manual_3_desc: "Select a base date and daily dosage to generate a pre-calculated schedule for weeks 1 through 24, including total pills required (always rounded up). Includes a custom days calculator at the bottom.",
+        manual_4_title: "Weekly Medication Calculator:",
+        manual_4_desc: "Select start and appointment dates along with weekly dosage to compute total duration and required pills automatically.",
+        manual_5_title: "Age Calculator:",
+        manual_5_desc: "Enter date of birth to calculate exact patient age in years, months, and days.",
+        manual_6_title: "Year Converter (B.E. / C.E.):",
+        manual_6_desc: "Enter a year in either Buddhist Era or Christian Era to automatically convert to the opposite system.",
+        manual_7_title: "Adult Vaccine Appointment Calculator:",
+        manual_7_desc: "Select vaccine type and dose history to calculate next due date based on official guidelines. For multi-dose regimens like Rabies, generates the full schedule with day markers.",
+        manual_8_title: "Oseltamivir Calculator:",
+        manual_8_desc: "Input patient weight or age and select indication (Treatment vs. Prophylaxis) to compute precise dosage, liquid volume, frequency, and total bottles needed.",
+        manual_9_title: "Contraceptive Injection Calculator:",
+        manual_9_desc: "Select latest injection date and formulation type (1-month or 3-month) to determine the next scheduled appointment date (+28 or +84 days).",
+        ph_specify_age: "Enter age...",
+        ph_specify_weight: "Enter weight...",
+        ph_specify_scr: "Enter SCr...",
+        ph_specify_dose: "Enter dose number",
+        ph_specify_pills: "Enter pill count",
+        ph_specify_days: "Enter days...",
+        ph_day: "Day",
+        ph_year: "C.E. / B.E.",
+        ph_eg_30: "e.g. 30",
+        ph_eg_4: "e.g. 4",
+        ph_eg_2567: "e.g. 2567",
+        ph_eg_2024: "e.g. 2024",
+        unit_year: "Years",
+        s8_empty_table: "Please select date and dosage to generate table",
+        s8_custom_date_match: "Corresponding Date",
+        s8_custom_daily_pay: "Daily Pills",
+        s8_custom_weekly_pay: "Weekly Pills",
+        osel_ind_treatment_desc: "(5 days, Twice daily)",
+        osel_weight_note: "*(Weight not required for age 13 years or older)",
+        osel_alert_not_rec: "Not recommended for infants under 3 months of age",
+        renal_clinical_data: "Clinical Data",
+        btn_copy: "Copy Result",
+        btn_copied: "Copied!",
+        btn_add_cal: "Add to Cal",
+        btn_ics: ".ics File",
+        cal_title_appt: "Medical Appointment",
+        cal_title_contra: "Contraceptive Injection Appointment",
+        cal_title_vaccine: "Vaccination Appointment",
+        btn_reset: "Reset",
+        toast_copied: "Copied result to clipboard",
+        toast_reset: "Calculator reset",
+        holiday_prefix: "Public Holiday: "
+    }
+};
+
+}
+if (!window.__EMC_PWA_LOADED__) {
+window.__EMC_PWA_LOADED__ = true;
+// =============================================================
+// EasyMedCal - PWA bootstrap
+// - Registers the Service Worker (/sw.js) for offline use
+// - Shows a small banner when a new version is available
+// =============================================================
+(function () {
+    'use strict';
+    if (!('serviceWorker' in navigator)) return;
+    // Service Workers only work over https:// or http://localhost (not file://)
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+
+    function isEN() {
+        try { return localStorage.getItem('lang') === 'EN'; } catch (e) { return false; }
+    }
+
+    function showUpdateBanner(worker) {
+        if (document.getElementById('emc-update-banner')) return;
+        const bar = document.createElement('div');
+        bar.id = 'emc-update-banner';
+        bar.setAttribute('role', 'status');
+        bar.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;' +
+            'background:#163333;color:#fff;padding:10px 14px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);' +
+            'display:flex;gap:10px;align-items:center;font-size:14px;max-width:calc(100% - 24px)';
+        const text = document.createElement('span');
+        text.textContent = isEN() ? 'A new version is available' : 'มีเวอร์ชันใหม่พร้อมใช้งาน';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = isEN() ? 'Update' : 'อัปเดต';
+        btn.style.cssText = 'background:#24917d;color:#fff;border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer';
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            worker.postMessage({ type: 'SKIP_WAITING' });
+        });
+        bar.appendChild(text);
+        bar.appendChild(btn);
+        document.body.appendChild(bar);
+    }
+
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(function (reg) {
+            // A new SW is already waiting (e.g. page reopened after an update was downloaded)
+            if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg.waiting);
+
+            reg.addEventListener('updatefound', function () {
+                const nw = reg.installing;
+                if (!nw) return;
+                nw.addEventListener('statechange', function () {
+                    // Only prompt if an older SW controls this page (i.e. this is an update, not first install)
+                    if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdateBanner(nw);
+                });
+            });
+        }).catch(function (err) {
+            console.warn('[EasyMedCal] Service Worker registration failed:', err);
+        });
+
+        // Reload once when a NEW SW takes control (skip on the very first install, nothing to refresh)
+        const hadController = !!navigator.serviceWorker.controller;
+        let reloaded = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (!hadController || reloaded) return;
+            reloaded = true;
+            location.reload();
+        });
+    });
+})();
+
+}
+
 function initEasyMedCal() {
     // -------------------------------------------------------------
     // Initialization & Theme Handling
